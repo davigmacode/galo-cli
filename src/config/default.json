@@ -1,0 +1,65 @@
+{
+  "engine": {
+    "name": "GALO",
+    "description": "Generative Artworks Lies Onchain",
+    "version": 1.0
+  },
+  "storage": {
+    "provider": "NFTStorage",
+    "key": ""
+  },
+  "collage": {
+    "type": "image/png",
+    "name": "preview.png",
+    "perRow": 10,
+    "width": 50
+  },
+  "traits": {
+    "path": "/traits",
+    "config": "traits.json",
+    "width": 1080,
+    "height": 1080
+  },
+  "metadata": {
+    "path": "/metadata",
+    "config": "metadata.json",
+    "template": {
+      "dna": "{dna}",
+      "edition": "{edition}",
+      "name": "{faker.name.findName} #{edition}",
+      "symbol": "GALO",
+      "description": "Generative Artworks Lies Onchain",
+      "image": "{edition}.png"
+    }
+  },
+  "artworks": {
+    "path": "/artworks",
+    "type": "image/png",
+    "name": "{edition}.png",
+    "generations": [
+      {
+        "size": 10,
+        "order": [
+          {
+            "name": "background",
+            "traits": {
+              "bg-01.png": { "weight": 0.4 },
+              "bg-02.png": { "weight": 0.2 },
+              "bg-03.png": { "weight": 0.7 }
+            }
+          },
+          { "name": "body" },
+          { "name": "hair" }
+        ]
+      },
+      {
+        "size": 5,
+        "order": [
+          { "name": "body" },
+          { "name": "clothes" },
+          { "name": "hair" }
+        ]
+      }
+    ]
+  }
+}
