@@ -1,5 +1,7 @@
 import debug from "debug";
 import faker from "faker";
+import ora from "ora";
+import chalk from "chalk";
 
 const log = debug("utils");
 
@@ -17,5 +19,18 @@ export const parseString = (
   variables: object,
   pattern: string = "\{([^\{]+)\}"
 ) => template.replace(new RegExp(pattern, "g"), (_unused, varName) => variables[varName]);
+
+export const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const task = async ({ processText, successText, delay = 1000, fn }: TaskConfig) => {
+  const spinner = ora(processText).start();
+  await fn();
+  await sleep(delay);
+  spinner.succeed(successText);
+}
+
+export const createSpinner = ora;
+
+export const pen = chalk;
 
 export const randomName = faker.name.findName;

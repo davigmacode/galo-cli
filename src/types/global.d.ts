@@ -55,3 +55,10 @@ interface BuildCollageConfig {
   thumbPerRow: number;
   imageRatio: number;
 }
+
+interface TaskConfig {
+  processText: string;
+  successText: string;
+  delay?: number;
+  fn: () => Promise<void>;
+}
