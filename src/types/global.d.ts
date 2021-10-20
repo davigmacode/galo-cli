@@ -37,3 +37,21 @@ interface GenerationConfig {
   size: number;
   order: GenerationOrder[];
 }
+
+interface BuildArtworksConfig {
+  path: string | string[];
+  edition: number;
+  attributes: Attr[];
+  width: number;
+  height: number;
+}
+
+interface BuildCollageConfig {
+  basePath: string | string[];
+  artworksPath: string | string[];
+  previewPath: string | string[];
+  metadata: any[];
+  thumbWidth: number;
+  thumbPerRow: number;
+  imageRatio: number;
+}

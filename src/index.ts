@@ -6,11 +6,15 @@ import initAction from "./actions/init";
 import buildAction from "./actions/build";
 import uploadAction from "./actions/upload";
 
+import chalk from "chalk";
+import * as header from "./header";
+
 const program = new Command();
 
 program
   .name(LIB_NAME)
   .version(LIB_VERSION)
+  .description(chalk.green(header.logo) + ' ' + chalk.bgBlue(header.author))
   .showHelpAfterError();
 
 program
@@ -35,12 +39,24 @@ program
 
 program
   .command('build')
+  .argument(
+    '[dir]',
+    'directory to build the artworks project',
+    (val) => cwd(val),
+    process.cwd()
+  )
   .description('generate the artworks, metadata, rarity, and collage')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(buildAction);
 
 program
   .command('upload')
+  .argument(
+    '[dir]',
+    'directory to upload the artworks project',
+    (val) => cwd(val),
+    process.cwd()
+  )
   .description('upload the generated artworks to decentralized storage')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(uploadAction);
