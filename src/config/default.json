@@ -11,7 +11,7 @@
   "collage": {
     "type": "image/png",
     "name": "preview.png",
-    "perRow": 10,
+    "perRow": 5,
     "width": 50
   },
   "traits": {
@@ -36,6 +36,9 @@
     "path": "/artworks",
     "type": "image/png",
     "name": "{edition}.png",
+    "width": 1080,
+    "height": 1080,
+    "shuffle": 3,
     "generations": [
       {
         "size": 10,
@@ -61,5 +64,11 @@
         ]
       }
     ]
+  },
+  "rarity": {
+    "common": 0.7,
+    "uncommon": 0.6,
+    "rare": 0.3,
+    "legend": 0.05
   }
 }
