@@ -23,22 +23,27 @@
   "metadata": {
     "path": "/metadata",
     "config": "metadata.json",
+    "shuffle": 3,
     "template": {
-      "dna": "{dna}",
-      "edition": "{edition}",
-      "name": "{faker.name.findName} #{edition}",
+      "dna": "{{dna}}",
+      "edition": "{{edition}}",
+      "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies Onchain",
-      "image": "{edition}.png"
+      "image": "{{edition}}.png",
+      "attributes": {
+        "{{#each attributes}}": {
+          "trait_type": "{{trait_type}}",
+          "value": "{{value}}"
+        }
+      }
     }
   },
   "artworks": {
     "path": "/artworks",
     "type": "image/png",
-    "name": "{edition}.png",
     "width": 1080,
     "height": 1080,
-    "shuffle": 3,
     "generations": [
       {
         "size": 10,
@@ -69,6 +74,7 @@
     "common": 0.7,
     "uncommon": 0.6,
     "rare": 0.3,
+    "epic": 0.1,
     "legend": 0.05
   }
 }

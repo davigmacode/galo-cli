@@ -3,7 +3,7 @@ import { pen, task } from "../helpers/utils";
 import { LIB_VERSION } from "../constants";
 
 export default async (basePath: string, opt: any) => {
-  console.log(pen.green('Init project'));
+  console.log(pen.green('Init Collection'));
 
   const traitsPath = pathJoin(basePath, opt.traitsPath);
   await task({
@@ -28,5 +28,5 @@ export default async (basePath: string, opt: any) => {
     },
   });
 
-  console.log(pen.green(`Project initiated at ${basePath}`));
+  console.log(pen.green(`Collection initiated at ${basePath}`));
 }

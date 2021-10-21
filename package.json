@@ -54,6 +54,7 @@
     "inquirer": "^8.2.0",
     "object-hash": "^2.2.0",
     "ora": "^5.0.0",
+    "stjs": "^0.0.5",
     "weighted": "^0.3.0"
   },
   "devDependencies": {
