@@ -1,5 +1,5 @@
 import { createCanvas } from "canvas";
-import { readImage, writeImage, pathNormalize, pathJoin } from "./file";
+import { getImage, writeImage, pathNormalize, pathJoin } from "./file";
 
 import debug from "debug";
 const log = debug("collage");
@@ -30,7 +30,7 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   // Don't want to rely on "edition" for assuming index
   for (let index = 0; index < generations.length; index++) {
     const gen = generations[index];
-    await readImage([basePath, artworksPath, `${gen.edition}`]).then((image) => {
+    await getImage([basePath, artworksPath, `${gen.edition}`]).then((image) => {
       previewCtx.drawImage(
         image,
         thumbWidth * (index % thumbPerRow),

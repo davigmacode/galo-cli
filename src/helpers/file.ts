@@ -40,7 +40,7 @@ export const writeImage = (path: string | string[], data: string | NodeJS.ArrayB
   write(path, data);
 };
 
-export const readImage = async (path: string | string[]) => {
+export const getImage = async (path: string | string[]) => {
   path = pathNormalize(path, '.png');
   return loadImage(path);
 };
@@ -49,6 +49,13 @@ export const writeJson = (path: string | string[], data: object) => {
   path = pathNormalize(path, '.json');
   write(path, JSON.stringify(data, null, 2));
 }
+
+export const readFile = (path: string | string[], ext?: string) => {
+  path = pathNormalize(path, ext);
+  return fs.readFileSync(path);
+}
+
+export const readImage = (path: string | string[]) => readFile(path, '.png');
 
 export const readJson = (path: string | string[]) => {
   path = pathNormalize(path, '.json');
