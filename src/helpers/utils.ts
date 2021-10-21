@@ -5,6 +5,8 @@ import chalk from "chalk";
 
 const log = debug("utils");
 
+export const capitalize = (s: string) => s && s[0].toUpperCase() + s.slice(1);
+
 export const shuffle = (array: any[], round: number = 1) : any[] => {
   log(`shuffle #${round}`);
   for (let i = array.length - 1; i > 0; i--) {
@@ -22,11 +24,12 @@ export const parseString = (
 
 export const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const task = async ({ processText, successText, delay = 1000, fn }: TaskConfig) => {
+export const task = async ({ processText, successText, delay = 300, fn }: TaskConfig) : Promise<any> => {
   const spinner = ora(processText).start();
-  await fn();
+  const result = await fn();
   await sleep(delay);
   spinner.succeed(successText);
+  return result;
 }
 
 export const createSpinner = ora;

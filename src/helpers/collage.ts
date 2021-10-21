@@ -10,27 +10,27 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   const thumbWidth = opt.thumbWidth;
   const thumbPerRow = opt.thumbPerRow;
   const imageRatio = opt.imageRatio;
-  const metadata = opt.metadata;
+  const generations = opt.generations;
 
   // Calculate height on the fly
   const thumbHeight = thumbWidth * imageRatio;
   // Prepare canvas
   const previewCanvasWidth = thumbWidth * thumbPerRow;
-  const previewCanvasHeight = thumbHeight * Math.round(metadata.length / thumbPerRow);
+  const previewCanvasHeight = thumbHeight * Math.round(generations.length / thumbPerRow);
   // Shout from the mountain tops
   const previewCanvasSize = `${previewCanvasWidth}x${previewCanvasHeight}`;
-  log(`Preparing a ${previewCanvasSize} project preview with ${metadata.length} thumbnails.`);
+  log(`Preparing a ${previewCanvasSize} project preview with ${generations.length} thumbnails.`);
 
   // Initiate the canvas now that we have calculated everything
   const previewPath = pathJoin(basePath, pathNormalize(opt.previewPath));
   const previewCanvas = createCanvas(previewCanvasWidth, previewCanvasHeight);
   const previewCtx = previewCanvas.getContext("2d");
 
-  // Iterate all NFTs and insert thumbnail into preview image
+  // Iterate all generations and insert thumbnail into preview image
   // Don't want to rely on "edition" for assuming index
-  for (let index = 0; index < metadata.length; index++) {
-    const nft = metadata[index];
-    await readImage([basePath, artworksPath, `${nft.edition}`]).then((image) => {
+  for (let index = 0; index < generations.length; index++) {
+    const gen = generations[index];
+    await readImage([basePath, artworksPath, `${gen.edition}`]).then((image) => {
       previewCtx.drawImage(
         image,
         thumbWidth * (index % thumbPerRow),

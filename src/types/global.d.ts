@@ -50,7 +50,7 @@ interface BuildCollageConfig {
   basePath: string | string[];
   artworksPath: string | string[];
   previewPath: string | string[];
-  metadata: any[];
+  generations: Gen[];
   thumbWidth: number;
   thumbPerRow: number;
   imageRatio: number;
@@ -60,5 +60,5 @@ interface TaskConfig {
   processText: string;
   successText: string;
   delay?: number;
-  fn: () => Promise<void>;
+  fn: () => Promise<any>;
 }

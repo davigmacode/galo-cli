@@ -12,8 +12,16 @@ export const cwd = (...paths: string[]) => {
 
 export const pathJoin = p.join;
 
-export const pathNormalize = (path: string | string[]) => {
-  return Array.isArray(path) ? pathJoin(...path) : path;
+export const pathNormalize = (path: string | string[], ext?: string) => {
+  // join path if is array
+  path = Array.isArray(path) ? pathJoin(...path) : path;
+
+  // ensure path extension
+  if (ext) {
+    path = p.extname(path) != ext ? path + ext : path;
+  }
+
+  return path;
 }
 
 export const setupDir = (...paths: string[]) => {
@@ -28,26 +36,22 @@ export const write = (path: string | string[], data: string | NodeJS.ArrayBuffer
 };
 
 export const writeImage = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
-  path = pathNormalize(path);
-  path = p.extname(path) != '.png' ? `${path}.png` : path;
+  path = pathNormalize(path, '.png');
   write(path, data);
 };
 
 export const readImage = async (path: string | string[]) => {
-  path = pathNormalize(path);
-  path = p.extname(path) != '.png' ? `${path}.png` : path;
+  path = pathNormalize(path, '.png');
   return loadImage(path);
 };
 
 export const writeJson = (path: string | string[], data: object) => {
-  path = pathNormalize(path);
-  path = p.extname(path) != '.json' ? `${path}.json` : path;
+  path = pathNormalize(path, '.json');
   write(path, JSON.stringify(data, null, 2));
 }
 
 export const readJson = (path: string | string[]) => {
-  path = pathNormalize(path);
-  path = p.extname(path) != '.json' ? `${path}.json` : path;
+  path = pathNormalize(path, '.json');
 
   log(`read ${path}`);
 
@@ -98,3 +102,14 @@ export const exists = (path: string | string[]) : boolean => {
   }
   return isExists;
 }
+
+export const deleteFile = (path: string | string[], ext?: string) => {
+  path = pathNormalize(path, ext);
+  fs.rmSync(path, { force: true, recursive: true });
+}
+
+export const deleteDir = (path: string | string[]) => deleteFile(path);
+
+export const deleteImage = (path: string | string[]) => deleteFile(path, '.png');
+
+export const deleteJson = (path: string | string[]) => deleteFile(path, '.json')

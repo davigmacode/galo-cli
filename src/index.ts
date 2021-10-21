@@ -4,7 +4,11 @@ import { cwd } from "./helpers/file";
 
 import initAction from "./actions/init";
 import buildAction from "./actions/build";
+import metadataAction from "./actions/metadata";
+import collageAction from "./actions/collage";
+import rarityAction from "./actions/rarity";
 import uploadAction from "./actions/upload";
+import cleanAction from "./actions/clean";
 
 import chalk from "chalk";
 import * as header from "./header";
@@ -19,10 +23,10 @@ program
 
 program
   .command('init')
-  .description('create a new generative artworks project')
+  .description('create a new generative artworks collection')
   .argument(
     '[dir]',
-    'directory to init the artworks project',
+    'directory to init the artworks collection',
     (val) => cwd(val),
     process.cwd()
   )
@@ -41,7 +45,7 @@ program
   .command('build')
   .argument(
     '[dir]',
-    'directory to build the artworks project',
+    'collection directory, use current dir if not supplied',
     (val) => cwd(val),
     process.cwd()
   )
@@ -50,15 +54,63 @@ program
   .action(buildAction);
 
 program
+  .command('build:metadata')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('create collection metadata without regenerating the collection')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(metadataAction);
+
+program
+  .command('build:collage')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('create collection collage without regenerating the collection')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(collageAction);
+
+program
+  .command('build:rarity')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('create collection rarity without regenerating the collection')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(rarityAction);
+
+program
   .command('upload')
   .argument(
     '[dir]',
-    'directory to upload the artworks project',
+    'collection directory, use current dir if not supplied',
     (val) => cwd(val),
     process.cwd()
   )
   .description('upload the generated artworks to decentralized storage')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(uploadAction);
+
+program
+  .command('clean')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('clean the collection directory')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(cleanAction);
 
 program.parse(process.argv);
