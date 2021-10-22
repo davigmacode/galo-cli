@@ -3,6 +3,8 @@ import faker from "faker";
 import ora from "ora";
 import chalk from "chalk";
 
+export { isEmpty, isArray } from "lodash";
+
 const log = debug("utils");
 
 export const capitalize = (s: string) => s && s[0].toUpperCase() + s.slice(1);
@@ -24,7 +26,7 @@ export const parseString = (
 
 export const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const task = async ({ processText, successText, delay = 300, fn }: TaskConfig) : Promise<any> => {
+export const task = async ({ processText, successText, delay = 50, fn }: TaskConfig) : Promise<any> => {
   const spinner = ora(processText).start();
   const result = await fn();
   await sleep(delay);
@@ -37,3 +39,32 @@ export const createSpinner = ora;
 export const pen = chalk;
 
 export const randomName = faker.name.findName;
+
+const isUnicodeSupported = () => {
+	if (process.platform !== 'win32') {
+		return process.env.TERM !== 'linux'; // Linux console (kernel)
+	}
+
+	return Boolean(process.env.CI) ||
+		Boolean(process.env.WT_SESSION) || // Windows Terminal
+		process.env.ConEmuTask === '{cmd::Cmder}' || // ConEmu and cmder
+		process.env.TERM_PROGRAM === 'vscode' ||
+		process.env.TERM === 'xterm-256color' ||
+		process.env.TERM === 'alacritty';
+}
+
+const symbolsMain = {
+	info: chalk.blue('ℹ'),
+	success: chalk.green('✔'),
+	warning: chalk.yellow('⚠'),
+	error: chalk.red('✖')
+};
+
+const symbolsFallback = {
+	info: chalk.blue('i'),
+	success: chalk.green('√'),
+	warning: chalk.yellow('‼'),
+	error: chalk.red('×')
+};
+
+export const symbols = isUnicodeSupported() ? symbolsMain : symbolsFallback;

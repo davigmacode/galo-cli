@@ -6,7 +6,9 @@ import { shuffle, pen, task } from "../helpers/utils";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  console.log(pen.green('Build Collection (galokeun)'));
+  const cmdTitle = pen.green('Build Collection (galokeun)');
+  console.log(cmdTitle);
+  console.time(cmdTitle);
 
   // check for the config file existence
   const generationsPath = pathJoin(basePath, 'generations.json');
@@ -160,4 +162,6 @@ export default async (basePath: string, opt: any) => {
       generations: generations,
     }),
   });
+
+  console.timeEnd(cmdTitle);
 }

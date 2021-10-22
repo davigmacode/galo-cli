@@ -71,10 +71,10 @@
     ]
   },
   "rarity": {
-    "common": 0.7,
-    "uncommon": 0.6,
-    "rare": 0.3,
-    "epic": 0.1,
-    "legend": 0.05
+    "c": { "name": "Common", "weight": 0.7 },
+    "u": { "name": "Uncommon", "weight": 0.6 },
+    "r": { "name": "Rare", "weight": 0.5 },
+    "e": { "name": "Epic", "weight": 0.4 },
+    "l": { "name": "Legend", "weight": 0.3 }
   }
 }

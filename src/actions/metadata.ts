@@ -3,7 +3,9 @@ import { pen, task, shuffle } from "../helpers/utils";
 import { transformGen } from "../helpers/dna";
 
 export default async (basePath: string, opt: any) => {
-  console.log(pen.green('Build Collection Metadata'));
+  const cmdTitle = pen.green('Build Collection Metadata');
+  console.log(cmdTitle);
+  console.time(cmdTitle);
 
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
@@ -59,4 +61,6 @@ export default async (basePath: string, opt: any) => {
     successText: `Metadata: ${metadataConfig}`,
     fn: async () => writeJson(metadataConfig, metadata)
   });
+
+  console.timeEnd(cmdTitle);
 }

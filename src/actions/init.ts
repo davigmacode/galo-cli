@@ -4,7 +4,9 @@ import { LIB_VERSION } from "../constants";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  console.log(pen.green('Init Collection'));
+  const cmdTitle = pen.green('Init Collection');
+  console.log(cmdTitle);
+  console.time(cmdTitle);
 
   // check for the config file existence
   const configPath = pathJoin(basePath, opt.config);
@@ -58,4 +60,5 @@ export default async (basePath: string, opt: any) => {
   }
 
   console.log(pen.green(`Collection initialized at ${basePath}`));
+  console.timeEnd(cmdTitle);
 }

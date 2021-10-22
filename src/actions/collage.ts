@@ -3,7 +3,9 @@ import { buildCollage } from "../helpers/collage";
 import { pen, task } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
-  console.log(pen.green('Build Collection Collage'));
+  const cmdTitle = pen.green('Build Collection Collage');
+  console.log(cmdTitle);
+  console.time(cmdTitle);
 
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
@@ -48,4 +50,6 @@ export default async (basePath: string, opt: any) => {
       generations: generations,
     }),
   });
+
+  console.timeEnd(cmdTitle);
 }
