@@ -6,15 +6,15 @@
   },
   "storage": {
     "ipfs": {
-      "name": "IPFS",
+      "label": "IPFS",
       "token": ""
     },
     "arweave": {
-      "name": "Arweave",
+      "label": "Arweave",
       "token": ""
     },
     "gdrive": {
-      "name": "Google Drive",
+      "label": "Google Drive",
       "token": ""
     }
   },

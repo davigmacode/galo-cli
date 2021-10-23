@@ -8,10 +8,10 @@ export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (configExists) {
-    const inquires = await inquirer.prompt([
+    const { qReInitiating } = await inquirer.prompt([
       {
         type: 'confirm',
-        name: 'reInitiating',
+        name: 'qReInitiating',
         message: 'Config file found, would you like to overwrite it to default value?',
         default: false,
       },
@@ -24,7 +24,7 @@ export default async (basePath: string, opt: any) => {
     });
 
     // exit the action if not confirmed to re initiating
-    if (!inquires.reInitiating) {
+    if (!qReInitiating) {
       consoleWarn(`Initialization canceled`);
       return;
     }

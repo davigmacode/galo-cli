@@ -3,17 +3,10 @@ import { task, consoleWarn } from "../helpers/utils";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  const configPath = pathJoin(basePath, opt.config);
-  const configExists = exists(configPath);
-  if (!configExists) {
-    consoleWarn(`Config file not found, init the collection first`);
-    return;
-  }
-
-  const { removeConfig } = await inquirer.prompt([
+  const { qRemoveConfig } = await inquirer.prompt([
     {
       type: 'confirm',
-      name: 'removeConfig',
+      name: 'qRemoveConfig',
       message: 'Do you want to also remove the config file?',
       default: false,
     },
@@ -24,6 +17,13 @@ export default async (basePath: string, opt: any) => {
       // Something else went wrong
     }
   });
+
+  const configPath = pathJoin(basePath, opt.config);
+  const configExists = exists(configPath);
+  if (!configExists) {
+    consoleWarn(`Config file not found, run "galo init" first`);
+    return;
+  }
 
   // read project config file
   const config = await task({
@@ -88,7 +88,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteDir(metadataPath),
   });
 
-  if (removeConfig) {
+  if (qRemoveConfig) {
     await task({
       processText: 'Removing config file',
       successText: `Removed: ${configPath}`,

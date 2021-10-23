@@ -3,13 +3,6 @@ import { task, shuffle, consoleWarn } from "../helpers/utils";
 import { transformGen } from "../helpers/dna";
 
 export default async (basePath: string, opt: any) => {
-  const generationsPath = pathJoin(basePath, 'generations.json');
-  const generationsExists = exists(generationsPath);
-  if (!generationsExists) {
-    consoleWarn(`Generations not found, build the collection first`);
-    return;
-  }
-
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
@@ -23,6 +16,13 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Config: ${configPath}`,
     fn: async () => readJson(configPath),
   });
+
+  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsExists = exists(generationsPath);
+  if (!generationsExists) {
+    consoleWarn(`Generations not found, build the collection first`);
+    return;
+  }
 
   // read the generations from file
   const generations = await task({

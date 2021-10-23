@@ -39,7 +39,10 @@ export default async (basePath: string, opt: any) => {
       message: 'Where do you want to upload?',
       choices: Object
         .keys(config.storage)
-        .map((value) => ({ ...config.storage[value], value })),
+        .map((key) => ({
+          name: config.storage[key].label,
+          value: key
+        })),
     },
   ]).catch((error) => {
     if (error.isTtyError) {
@@ -50,13 +53,19 @@ export default async (basePath: string, opt: any) => {
   });
 
   const storageProvider = config.storage[qStorageProvider];
+
+  if(qStorageProvider != 'ipfs') {
+    consoleWarn(`Currently only support ${config.storage['ipfs'].label}`);
+    return;
+  }
+
   if (isEmpty(storageProvider.token)) {
     while (isEmpty(storageProvider.token)) {
       const { qStorageToken } = await inquirer.prompt([
         {
           type: 'input',
           name: 'qStorageToken',
-          message: `Cant find ${storageProvider.name} token in the config file, please enter the token:`,
+          message: `Cant find ${storageProvider.label} token in the config file, please enter the token:`,
         },
       ]).catch((error) => {
         console.log(symbols.error, error);

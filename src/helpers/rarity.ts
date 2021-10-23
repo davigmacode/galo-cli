@@ -11,9 +11,9 @@ export const populateRarity = (generations: Gen[]) => {
     for (const attr of gen.attributes) {
       const path = [attr.trait, attr.value];
       const occurrence = get(rarity, [ ...path, 'occurrence' ], 0) + 1;
-      const percentage = occurrence / editions * 100;
+      const chance = occurrence / editions * 100;
       set(rarity, [ ...path, 'occurrence' ], occurrence);
-      set(rarity, [ ...path, 'percentage' ], `${percentage.toFixed(0)}%`);
+      set(rarity, [ ...path, 'chance' ], `${chance.toFixed(0)}%`);
     }
   }
   return rarity;

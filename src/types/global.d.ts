@@ -45,7 +45,7 @@ interface GenerationOrder {
   excludes: string[];
 }
 
-interface GenerationConfig {
+interface Generation {
   size: number;
   order: string[] | GenerationOrder[];
 }

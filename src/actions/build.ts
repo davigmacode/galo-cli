@@ -8,6 +8,20 @@ import { shuffle, task, consoleWarn, consoleError } from "../helpers/utils";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
+  const configPath = pathJoin(basePath, opt.config);
+  const configExists = exists(configPath);
+  if (!configExists) {
+    consoleWarn(`Config file not found, run "galo init" first`);
+    return;
+  }
+
+  // read project config file
+  const config = await task({
+    processText: 'Loading collection configuration',
+    successText: `Collection Config: ${configPath}`,
+    fn: async () => readJson(configPath),
+  });
+
   // check for the config file existence
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
@@ -33,14 +47,6 @@ export default async (basePath: string, opt: any) => {
       return;
     }
   }
-
-  // read project config file
-  const configPath = pathJoin(basePath, opt.config);
-  const config = await task({
-    processText: 'Loading collection configuration',
-    successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
-  });
 
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);

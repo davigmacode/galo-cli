@@ -3,17 +3,10 @@ import { buildCollage } from "../helpers/collage";
 import { task, consoleWarn } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
-  const generationsPath = pathJoin(basePath, 'generations.json');
-  const generationsExists = exists(generationsPath);
-  if (!generationsExists) {
-    consoleWarn(`Generations not found, build the collection first`);
-    return;
-  }
-
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, init the collection first`);
+    consoleWarn(`Config file not found, run "galo init" first`);
     return;
   }
 
@@ -23,6 +16,13 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Config: ${configPath}`,
     fn: async () => readJson(configPath),
   });
+
+  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsExists = exists(generationsPath);
+  if (!generationsExists) {
+    consoleWarn(`Generations not found, build the collection first`);
+    return;
+  }
 
   // read the generations from file
   const generations = await task({
