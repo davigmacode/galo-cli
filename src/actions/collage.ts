@@ -1,23 +1,19 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { buildCollage } from "../helpers/collage";
-import { pen, task } from "../helpers/utils";
+import { task, consoleWarn } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Build Collection Collage');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
-    console.log(pen.green(`Generations not found, build the collection first`));
+    consoleWarn(`Generations not found, build the collection first`);
     return;
   }
 
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    console.log(pen.green(`Config file not found, init the collection first`));
+    consoleWarn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -50,6 +46,4 @@ export default async (basePath: string, opt: any) => {
       generations: generations,
     }),
   });
-
-  console.timeEnd(cmdTitle);
 }

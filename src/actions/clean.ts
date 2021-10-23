@@ -1,16 +1,11 @@
 import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir } from "../helpers/file";
-import { pen, task } from "../helpers/utils";
-import { NFTStorage } from "nft.storage";
+import { task, consoleWarn } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Clean Collection');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    console.log(pen.green(`Config file not found, init the collection first`));
+    consoleWarn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -30,22 +25,6 @@ export default async (basePath: string, opt: any) => {
 
   // read metadata config file
   const uploadsPath = pathJoin(basePath, 'uploads.json');
-  const uploads = await task({
-    processText: 'Loading collection uploads',
-    successText: `Collection Uploads: ${uploadsPath}`,
-    fn: async () => readJson(uploadsPath),
-  });
-
-  const storage = new NFTStorage({ token: config.storage.key })
-  for await (const upload of uploads) {
-    const cid = upload.ipnft;
-    await task({
-      processText: `Removing ${cid}`,
-      successText:`Removing ${cid}`,
-      fn: async () => storage.delete(cid),
-    });
-  }
-
   await task({
     processText: 'Removing collection uploads',
     successText: `Removed: ${uploadsPath}`,
@@ -79,6 +58,4 @@ export default async (basePath: string, opt: any) => {
     successText: `Removed: ${metadataPath}`,
     fn: async () => deleteDir(metadataPath),
   });
-
-  console.timeEnd(cmdTitle);
 }

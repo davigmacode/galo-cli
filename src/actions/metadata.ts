@@ -1,23 +1,19 @@
 import { writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { pen, task, shuffle } from "../helpers/utils";
+import { task, shuffle, consoleWarn } from "../helpers/utils";
 import { transformGen } from "../helpers/dna";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Build Collection Metadata');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
-    console.log(pen.green(`Generations not found, build the collection first`));
+    consoleWarn(`Generations not found, build the collection first`);
     return;
   }
 
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    console.log(pen.green(`Config file not found, init the collection first`));
+    consoleWarn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -61,6 +57,4 @@ export default async (basePath: string, opt: any) => {
     successText: `Metadata: ${metadataConfig}`,
     fn: async () => writeJson(metadataConfig, metadata)
   });
-
-  console.timeEnd(cmdTitle);
 }

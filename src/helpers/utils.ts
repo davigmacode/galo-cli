@@ -3,7 +3,7 @@ import faker from "faker";
 import ora from "ora";
 import chalk from "chalk";
 
-export { isEmpty, isArray } from "lodash";
+export { isEmpty, isArray, get, set } from "lodash";
 
 const log = debug("utils");
 
@@ -68,3 +68,15 @@ const symbolsFallback = {
 };
 
 export const symbols = isUnicodeSupported() ? symbolsMain : symbolsFallback;
+
+export const consoleError = (msg: string) => {
+	console.log(pen.redBright(msg));
+}
+
+export const consoleWarn = (msg: string) => {
+	console.log(pen.yellowBright(msg));
+}
+
+export const consoleInfo = (msg: string) => {
+	console.log(pen.green(msg));
+}

@@ -1,13 +1,9 @@
 import { setupDir, writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { pen, task } from "../helpers/utils";
+import { consoleInfo, consoleWarn, task } from "../helpers/utils";
 import { LIB_VERSION } from "../constants";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Init Collection');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   // check for the config file existence
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
@@ -29,9 +25,18 @@ export default async (basePath: string, opt: any) => {
 
     // exit the action if not confirmed to re initiating
     if (!inquires.reInitiating) {
-      console.log(pen.green(`Initialization canceled`));
+      consoleWarn(`Initialization canceled`);
       return;
     }
+  }
+
+  const basePathExists = exists(basePath);
+  if (!basePathExists) {
+    await task({
+      processText: 'Setup collection directory',
+      successText: `Created: ${basePath}`,
+      fn: async () => setupDir(basePath),
+    });
   }
 
   await task({
@@ -43,8 +48,7 @@ export default async (basePath: string, opt: any) => {
       configData.traits.path = opt.traitsPath;
       configData.artworks.path = opt.artworksPath;
       configData.metadata.path = opt.metadataPath;
-      configData.storage.provider = opt.storageProvider;
-      configData.storage.key = opt.storageKey;
+      configData.collage.path = opt.previewPath;
       writeJson([basePath, opt.config], configData);
     },
   });
@@ -59,6 +63,5 @@ export default async (basePath: string, opt: any) => {
     });
   }
 
-  console.log(pen.green(`Collection initialized at ${basePath}`));
-  console.timeEnd(cmdTitle);
+  consoleInfo(`Collection initialized at ${basePath}`);
 }
