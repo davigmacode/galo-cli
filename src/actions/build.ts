@@ -1,6 +1,7 @@
-import { generateGen, transformGen } from "../helpers/dna";
+import { buildGen, transformGen } from "../helpers/dna";
 import { setupDir, writeJson, readJson, pathJoin, findDirs, exists } from "../helpers/file";
-import { buildArtworks, populateTraits } from "../helpers/traits";
+import { populateTraits } from "../helpers/traits";
+import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity } from "../helpers/rarity";
 import { shuffle, task, consoleWarn, consoleError } from "../helpers/utils";
@@ -50,12 +51,12 @@ export default async (basePath: string, opt: any) => {
 
   // populate traits and write to config file
   const traitsConfig = pathJoin(basePath, config.traits.config);
-  let traits: LayerBreakdown;
+  let traits: Traits;
   await task({
     processText: 'Preparing traits',
     successText: `Collection Traits: ${traitsConfig}`,
     fn: async () => {
-      traits = populateTraits([basePath, config.traits.path]);
+      traits = populateTraits([basePath, config.traits.path], config.rarity);
       writeJson(traitsConfig, traits);
     },
   });
@@ -66,11 +67,10 @@ export default async (basePath: string, opt: any) => {
     processText: 'Preparing generations',
     successText: `Collection Generations: ${generationsPath}`,
     fn: async () => {
-      generations = generateGen(config.artworks.generations, traits);
+      generations = buildGen(config.artworks.generations, traits, config.rarity);
       writeJson(generationsPath, generations);
     },
   });
-
 
   // ensure artworks directory
   const artworksPath = pathJoin(basePath, config.artworks.path);
@@ -106,6 +106,8 @@ export default async (basePath: string, opt: any) => {
         attributes: gen.attributes,
         width: config.artworks.width,
         height: config.artworks.height,
+        minify: config.artworks.minify,
+        quality: config.artworks.quality
       }),
     });
 

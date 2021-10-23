@@ -1,16 +1,15 @@
 import weighted from "weighted";
-import { createCanvas, loadImage } from "canvas";
 import {
   pathNormalize, pathJoin,
   findDirs, findImages,
-  readJson, exists,
-  writeImage
+  readJson, exists
 } from "./file";
+import { getDefaultRarity } from "./rarity";
 
-import debug from "debug";
-const log = debug("traits");
+// import debug from "debug";
+// const log = debug("traits");
 
-export const populateTraits = (path: string | string[]) : LayerBreakdown => {
+export const populateTraits = (path: string | string[], rarity: Rarity) : Traits => {
   path = pathNormalize(path);
 
   let layersData = {};
@@ -23,7 +22,12 @@ export const populateTraits = (path: string | string[]) : LayerBreakdown => {
     const layerConfig = readJson(layerPath);
     layersData[layerName] = {
       ...{},
-      ...{ caption: layerName, path: pathJoin(...layerPath) },
+      ...{
+        caption: layerName,
+        opacity: 1,
+        blend: "source-over",
+        path: pathJoin(...layerPath),
+      },
       ...layerConfig
     };
 
@@ -37,7 +41,14 @@ export const populateTraits = (path: string | string[]) : LayerBreakdown => {
 
       layerItems[layerImageName] = {
         ...{},
-        ...{ caption: layerImageName, path: layerImagePath },
+        ...{
+          caption: layerImageName,
+          opacity: layersData[layerName].opacity,
+          blend: layersData[layerName].blend,
+          image: layerImage,
+          path: layerImagePath,
+          rarity: getDefaultRarity(rarity),
+        },
         ...layerImageConfig
       };
     }
@@ -46,41 +57,27 @@ export const populateTraits = (path: string | string[]) : LayerBreakdown => {
   return layersData;
 }
 
-export const randomTraits = (breakdown: LayerBreakdown) : Attr[] => {
-  let tmp = [];
-  Object.keys(breakdown).forEach(attr => {
-    let layer = breakdown[attr];
-    let option = [];
-    let weight = [];
-    Object.keys(layer.items).forEach(key => {
-      const item = layer.items[key];
-      option.push(item);
-      weight.push(item.weight || .3);
+export const randomTraits = (traits: Traits, rarity: Rarity) : GenAttr[] => {
+  let tmp: GenAttr[] = [];
+  Object.keys(traits).forEach(attr => {
+    let trait = traits[attr];
+    let options = [];
+    let weights = [];
+    Object.keys(trait.items).forEach(key => {
+      const item = trait.items[key];
+      options.push(item);
+      weights.push(item.weight || rarity[item.rarity].weight);
     });
-    const randomSelection = weighted.select(option, weight);
+    const randomSelection = weighted.select(options, weights);
     tmp.push({
-      trait_type: layer.caption,
+      trait: trait.caption,
       value: randomSelection.caption,
-      path: randomSelection.path
+      opacity: randomSelection.opacity,
+      blend: randomSelection.blend,
+      image: randomSelection.image,
+      path: randomSelection.path,
     });
   });
 
   return tmp;
-}
-
-export const buildArtworks = async (opt: BuildArtworksConfig) => {
-  const canvas = createCanvas(opt.width, opt.height);
-  const ctx = canvas.getContext("2d");
-
-  await Promise.all(
-    opt.attributes.map(async attr => {
-      const loadedImage = await loadImage(attr.path);
-      ctx.patternQuality = 'best';
-      ctx.quality = 'best';
-      ctx.drawImage(loadedImage, 0, 0, opt.width, opt.height);
-    }),
-  );
-
-  log(`Building image for #${opt.edition}`);
-  writeImage([pathNormalize(opt.path), `${opt.edition}`], canvas.toBuffer('image/png'));
 }

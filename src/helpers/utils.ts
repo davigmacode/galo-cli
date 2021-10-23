@@ -3,7 +3,7 @@ import faker from "faker";
 import ora from "ora";
 import chalk from "chalk";
 
-export { isEmpty, isArray, get, set } from "lodash";
+export { isEmpty, isArray, isString, get, set, findKey } from "lodash";
 
 const log = debug("utils");
 

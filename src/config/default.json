@@ -7,15 +7,15 @@
   "storage": {
     "ipfs": {
       "name": "IPFS",
-      "key": ""
+      "token": ""
     },
     "arweave": {
       "name": "Arweave",
-      "key": ""
+      "token": ""
     },
     "gdrive": {
       "name": "Google Drive",
-      "key": ""
+      "token": ""
     }
   },
   "collage": {
@@ -45,7 +45,7 @@
       "image": "{{edition}}.png",
       "attributes": {
         "{{#each attributes}}": {
-          "trait_type": "{{trait_type}}",
+          "trait_type": "{{trait}}",
           "value": "{{value}}"
         }
       },
@@ -55,7 +55,10 @@
       },
       "properties": {
         "files": [
-          { "uri": "{{edition}}.png", "type": "image/png" }
+          {
+            "uri": "{{edition}}.png",
+            "type": "image/png"
+          }
         ],
         "category": "image",
         "maxSupply": 1,
@@ -71,39 +74,50 @@
   "artworks": {
     "path": "/artworks",
     "type": "image/png",
+    "quality": "best",
+    "minify": true,
     "width": 1080,
     "height": 1080,
     "generations": [
       {
-        "size": 10,
-        "order": [
-          {
-            "name": "background",
-            "traits": {
-              "bg-01.png": { "weight": 0.4 },
-              "bg-02.png": { "weight": 0.2 },
-              "bg-03.png": { "weight": 0.7 }
-            }
-          },
-          { "name": "body" },
-          { "name": "hair" }
-        ]
+        "size": 15,
+        "order": ["background", "body", "clothes", "hair"]
       },
       {
-        "size": 5,
+        "size": 10,
         "order": [
-          { "name": "body" },
-          { "name": "clothes" },
-          { "name": "hair" }
+          "background",
+          "body",
+          "clothes",
+          {
+            "name": "hair",
+            "excludes": ["Hair-01"]
+          }
         ]
       }
     ]
   },
   "rarity": {
-    "c": { "name": "Common", "weight": 0.7 },
-    "u": { "name": "Uncommon", "weight": 0.6 },
-    "r": { "name": "Rare", "weight": 0.5 },
-    "e": { "name": "Epic", "weight": 0.4 },
-    "l": { "name": "Legend", "weight": 0.3 }
+    "common": {
+      "label": "Common",
+      "weight": 0.9,
+      "default": true
+    },
+    "uncommon": {
+      "label": "Uncommon",
+      "weight": 0.7
+    },
+    "rare": {
+      "label": "Rare",
+      "weight": 0.5
+    },
+    "epic": {
+      "label": "Epic",
+      "weight": 0.3
+    },
+    "legend": {
+      "label": "Legend",
+      "weight": 0.1
+    }
   }
 }

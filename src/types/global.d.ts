@@ -2,48 +2,62 @@ interface Gen {
   dna: string;
   edition: number;
   image: string;
-  attributes: Attr[];
+  attributes: GenAttr[];
 }
 
-interface Attr {
-  trait_type: string;
+interface GenAttr {
+  trait: string;
   value: string;
+  image: string;
   path: string;
-}
-
-interface Layer {
-  caption: string;
-  description: string;
-  blend: string;
   opacity: number;
-  items: LayerItem[];
+  blend: 'saturate' | 'clear' | 'copy' | 'destination' | 'source-over' | 'destination-over' |
+  'source-in' | 'destination-in' | 'source-out' | 'destination-out' | 'source-atop' | 'destination-atop' |
+  'xor' | 'lighter' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' |
+  'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
 }
 
-interface LayerItem {
+interface TraitType {
   caption: string;
   description: string;
+  opacity: number;
+  blend: 'saturate' | 'clear' | 'copy' | 'destination' | 'source-over' | 'destination-over' |
+  'source-in' | 'destination-in' | 'source-out' | 'destination-out' | 'source-atop' | 'destination-atop' |
+  'xor' | 'lighter' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' |
+  'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
+  items: TraitItem[];
+}
+
+interface TraitItem {
+  caption: string;
+  description: string;
+  rarity: string;
   weight: number;
 }
 
-interface LayerBreakdown {
-  [index: string]: Layer;
+interface Traits {
+  [index: string]: TraitType;
 }
 
 interface GenerationOrder {
   name: string;
+  includes: string[];
+  excludes: string[];
 }
 
 interface GenerationConfig {
   size: number;
-  order: GenerationOrder[];
+  order: string[] | GenerationOrder[];
 }
 
 interface BuildArtworksConfig {
   path: string | string[];
   edition: number;
-  attributes: Attr[];
+  attributes: GenAttr[];
   width: number;
   height: number;
+  minify: boolean;
+  quality: "fast" | "good" | "best" | "nearest" | "bilinear";
 }
 
 interface BuildCollageConfig {
@@ -61,4 +75,14 @@ interface TaskConfig {
   successText: string;
   delay?: number;
   fn: () => Promise<any>;
+}
+
+interface Rarity {
+  [key: string]: RarityTier
+}
+
+interface RarityTier {
+  label: string;
+  weight: number;
+  default: boolean;
 }

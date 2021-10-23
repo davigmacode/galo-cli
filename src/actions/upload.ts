@@ -50,18 +50,18 @@ export default async (basePath: string, opt: any) => {
   });
 
   const storageProvider = config.storage[qStorageProvider];
-  if (isEmpty(storageProvider.key)) {
-    while (isEmpty(storageProvider.key)) {
-      const { qStorageKey } = await inquirer.prompt([
+  if (isEmpty(storageProvider.token)) {
+    while (isEmpty(storageProvider.token)) {
+      const { qStorageToken } = await inquirer.prompt([
         {
           type: 'input',
-          name: 'qStorageKey',
-          message: `Cant find ${storageProvider.name} key in the config file, please enter the key:`,
+          name: 'qStorageToken',
+          message: `Cant find ${storageProvider.name} token in the config file, please enter the token:`,
         },
       ]).catch((error) => {
         console.log(symbols.error, error);
       });
-      storageProvider.key = qStorageKey;
+      storageProvider.token = qStorageToken;
     }
 
     config.storage[qStorageProvider] = storageProvider;
@@ -81,7 +81,7 @@ export default async (basePath: string, opt: any) => {
   });
 
   const n = metadata.length;
-  const storage = new NFTStorage({ token: storageProvider.key });
+  const storage = new NFTStorage({ token: storageProvider.token });
   for (let i = 0; i < n; i++) {
     const c = `[${i+1}/${n}]`;
     const meta = metadata[i];
