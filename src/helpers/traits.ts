@@ -57,10 +57,9 @@ export const populateTraits = (path: string | string[], rarity: Rarity) : Traits
   return layersData;
 }
 
-export const randomTraits = (traits: Traits, rarity: Rarity) : GenAttr[] => {
-  let tmp: GenAttr[] = [];
-  Object.keys(traits).forEach(attr => {
-    let trait = traits[attr];
+export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] => {
+  let result: GenAttr[] = [];
+  for (const trait of traits) {
     let options = [];
     let weights = [];
     Object.keys(trait.items).forEach(key => {
@@ -68,16 +67,15 @@ export const randomTraits = (traits: Traits, rarity: Rarity) : GenAttr[] => {
       options.push(item);
       weights.push(item.weight || rarity[item.rarity].weight);
     });
-    const randomSelection = weighted.select(options, weights);
-    tmp.push({
+    const selection = weighted.select(options, weights);
+    result.push({
       trait: trait.caption,
-      value: randomSelection.caption,
-      opacity: randomSelection.opacity,
-      blend: randomSelection.blend,
-      image: randomSelection.image,
-      path: randomSelection.path,
+      value: selection.caption,
+      opacity: selection.opacity,
+      blend: selection.blend,
+      image: selection.image,
+      path: selection.path,
     });
-  });
-
-  return tmp;
+  }
+  return result;
 }
