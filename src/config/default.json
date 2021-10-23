@@ -5,8 +5,18 @@
     "version": 1.0
   },
   "storage": {
-    "provider": "NFTStorage",
-    "key": ""
+    "ipfs": {
+      "name": "IPFS",
+      "key": ""
+    },
+    "arweave": {
+      "name": "Arweave",
+      "key": ""
+    },
+    "gdrive": {
+      "name": "Google Drive",
+      "key": ""
+    }
   },
   "collage": {
     "type": "image/png",
@@ -30,12 +40,31 @@
       "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies Onchain",
+      "seller_fee_basis_points": 500,
+      "external_url": "https://example.com",
       "image": "{{edition}}.png",
       "attributes": {
         "{{#each attributes}}": {
           "trait_type": "{{trait_type}}",
           "value": "{{value}}"
         }
+      },
+      "collection": {
+        "name": "Collection Name",
+        "family": "Collection family Name"
+      },
+      "properties": {
+        "files": [
+          { "uri": "{{edition}}.png", "type": "image/png" }
+        ],
+        "category": "image",
+        "maxSupply": 1,
+        "creators": [
+            {
+              "address": "solana address for a creator",
+              "share": 100
+            }
+        ]
       }
     }
   },

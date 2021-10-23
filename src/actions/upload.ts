@@ -1,17 +1,13 @@
 import { writeJson, readJson, readImage, pathJoin, exists } from "../helpers/file";
-import { pen, task, symbols, isEmpty } from "../helpers/utils";
+import { task, symbols, isEmpty, consoleWarn } from "../helpers/utils";
 import { NFTStorage, File } from "nft.storage";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Upload Collection');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    console.log(pen.green(`Config file not found, init the collection first`));
+    consoleWarn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -25,7 +21,7 @@ export default async (basePath: string, opt: any) => {
   const metadataPath = pathJoin(basePath, config.metadata.config);
   const metadataExists = exists(metadataPath);
   if (!metadataExists) {
-    console.log(pen.green(`Metadata not found, build the collection first`));
+    consoleWarn(`Metadata not found, build the collection first`);
     return;
   }
 
@@ -36,37 +32,56 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(metadataPath),
   });
 
+  const { qStorageProvider } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'qStorageProvider',
+      message: 'Where do you want to upload?',
+      choices: Object
+        .keys(config.storage)
+        .map((value) => ({ ...config.storage[value], value })),
+    },
+  ]).catch((error) => {
+    if (error.isTtyError) {
+      // Prompt couldn't be rendered in the current environment
+    } else {
+      // Something else went wrong
+    }
+  });
+
+  const storageProvider = config.storage[qStorageProvider];
+  if (isEmpty(storageProvider.key)) {
+    while (isEmpty(storageProvider.key)) {
+      const { qStorageKey } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'qStorageKey',
+          message: `Cant find ${storageProvider.name} key in the config file, please enter the key:`,
+        },
+      ]).catch((error) => {
+        console.log(symbols.error, error);
+      });
+      storageProvider.key = qStorageKey;
+    }
+
+    config.storage[qStorageProvider] = storageProvider;
+    await task({
+      processText: 'Updating Config File',
+      successText: `Collection Config: ${configPath}`,
+      fn: async () => writeJson(configPath, config),
+    });
+  }
+
   // read metadata config file
   const uploadsPath = pathJoin(basePath, 'uploads.json');
   const uploads = await task({
-    processText: 'Loading collection uploads',
-    successText: `Collection Uploads: ${uploadsPath}`,
+    processText: 'Loading cached uploads',
+    successText: `Cached Uploads: ${uploadsPath}`,
     fn: async () => readJson(uploadsPath),
   });
 
-  let storageKey = config.storage.key;
-  while (isEmpty(storageKey)) {
-    const inquires = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'storageKey',
-        message: 'Cant find the storage key from the config file, please enter the key:',
-      },
-    ]).catch((error) => {
-      console.log(symbols.error, error);
-    });
-    storageKey = inquires.storageKey;
-  }
-
-  config.storage.key = storageKey;
-  await task({
-    processText: 'Updating Config File',
-    successText: `Collection Config: ${configPath}`,
-    fn: async () => writeJson(configPath, config),
-  });
-
   const n = metadata.length;
-  const storage = new NFTStorage({ token: config.storage.key });
+  const storage = new NFTStorage({ token: storageProvider.key });
   for (let i = 0; i < n; i++) {
     const c = `[${i+1}/${n}]`;
     const meta = metadata[i];
@@ -88,6 +103,4 @@ export default async (basePath: string, opt: any) => {
       console.log(symbols.success, c, `Cached artworks and metadata #${meta.edition}`);
     }
   }
-
-  console.timeEnd(cmdTitle);
 }
