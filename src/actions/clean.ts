@@ -1,5 +1,6 @@
 import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir } from "../helpers/file";
 import { task, consoleWarn } from "../helpers/utils";
+import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -8,6 +9,21 @@ export default async (basePath: string, opt: any) => {
     consoleWarn(`Config file not found, init the collection first`);
     return;
   }
+
+  const { removeConfig } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'removeConfig',
+      message: 'Do you want to also remove the config file?',
+      default: false,
+    },
+  ]).catch((error) => {
+    if (error.isTtyError) {
+      // Prompt couldn't be rendered in the current environment
+    } else {
+      // Something else went wrong
+    }
+  });
 
   // read project config file
   const config = await task({
@@ -23,7 +39,6 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(generationsPath),
   });
 
-  // read metadata config file
   const uploadsPath = pathJoin(basePath, 'uploads.json');
   await task({
     processText: 'Removing collection uploads',
@@ -36,6 +51,20 @@ export default async (basePath: string, opt: any) => {
     processText: 'Removing collection metadata',
     successText: `Removed: ${metadataConfig}`,
     fn: async () => deleteJson(metadataConfig),
+  });
+
+  const rarityConfig = pathJoin(basePath, 'rarity.json');
+  await task({
+    processText: 'Removing collection rarity',
+    successText: `Removed: ${rarityConfig}`,
+    fn: async () => deleteJson(rarityConfig),
+  });
+
+  const traitsConfig = pathJoin(basePath, config.traits.config);
+  await task({
+    processText: 'Removing collection traits',
+    successText: `Removed: ${traitsConfig}`,
+    fn: async () => deleteJson(traitsConfig),
   });
 
   const collagePath = pathJoin(basePath, config.collage.name);
@@ -58,4 +87,12 @@ export default async (basePath: string, opt: any) => {
     successText: `Removed: ${metadataPath}`,
     fn: async () => deleteDir(metadataPath),
   });
+
+  if (removeConfig) {
+    await task({
+      processText: 'Removing config file',
+      successText: `Removed: ${configPath}`,
+      fn: async () => deleteDir(configPath),
+    });
+  }
 }
