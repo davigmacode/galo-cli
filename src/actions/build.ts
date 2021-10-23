@@ -2,14 +2,11 @@ import { generateGen, transformGen } from "../helpers/dna";
 import { setupDir, writeJson, readJson, pathJoin, findDirs, exists } from "../helpers/file";
 import { buildArtworks, populateTraits } from "../helpers/traits";
 import { buildCollage } from "../helpers/collage";
-import { shuffle, pen, task } from "../helpers/utils";
+import { populateRarity } from "../helpers/rarity";
+import { shuffle, task, consoleWarn, consoleError } from "../helpers/utils";
 import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
-  const cmdTitle = pen.green('Build Collection (galokeun)');
-  console.log(cmdTitle);
-  console.time(cmdTitle);
-
   // check for the config file existence
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
@@ -31,7 +28,7 @@ export default async (basePath: string, opt: any) => {
 
     // exit the action if not confirmed to re initiating
     if (!inquires.reGeneration) {
-      console.log(pen.green(`Build collection canceled`));
+      consoleWarn(`Build collection canceled`);
       return;
     }
   }
@@ -47,7 +44,7 @@ export default async (basePath: string, opt: any) => {
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);
   if (traitsItems.length == 0) {
-    console.log(pen.bgRed('Please adding traits manually first'));
+    consoleError('Please adding traits manually first');
     return;
   }
 
@@ -163,5 +160,14 @@ export default async (basePath: string, opt: any) => {
     }),
   });
 
-  console.timeEnd(cmdTitle);
+  // populating rarity
+  const rarityConfig = pathJoin(basePath, 'rarity.json');
+  await task({
+    processText: 'Populating rarity',
+    successText: `Collection Rarity: ${rarityConfig}`,
+    fn: async () => {
+      const rarity = populateRarity(generations);
+      writeJson(rarityConfig, rarity);
+    },
+  });
 }
