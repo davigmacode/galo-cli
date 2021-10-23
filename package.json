@@ -2,17 +2,21 @@
   "name": "galo",
   "version": "1.0.0",
   "description": "Generative Artworks Lies Onchain",
-  "main": "./build/main/index.js",
-  "typings": "./build/main/index.d.ts",
-  "module": "./build/module/index.js",
   "repository": "https://github.com/davigmacode/galo",
   "license": "MIT",
   "keywords": [],
+  "preferGlobal": true,
   "bin": {
-    "galo": "./build/main/index.js"
+    "galo": "./build/main/index.js",
+    "galokeun": "./build/main/index.js"
   },
+  "main": "./build/main/index.js",
+  "typings": "./build/main/index.d.ts",
+  "module": "./build/module/index.js",
   "pkg": {
-    "scripts": "./build/**/*.{js|json}"
+    "scripts": "./build/**/*.{js|json}",
+    "assets": "./node_modules/canvas/build/Release/*",
+    "outputPath": "./bin"
   },
   "scripts": {
     "build": "run-p build:*",
@@ -48,7 +52,7 @@
     "galo": "node build/main/index.js"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
   "dependencies": {
     "canvas": "^2.8.0",
@@ -70,8 +74,9 @@
     "@types/faker": "^5.5.9",
     "@types/inquirer": "^8.1.3",
     "@types/lodash": "^4.14.176",
-    "@types/node": "^16.11.1",
+    "@types/node": "^16.11.3",
     "@types/object-hash": "^2.2.1",
+    "@types/ora": "^3.2.0",
     "@types/weighted": "^0.3.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",

@@ -3,6 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
   "language": "en",
   "words": [
+    "arweave",
     "bitauth",
     "bitjson",
     "cimg",
@@ -15,11 +16,14 @@
     "esnext",
     "execa",
     "exponentiate",
+    "gdrive",
     "globby",
+    "ipfs",
     "libauth",
     "mkdir",
     "prettierignore",
     "sandboxed",
+    "solana",
     "transpiled",
     "typedoc",
     "untracked"
