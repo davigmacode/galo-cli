@@ -1,7 +1,7 @@
 import weighted from "weighted";
 import {
   pathNormalize, pathJoin,
-  findDirs, findImages,
+  findDirs, findTypes,
   readJson, exists
 } from "./file";
 import { getDefaultRarity } from "./rarity";
@@ -9,7 +9,11 @@ import { getDefaultRarity } from "./rarity";
 // import debug from "debug";
 // const log = debug("traits");
 
-export const populateTraits = (path: string | string[], rarity: Rarity) : Traits => {
+export const populateTraits = (
+  path: string | string[],
+  exts: string | string[],
+  rarity: Rarity
+) : Traits => {
   path = pathNormalize(path);
 
   let layersData = {};
@@ -32,7 +36,7 @@ export const populateTraits = (path: string | string[], rarity: Rarity) : Traits
     };
 
     let layerItems = {};
-    const layerImages = findImages(layerPath);
+    const layerImages = findTypes(layerPath, exts);
     for (const layerImage of layerImages) {
       // @ts-ignore
       const [layerImageName, layerImageExt] = layerImage.split(".");
@@ -45,6 +49,7 @@ export const populateTraits = (path: string | string[], rarity: Rarity) : Traits
           caption: layerImageName,
           opacity: layersData[layerName].opacity,
           blend: layersData[layerName].blend,
+          filename: layerImage,
           image: layerImage,
           path: layerImagePath,
           rarity: getDefaultRarity(rarity),

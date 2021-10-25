@@ -87,8 +87,10 @@ export const findFiles = (path: string | string[]) : string[] => {
   return find(path, dirent => dirent.isFile());
 }
 
-export const findTypes = (path: string | string[], ext: string) : string[] => {
-  return find(path, dirent => p.extname(dirent.name) == ext);
+export const findTypes = (path: string | string[], ext: string | string[]) : string[] => {
+  // normalize exts
+  ext = Array.isArray(ext) ? ext : [ext];
+  return find(path, dirent => ext.includes(p.extname(dirent.name)));
 }
 
 export const findImages = (path: string | string[]) : string[] => {

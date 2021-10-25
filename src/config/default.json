@@ -28,7 +28,8 @@
     "path": "/traits",
     "config": "traits.json",
     "width": 1080,
-    "height": 1080
+    "height": 1080,
+    "extensions": [".png", ".jpg"]
   },
   "metadata": {
     "path": "/metadata",

@@ -6,11 +6,12 @@ import { cwd } from "./helpers/file";
 
 import initAction from "./actions/init";
 import buildAction from "./actions/build";
+import traitsAction from "./actions/traits";
 import metadataAction from "./actions/metadata";
 import collageAction from "./actions/collage";
 import rarityAction from "./actions/rarity";
 import uploadAction from "./actions/upload";
-import cleanAction from "./actions/clean";
+import destroyAction from "./actions/destroy";
 
 import chalk from "chalk";
 import * as header from "./header";
@@ -66,6 +67,19 @@ program
   .description('build the artworks, metadata, rarity, and collage')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(buildAction);
+
+program
+  .command('traits')
+  .alias('t')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('populate collection traits without generating the artworks')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(traitsAction);
 
 program
   .command('metadata')
@@ -130,6 +144,6 @@ program
   )
   .description('destroy the generated files and directories')
   .option('-c, --config <path>', 'set config path', './config.json')
-  .action(cleanAction);
+  .action(destroyAction);
 
 program.parse(process.argv);
