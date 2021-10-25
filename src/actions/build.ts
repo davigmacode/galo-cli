@@ -4,8 +4,7 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity } from "../helpers/rarity";
-import { shuffle, task, consoleWarn, consoleError } from "../helpers/utils";
-import inquirer from "inquirer";
+import { shuffle, task, prompt, consoleWarn, consoleError } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -26,7 +25,7 @@ export default async (basePath: string, opt: any) => {
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
   if (generationsExists) {
-    const inquires = await inquirer.prompt([
+    const { reGeneration } : any = await prompt([
       {
         type: 'confirm',
         name: 'reGeneration',
@@ -42,7 +41,7 @@ export default async (basePath: string, opt: any) => {
     });
 
     // exit the action if not confirmed to re initiating
-    if (!inquires.reGeneration) {
+    if (!reGeneration) {
       consoleWarn(`Build collection canceled`);
       return;
     }

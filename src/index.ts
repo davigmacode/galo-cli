@@ -37,6 +37,7 @@ program
 
 program
   .command('init')
+  .alias('i')
   .description('initialize a new generative artworks collection')
   .argument(
     '[dir]',
@@ -55,6 +56,7 @@ program
 
 program
   .command('build')
+  .alias('b')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
@@ -67,6 +69,7 @@ program
 
 program
   .command('metadata')
+  .alias('m')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
@@ -78,19 +81,21 @@ program
   .action(metadataAction);
 
 program
-  .command('collage')
+  .command('preview')
+  .alias('p')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
     (val) => cwd(val),
     process.cwd()
   )
-  .description('create collection collage without regenerating the artworks')
+  .description('create collection preview without regenerating the artworks')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(collageAction);
 
 program
   .command('rarity')
+  .alias('r')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
@@ -103,6 +108,7 @@ program
 
 program
   .command('upload')
+  .alias('u')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
@@ -114,14 +120,15 @@ program
   .action(uploadAction);
 
 program
-  .command('clean')
+  .command('destroy')
+  .alias('d')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
     (val) => cwd(val),
     process.cwd()
   )
-  .description('clean the collection directory')
+  .description('destroy the generated files and directories')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(cleanAction);
 

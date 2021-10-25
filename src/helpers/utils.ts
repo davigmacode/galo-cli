@@ -2,6 +2,7 @@ import debug from "debug";
 import faker from "faker";
 import ora from "ora";
 import chalk from "chalk";
+import inquirer from "inquirer";
 
 export {
 	isEmpty, isArray, isString,
@@ -38,6 +39,8 @@ export const task = async ({ processText, successText, delay = 50, fn }: TaskCon
 }
 
 export const createSpinner = ora;
+
+export const prompt = inquirer.createPromptModule();
 
 export const pen = chalk;
 

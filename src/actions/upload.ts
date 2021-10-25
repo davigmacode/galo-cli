@@ -1,7 +1,6 @@
 import { writeJson, readJson, readImage, pathJoin, exists } from "../helpers/file";
-import { task, symbols, isEmpty, consoleWarn } from "../helpers/utils";
+import { task, prompt, symbols, isEmpty, consoleWarn } from "../helpers/utils";
 import { NFTStorage, File } from "nft.storage";
-import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -32,7 +31,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(metadataPath),
   });
 
-  const { qStorageProvider } = await inquirer.prompt([
+  const { qStorageProvider } : any = await prompt([
     {
       type: 'list',
       name: 'qStorageProvider',
@@ -61,7 +60,7 @@ export default async (basePath: string, opt: any) => {
 
   if (isEmpty(storageProvider.token)) {
     while (isEmpty(storageProvider.token)) {
-      const { qStorageToken } = await inquirer.prompt([
+      const { qStorageToken } : any = await prompt([
         {
           type: 'input',
           name: 'qStorageToken',

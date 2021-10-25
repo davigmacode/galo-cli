@@ -1,14 +1,13 @@
 import { setupDir, writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { consoleInfo, consoleWarn, task } from "../helpers/utils";
+import { consoleInfo, consoleWarn, task, prompt } from "../helpers/utils";
 import { LIB_VERSION } from "../constants";
-import inquirer from "inquirer";
 
 export default async (basePath: string, opt: any) => {
   // check for the config file existence
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (configExists) {
-    const { qReInitiating } = await inquirer.prompt([
+    const { qReInitiating } : any = await prompt([
       {
         type: 'confirm',
         name: 'qReInitiating',
