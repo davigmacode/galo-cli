@@ -16,50 +16,50 @@ export const populateTraits = (
 ) : Traits => {
   path = pathNormalize(path);
 
-  let layersData = {};
-  for (const layerName of findDirs(path)) {
-    const layerPath = [path, layerName];
+  let traitsData = {};
+  for (const traitType of findDirs(path)) {
+    const traitPath = [path, traitType];
 
     // skip if the layer directory is not exists
-    if (!exists(layerPath)) continue;
+    if (!exists(traitPath)) continue;
 
-    const layerConfig = readJson(layerPath);
-    layersData[layerName] = {
+    const traitConfig = readJson(traitPath);
+    traitsData[traitType] = {
       ...{},
       ...{
-        caption: layerName,
+        caption: traitType,
         opacity: 1,
         blend: "source-over",
-        path: pathJoin(...layerPath),
+        path: pathJoin(...traitPath),
       },
-      ...layerConfig
+      ...traitConfig
     };
 
-    let layerItems = {};
-    const layerImages = findTypes(layerPath, exts);
-    for (const layerImage of layerImages) {
+    let traitItems = {};
+    const traitFiles = findTypes(traitPath, exts);
+    for (const traitFile of traitFiles) {
       // @ts-ignore
-      const [layerImageName, layerImageExt] = layerImage.split(".");
-      const layerImageConfig = readJson([...layerPath, layerImageName]);
-      const layerImagePath = pathJoin(...[...layerPath, layerImage]);
+      const [traitFileName, traitFileExt] = traitFile.split(".");
+      const traitConfig = readJson([...traitPath, traitFileName]);
+      const traitFilePath = pathJoin(...[...traitPath, traitFile]);
 
-      layerItems[layerImageName] = {
+      traitItems[traitFileName] = {
         ...{},
         ...{
-          caption: layerImageName,
-          opacity: layersData[layerName].opacity,
-          blend: layersData[layerName].blend,
-          filename: layerImage,
-          image: layerImage,
-          path: layerImagePath,
+          caption: traitFileName,
+          opacity: traitsData[traitType].opacity,
+          blend: traitsData[traitType].blend,
+          filename: traitFile,
+          path: traitFilePath,
+          extension: traitFileExt,
           rarity: getDefaultRarity(rarity),
         },
-        ...layerImageConfig
+        ...traitConfig
       };
     }
-    layersData[layerName]["items"] = layerItems;
+    traitsData[traitType]["items"] = traitItems;
   }
-  return layersData;
+  return traitsData;
 }
 
 export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] => {
