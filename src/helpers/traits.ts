@@ -73,25 +73,25 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
   for (const trait of traits) {
     let options = [];
     let weights = [];
-    // const traitItems = Object.keys(trait.items);
-    // if (Object.keys(trait.items).length == 0) {
-    //   console.log(`${trait.label} trait has no items, please add some or remove from generation order`);
-    //   return [];
-    // }
-    Object.keys(trait.items).forEach(key => {
-      const item = trait.items[key];
-      options.push(item);
-      weights.push(weightFromRarity(item.rarity, rarity));
-    });
-    const selection = weighted.select(options, weights);
-    result.push({
-      trait: trait.label,
-      value: selection.label,
-      opacity: selection.opacity,
-      blend: selection.blend,
-      image: selection.image,
-      path: selection.path,
-    });
+    const traitItems = Object.keys(trait.items);
+    if (traitItems.length > 0) {
+      for (const key of traitItems) {
+        const item = trait.items[key];
+        options.push(item);
+        weights.push(weightFromRarity(item.rarity, rarity));
+      }
+      const selection = weighted.select(options, weights);
+      result.push({
+        trait: trait.label,
+        value: selection.label,
+        opacity: selection.opacity,
+        blend: selection.blend,
+        image: selection.image,
+        path: selection.path,
+      });
+    } else {
+      console.log(`${trait.label} trait has no items, please add some or remove from generation order`);
+    }
   }
   return result;
 }
