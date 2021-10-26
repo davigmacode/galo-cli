@@ -18,7 +18,7 @@ interface GenAttr {
 }
 
 interface TraitType {
-  caption: string;
+  label: string;
   description: string;
   opacity: number;
   blend: 'saturate' | 'clear' | 'copy' | 'destination' | 'source-over' | 'destination-over' |
@@ -29,10 +29,9 @@ interface TraitType {
 }
 
 interface TraitItem {
-  caption: string;
+  label: string;
   description: string;
-  rarity: string;
-  weight: number;
+  rarity: string | number;
 }
 
 interface Traits {

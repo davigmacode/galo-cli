@@ -1,5 +1,11 @@
 import { get, set, findKey } from "./utils";
 
+export const weightFromRarity = (rarity: string, tiers: Rarity): number => {
+  return tiers[rarity]
+    ? tiers[rarity].weight
+    : parseInt(rarity);
+}
+
 export const getDefaultRarity = (tiers: Rarity): string => {
   return findKey(tiers, { default: true });
 }

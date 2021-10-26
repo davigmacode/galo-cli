@@ -4,7 +4,10 @@ import {
   findDirs, findTypes,
   readJson, exists
 } from "./file";
-import { getDefaultRarity } from "./rarity";
+import {
+  getDefaultRarity,
+  weightFromRarity
+} from "./rarity";
 
 // import debug from "debug";
 // const log = debug("traits");
@@ -27,7 +30,7 @@ export const populateTraits = (
     traitsData[traitType] = {
       ...{},
       ...{
-        caption: traitType,
+        label: traitType,
         opacity: 1,
         blend: "source-over",
         path: pathJoin(...traitPath),
@@ -39,20 +42,23 @@ export const populateTraits = (
     const traitFiles = findTypes(traitPath, exts);
     for (const traitFile of traitFiles) {
       // @ts-ignore
-      const [traitFileName, traitFileExt] = traitFile.split(".");
-      const traitConfig = readJson([...traitPath, traitFileName]);
-      const traitFilePath = pathJoin(...[...traitPath, traitFile]);
+      const [traitName, traitExt] = traitFile.split(".");
+      const traitConfig = readJson([...traitPath, traitName]);
 
-      traitItems[traitFileName] = {
+      const traitNameSplit = traitName.split("_");
+      const traitLabel = traitNameSplit.length == 2 ? traitNameSplit[1] : traitNameSplit[0];
+      const traitRarity = traitNameSplit.length == 2 ? traitNameSplit[0] : getDefaultRarity(rarity);
+
+      traitItems[traitName] = {
         ...{},
         ...{
-          caption: traitFileName,
+          label: traitLabel,
           opacity: traitsData[traitType].opacity,
           blend: traitsData[traitType].blend,
           filename: traitFile,
-          path: traitFilePath,
-          extension: traitFileExt,
-          rarity: getDefaultRarity(rarity),
+          path: pathJoin(...[...traitPath, traitFile]),
+          extension: traitExt,
+          rarity: traitRarity,
         },
         ...traitConfig
       };
@@ -67,15 +73,20 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
   for (const trait of traits) {
     let options = [];
     let weights = [];
+    // const traitItems = Object.keys(trait.items);
+    // if (Object.keys(trait.items).length == 0) {
+    //   console.log(`${trait.label} trait has no items, please add some or remove from generation order`);
+    //   return [];
+    // }
     Object.keys(trait.items).forEach(key => {
       const item = trait.items[key];
       options.push(item);
-      weights.push(item.weight || rarity[item.rarity].weight);
+      weights.push(weightFromRarity(item.rarity, rarity));
     });
     const selection = weighted.select(options, weights);
     result.push({
-      trait: trait.caption,
-      value: selection.caption,
+      trait: trait.label,
+      value: selection.label,
       opacity: selection.opacity,
       blend: selection.blend,
       image: selection.image,
