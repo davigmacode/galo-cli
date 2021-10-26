@@ -1,5 +1,5 @@
-import { writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { task, shuffle, consoleWarn } from "../helpers/utils";
+import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
+import { task, prompt, shuffle, consoleWarn } from "../helpers/utils";
 import { transformGen } from "../helpers/dna";
 
 export default async (basePath: string, opt: any) => {
@@ -31,12 +31,64 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(generationsPath),
   });
 
-  // transform generations into metadata
-  const metadata = await task({
-    processText: 'Transforming generations into metadata',
-    successText: `Transformed generations into metadata`,
-    fn: async () => generations.map((gen) => transformGen(gen, config.metadata.template)),
+  // confirm to overwrite the metadata
+  const metadataPath = pathJoin(basePath, config.metadata.path);
+  const metadataExists = exists(metadataPath);
+  if (metadataExists) {
+    const { rebuilding } : any = await prompt([
+      {
+        type: 'confirm',
+        name: 'rebuilding',
+        message: 'Metadata found, would you like to rebuilding the metadata?',
+        default: false,
+      },
+    ]).catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+
+    // exit the action if not confirmed to re initiating
+    if (!rebuilding) {
+      consoleWarn(`Rebuilding metadata canceled`);
+      return;
+    }
+  }
+
+  // ensure metadata directory
+  await task({
+    processText: 'Preparing metadata directory',
+    successText: `Metadata Dir: ${metadataPath}`,
+    fn: async () => setupDir(metadataPath)
   });
+
+  // define metadata collection
+  let metadata = [];
+
+  // generate artworks and metadata
+  const generationsLength = generations.length;
+  for (let i = 0; i < generationsLength; i++) {
+    const gen = generations[i];
+    const edition = gen.edition.toString();
+    const editionOf = `${edition}/${generationsLength}`;
+
+    // create a single metadata
+    const metaPath = pathJoin(metadataPath, edition);
+    await task({
+      processText: `Building metadata for edition [${editionOf}]`,
+      successText: `Metadata [${editionOf}]: ${metaPath}.json`,
+      fn: async () => {
+        // transform gen into metadata based on configurable template
+        const meta = transformGen(gen, config.metadata.template);
+        // create a single metadata
+        writeJson(metaPath, meta);
+        // add to metadata collection
+        metadata.push(meta);
+      },
+    });
+  }
 
   // shuffle metadata collection if required
   const shuffleCount = config.metadata.shuffle;
