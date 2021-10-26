@@ -32,7 +32,7 @@ export const sleep = async (ms: number) => new Promise(resolve => setTimeout(res
 
 export const task = async ({ processText, successText, delay = 50, fn }: TaskConfig) : Promise<any> => {
   const spinner = ora(processText).start();
-  const result = await fn();
+  const result = await fn(spinner);
   await sleep(delay);
   spinner.succeed(successText);
   return result;

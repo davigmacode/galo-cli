@@ -50,13 +50,19 @@ interface Generation {
 }
 
 interface BuildArtworksConfig {
-  path: string | string[];
-  edition: number;
-  attributes: GenAttr[];
-  width: number;
-  height: number;
-  minify: boolean;
-  quality: "fast" | "good" | "best" | "nearest" | "bilinear";
+  trait: {
+    width: number;
+    height: number;
+    attributes: GenAttr[];
+  }
+  artwork: {
+    path: string | string[];
+    ext: string;
+    width: number;
+    height: number;
+    minify: boolean;
+    quality: "fast" | "good" | "best" | "nearest" | "bilinear";
+  }
 }
 
 interface BuildCollageConfig {
@@ -73,7 +79,7 @@ interface TaskConfig {
   processText: string;
   successText: string;
   delay?: number;
-  fn: () => Promise<any>;
+  fn: (spinner: any) => Promise<any>;
 }
 
 interface Rarity {

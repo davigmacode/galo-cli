@@ -1,4 +1,4 @@
-import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir } from "../helpers/file";
+import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, consoleWarn } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
@@ -52,11 +52,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(metadataConfig),
   });
 
-  const rarityConfig = pathJoin(basePath, 'rarity.json');
+  const rarityJson = pathJoin(basePath, 'rarity.json');
   await task({
     processText: 'Removing collection rarity',
-    successText: `Removed: ${rarityConfig}`,
-    fn: async () => deleteJson(rarityConfig),
+    successText: `Removed: ${rarityJson}`,
+    fn: async () => deleteJson(rarityJson),
+  });
+
+  const rarityCsv = pathJoin(basePath, 'rarity.csv');
+  await task({
+    processText: 'Removing collection rarity',
+    successText: `Removed: ${rarityCsv}`,
+    fn: async () => deleteFile(rarityCsv, '.csv'),
   });
 
   const traitsConfig = pathJoin(basePath, config.traits.config);

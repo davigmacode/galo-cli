@@ -89,8 +89,6 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
         image: selection.image,
         path: selection.path,
       });
-    } else {
-      console.log(`${trait.label} trait has no items, please add some or remove from generation order`);
     }
   }
   return result;

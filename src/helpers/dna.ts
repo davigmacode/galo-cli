@@ -13,6 +13,7 @@ export const buildGen = (
   generations: Generation[],
   traits: Traits,
   rarity: Rarity,
+  spinner?: any,
 ) : Gen[] => {
   let genResult = [];
   for (const genConfig of generations) {
@@ -30,7 +31,15 @@ export const buildGen = (
       if (isArray(genTraitItemsExcludes) && !isEmpty(genTraitItemsExcludes)) {
         genTrait.items = omit(genTrait.items, genTraitItemsExcludes);
       }
-      genTraits.push(genTrait);
+      // if trait has no items don't includes to trait list
+      if (Object.keys(genTrait.items).length > 0) {
+        genTraits.push(genTrait);
+      } else {
+        if (spinner) {
+          spinner.warn(`[${genTrait.label}] trait has no items, please add some or remove from generation order`);
+          spinner.start('Preparing generations');
+        }
+      }
     }
 
     for (let i = 0; i < genConfig.size; i++) {

@@ -1,6 +1,6 @@
 {
   "name": "galo",
-  "version": "1.0.3",
+  "version": "1.2.1",
   "description": "Generative Artworks Lies Onchain",
   "repository": "https://github.com/davigmacode/galo",
   "author": "Irfan Vigma Taufik <davigmacode@gmail.com>",
@@ -16,7 +16,6 @@
   "module": "./build/module/index.js",
   "pkg": {
     "scripts": "./build/**/*.{js|json}",
-    "assets": "./node_modules/canvas/build/Release/*",
     "outputPath": "./bin"
   },
   "scripts": {
@@ -48,7 +47,7 @@
     "version": "standard-version",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
-    "package:win": "pkg . --output bin/win/galo",
+    "package:win": "pkg . --output bin/win/galo --compress GZip",
     "galo:dev": "run-s build galo",
     "galo": "node build/main/index.js"
   },
@@ -56,17 +55,19 @@
     "node": ">=16"
   },
   "dependencies": {
-    "canvas": "^2.8.0",
     "commander": "^8.2.0",
     "debug": "^4.3.2",
     "faker": "^5.5.3",
+    "fast-csv": "^4.3.6",
     "imagemin": "^7.0.1",
     "imagemin-pngquant": "^9.0.2",
+    "images": "^3.2.3",
     "inquirer": "^8.2.0",
     "lodash": "^4.17.21",
     "nft.storage": "^3.3.0",
     "object-hash": "^2.2.0",
     "ora": "^5.0.0",
+    "sharp": "^0.29.2",
     "stjs": "^0.0.5",
     "weighted": "^0.3.0"
   },
@@ -80,6 +81,7 @@
     "@types/lodash": "^4.14.176",
     "@types/node": "^16.11.3",
     "@types/object-hash": "^2.2.1",
+    "@types/sharp": "^0.29.2",
     "@types/weighted": "^0.3.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
@@ -96,7 +98,7 @@
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "open-cli": "^6.0.1",
-    "pkg": "^5.3.3",
+    "pkg": "^5.4.0",
     "prettier": "^2.1.1",
     "standard-version": "^9.0.0",
     "ts-node": "^9.0.0",
@@ -108,6 +110,8 @@
     "build/module",
     "!**/*.spec.*",
     "!**/*.json",
+    "!**/*.node",
+    "!**/*.dll",
     "CHANGELOG.md",
     "LICENSE",
     "README.md"

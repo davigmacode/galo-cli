@@ -1,5 +1,5 @@
-import { createCanvas } from "canvas";
-import { getImage, writeImage, pathNormalize, pathJoin } from "./file";
+import { pathNormalize, pathJoin } from "./file";
+import images from "images";
 
 import debug from "debug";
 const log = debug("collage");
@@ -15,32 +15,23 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   // Calculate height on the fly
   const thumbHeight = thumbWidth * imageRatio;
   // Prepare canvas
-  const previewCanvasWidth = thumbWidth * thumbPerRow;
-  const previewCanvasHeight = thumbHeight * Math.round(generations.length / thumbPerRow);
+  const previewWidth = thumbWidth * thumbPerRow;
+  const previewHeight = thumbHeight * Math.round(generations.length / thumbPerRow);
   // Shout from the mountain tops
-  const previewCanvasSize = `${previewCanvasWidth}x${previewCanvasHeight}`;
-  log(`Preparing a ${previewCanvasSize} project preview with ${generations.length} thumbnails.`);
+  const previewSize = `${previewWidth}x${previewHeight}`;
+  log(`Preparing a ${previewSize} project preview with ${generations.length} thumbnails.`);
 
-  // Initiate the canvas now that we have calculated everything
-  const previewPath = pathJoin(basePath, pathNormalize(opt.previewPath));
-  const previewCanvas = createCanvas(previewCanvasWidth, previewCanvasHeight);
-  const previewCtx = previewCanvas.getContext("2d");
-
-  // Iterate all generations and insert thumbnail into preview image
-  // Don't want to rely on "edition" for assuming index
+  const collage = images(previewWidth, previewHeight);
   for (let index = 0; index < generations.length; index++) {
     const gen = generations[index];
-    await getImage([basePath, artworksPath, `${gen.edition}`]).then((image) => {
-      previewCtx.drawImage(
-        image,
-        thumbWidth * (index % thumbPerRow),
-        thumbHeight * Math.trunc(index / thumbPerRow),
-        thumbWidth,
-        thumbHeight
-      );
-    });
+    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.edition}`], '.png');
+    const thumb = images(thumbPath).resize(thumbWidth, thumbHeight);
+    const xPos = thumbWidth * (index % thumbPerRow);
+    const yPos = thumbHeight * Math.trunc(index / thumbPerRow);
+    collage.draw(thumb, xPos, yPos);
   }
 
   // Write Project Preview to file
-  writeImage(previewPath, previewCanvas.toBuffer("image/png"));
+  const previewPath = pathJoin(basePath, pathNormalize(opt.previewPath));
+  collage.save(previewPath);
 }

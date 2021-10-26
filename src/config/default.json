@@ -75,6 +75,7 @@
   "artworks": {
     "path": "/artworks",
     "type": "image/png",
+    "ext": ".png",
     "quality": "best",
     "minify": true,
     "width": 1080,

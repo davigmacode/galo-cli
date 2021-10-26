@@ -7,6 +7,7 @@ import { cwd } from "./helpers/file";
 import initAction from "./actions/init";
 import buildAction from "./actions/build";
 import traitsAction from "./actions/traits";
+import artworksAction from "./actions/artworks";
 import metadataAction from "./actions/metadata";
 import collageAction from "./actions/collage";
 import rarityAction from "./actions/rarity";
@@ -64,7 +65,7 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .description('build the artworks, metadata, rarity, and collage')
+  .description('build the generations of artworks, metadata, rarity, and collage')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(buildAction);
 
@@ -77,9 +78,22 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .description('populate collection traits without generating the artworks')
+  .description('populate collection traits without building the generations')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(traitsAction);
+
+program
+  .command('artworks')
+  .alias('a')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('create collection artworks without rebuilding the generations')
+  .option('-c, --config <path>', 'set config path', './config.json')
+  .action(artworksAction);
 
 program
   .command('metadata')
@@ -90,7 +104,7 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .description('create collection metadata without regenerating the artworks')
+  .description('create collection metadata without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(metadataAction);
 
@@ -103,7 +117,7 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .description('create collection preview without regenerating the artworks')
+  .description('create collection preview without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(collageAction);
 
@@ -116,7 +130,7 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .description('create collection rarity without regenerating the artworks')
+  .description('create collection rarity without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './config.json')
   .action(rarityAction);
 

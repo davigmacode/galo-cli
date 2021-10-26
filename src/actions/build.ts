@@ -3,7 +3,7 @@ import { setupDir, writeJson, readJson, pathJoin, findDirs, exists } from "../he
 import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
-import { populateRarity } from "../helpers/rarity";
+import { populateRarity, rarityToCSV } from "../helpers/rarity";
 import { shuffle, task, prompt, consoleWarn, consoleError } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
@@ -71,8 +71,8 @@ export default async (basePath: string, opt: any) => {
   await task({
     processText: 'Preparing generations',
     successText: `Collection Generations: ${generationsPath}`,
-    fn: async () => {
-      generations = buildGen(config.artworks.generations, traits, config.rarity);
+    fn: async (spinner) => {
+      generations = buildGen(config.artworks.generations, traits, config.rarity, spinner);
       writeJson(generationsPath, generations);
     },
   });
@@ -97,34 +97,44 @@ export default async (basePath: string, opt: any) => {
   let metadata = [];
 
   // generate artworks and metadata
-  for (let i = 0; i < generations.length; i++) {
+  const generationsLength = generations.length;
+  for (let i = 0; i < generationsLength; i++) {
     const gen = generations[i];
-    const ed = gen.edition;
+    const edition = gen.edition.toString();
+    const editionOf = `${edition}/${generationsLength}`;
 
     // create a single artwork
+    const artworkPath = pathJoin(artworksPath, edition);
     await task({
-      processText: `Building artwork for edition #${ed}`,
-      successText: `Artwork #${ed}: ${pathJoin(artworksPath, `${ed}.png`)}`,
+      processText: `Building artwork for edition [${editionOf}]`,
+      successText: `Artwork [${editionOf}]: ${artworkPath}`,
       fn: async () => buildArtworks({
-        path: artworksPath,
-        edition: gen.edition,
-        attributes: gen.attributes,
-        width: config.artworks.width,
-        height: config.artworks.height,
-        minify: config.artworks.minify,
-        quality: config.artworks.quality
+        trait: {
+          width: config.traits.width,
+          height: config.traits.height,
+          attributes: gen.attributes,
+        },
+        artwork: {
+          path: artworkPath,
+          ext: config.artworks.ext,
+          width: config.artworks.width,
+          height: config.artworks.height,
+          minify: config.artworks.minify,
+          quality: config.artworks.quality,
+        }
       }),
     });
 
     // create a single metadata
+    const metaPath = pathJoin(metadataPath, edition);
     await task({
-      processText: `Building metadata for edition #${ed}`,
-      successText: `Metadata #${ed}: ${pathJoin(metadataPath, `${ed}.json`)}`,
+      processText: `Building metadata for edition [${editionOf}]`,
+      successText: `Metadata [${editionOf}]: ${metaPath}.json`,
       fn: async () => {
         // transform gen into metadata based on configurable template
         const meta = transformGen(gen, config.metadata.template);
         // create a single metadata
-        writeJson([metadataPath, `${ed}`], meta);
+        writeJson(metaPath, meta);
         // add to metadata collection
         metadata.push(meta);
       },
@@ -168,13 +178,23 @@ export default async (basePath: string, opt: any) => {
   });
 
   // populating rarity
-  const rarityConfig = pathJoin(basePath, 'rarity.json');
-  await task({
+  const rarity = await task({
     processText: 'Populating rarity',
-    successText: `Collection Rarity: ${rarityConfig}`,
-    fn: async () => {
-      const rarity = populateRarity(generations);
-      writeJson(rarityConfig, rarity);
-    },
+    successText: `Collection rarity is ready`,
+    fn: async () => populateRarity(traits, generations),
+  });
+
+  const rarityJson = pathJoin(basePath, 'rarity.json');
+  await task({
+    processText: 'Writing rarity to .json',
+    successText: `Collection Rarity: ${rarityJson}`,
+    fn: async () => writeJson(rarityJson, rarity),
+  });
+
+  const rarityCsv = pathJoin(basePath, 'rarity.csv');
+  await task({
+    processText: 'Writing rarity to .csv',
+    successText: `Collection Rarity: ${rarityCsv}`,
+    fn: async () => rarityToCSV(rarityCsv, rarity),
   });
 }

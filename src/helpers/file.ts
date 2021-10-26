@@ -1,6 +1,5 @@
 import fs from "fs";
 import p from "path";
-import { loadImage } from "canvas";
 
 import debug from "debug";
 const log = debug("file");
@@ -38,11 +37,6 @@ export const write = (path: string | string[], data: string | NodeJS.ArrayBuffer
 export const writeImage = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
   path = pathNormalize(path, '.png');
   write(path, data);
-};
-
-export const getImage = async (path: string | string[]) => {
-  path = pathNormalize(path, '.png');
-  return loadImage(path);
 };
 
 export const writeJson = (path: string | string[], data: object) => {
