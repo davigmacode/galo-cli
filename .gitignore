@@ -1,6 +1,7 @@
 diff
 .idea/*
 .nyc_output
+bin
 build
 node_modules
 test
