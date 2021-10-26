@@ -99,24 +99,24 @@
     ]
   },
   "rarity": {
-    "common": {
+    "C": {
       "label": "Common",
       "weight": 0.9,
       "default": true
     },
-    "uncommon": {
+    "U": {
       "label": "Uncommon",
       "weight": 0.7
     },
-    "rare": {
+    "R": {
       "label": "Rare",
       "weight": 0.5
     },
-    "epic": {
+    "E": {
       "label": "Epic",
       "weight": 0.3
     },
-    "legend": {
+    "L": {
       "label": "Legend",
       "weight": 0.1
     }
