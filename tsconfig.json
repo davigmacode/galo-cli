@@ -37,7 +37,9 @@
     // "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     // "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
 
-    "lib": ["es2017"],
+    "skipLibCheck": true, // Stops checking 3rd party libraries
+
+    "lib": ["es2017", "DOM"],
     "types": ["node"],
     "typeRoots": ["node_modules/@types", "src/types"]
   },
