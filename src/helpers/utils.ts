@@ -7,7 +7,7 @@ import inquirer from "inquirer";
 export {
 	isEmpty, isArray, isString,
 	get, set, findKey, pick, omit,
-	isNil
+	isNil, isNumber, isFinite
 } from "lodash";
 
 const log = debug("utils");

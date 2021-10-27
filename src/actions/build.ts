@@ -8,13 +8,13 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { shuffle, task, prompt, consoleWarn, consoleError, isNil } from "../helpers/utils";
+import { shuffle, task, prompt, isNil, isEmpty, print } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, run "galo init" first`);
+    print.warn(`Config file not found, run "galo init" first`);
     return;
   }
 
@@ -28,7 +28,7 @@ export default async (basePath: string, opt: any) => {
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);
   if (traitsItems.length == 0) {
-    consoleError('Please adding traits manually first');
+    print.error('Please adding traits manually first');
     return;
   }
 
@@ -69,23 +69,46 @@ export default async (basePath: string, opt: any) => {
         default: false,
         when: ({ cancelOperation }) => isNil(needToBuildGenerations) && !cancelOperation
       },
-    ]).catch((error) => {
-      if (error.isTtyError) {
-        // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
-      }
-    });
+    ]).catch((error) => print.error(error));
 
     // exit the action if not confirmed to re initiating
     if (cancelOperation) {
-      consoleWarn(`Build collection canceled`);
+      print.warn(`Build collection canceled`);
       return;
     }
 
     needToBuildGenerations = reGeneration || needToBuildGenerations;
   } else {
     needToBuildGenerations = true;
+  }
+
+  const traitsPath = pathJoin(basePath, config.traits.path);
+  const generationsConfig = config.artworks.generations;
+  if (isNil(generationsConfig) || isEmpty(generationsConfig)) {
+    const { qGenOrder, qGenSize } : any = await prompt([
+      {
+        type: 'input',
+        name: 'qGenOrder',
+        message: 'Generation Order (comma separated):',
+        default: findDirs(traitsPath).join(','),
+        validate: (input) => !isNil(input) && !isEmpty(input),
+        filter: (input) => input.split(",").map(item => item.trim())
+      },
+      {
+        type: 'number',
+        name: 'qGenSize',
+        message: 'Generation Size:',
+        default: 15,
+        validate: (input) => isFinite(input)
+      },
+    ]).catch((error) => print.error(error));
+
+    config.artworks.generations = [{ size: qGenSize, order: qGenOrder }];
+    await task({
+      processText: 'Updating Config File',
+      successText: `Collection Config: ${configPath}`,
+      fn: async () => writeJson(configPath, config),
+    });
   }
 
   // generate dna from traits, shuffle if required and write to config file

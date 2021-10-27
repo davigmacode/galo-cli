@@ -1,5 +1,5 @@
 import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir, deleteFile } from "../helpers/file";
-import { task, prompt, consoleWarn } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const { qRemoveConfig } : any = await prompt([
@@ -9,18 +9,12 @@ export default async (basePath: string, opt: any) => {
       message: 'Do you want to also remove the config file?',
       default: false,
     },
-  ]).catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
-    }
-  });
+  ]).catch((error) => print.error(error));
 
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, run "galo init" first`);
+    print.warn(`Config file not found, run "galo init" first`);
     return;
   }
 
@@ -38,11 +32,11 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(generationsPath),
   });
 
-  const uploadsPath = pathJoin(basePath, 'uploads.json');
+  const ipfsCache = pathJoin(basePath, config.storage.ipfs.cache);
   await task({
-    processText: 'Removing collection uploads',
-    successText: `Removed: ${uploadsPath}`,
-    fn: async () => deleteJson(uploadsPath),
+    processText: 'Removing IPFS upload cache',
+    successText: `Removed: ${ipfsCache}`,
+    fn: async () => deleteJson(ipfsCache),
   });
 
   const metadataConfig = pathJoin(basePath, config.metadata.config);

@@ -51,8 +51,8 @@
       "image": "{{edition}}.png",
       "attributes": {
         "{{#each attributes}}": {
-          "trait_type": "{{trait}}",
-          "value": "{{value}}"
+          "trait_type": "{{traitType.label}}",
+          "value": "{{traitItem.label}}"
         }
       },
       "collection": {
@@ -82,27 +82,10 @@
     "type": "image/png",
     "ext": ".png",
     "quality": "best",
-    "minify": true,
+    "minify": false,
     "width": 1080,
     "height": 1080,
-    "generations": [
-      {
-        "size": 15,
-        "order": ["background", "body", "clothes", "hair"]
-      },
-      {
-        "size": 10,
-        "order": [
-          "background",
-          "body",
-          "clothes",
-          {
-            "name": "hair",
-            "excludes": ["Hair-01"]
-          }
-        ]
-      }
-    ]
+    "generations": []
   },
   "rarity": {
     "C": {
