@@ -47,7 +47,7 @@ program
     (val) => cwd(val),
     process.cwd()
   )
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-tc, --traits-config <path>', 'set traits config', './traits.json')
   .option('-mc, --metadata-config <path>', 'set metadata config', './metadata.json')
   .option('-tp, --traits-path <path>', 'set traits path', './traits')
@@ -66,7 +66,7 @@ program
     process.cwd()
   )
   .description('build the generations of artworks, metadata, rarity, and collage')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-g, --generations', 'with build new generations')
   .option('-a, --artworks', 'with build the artworks', true)
   .option('-ng, --no-generations', 'without build new generations')
@@ -83,7 +83,7 @@ program
     process.cwd()
   )
   .description('populate collection traits without building the generations')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(traitsAction);
 
 program
@@ -96,7 +96,7 @@ program
     process.cwd()
   )
   .description('create collection artworks without rebuilding the generations')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(artworksAction);
 
 program
@@ -109,7 +109,7 @@ program
     process.cwd()
   )
   .description('create collection metadata without rebuilding the generations')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(metadataAction);
 
 program
@@ -122,7 +122,7 @@ program
     process.cwd()
   )
   .description('create collection preview without rebuilding the generations')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(collageAction);
 
 program
@@ -135,7 +135,7 @@ program
     process.cwd()
   )
   .description('create collection rarity without rebuilding the generations')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(rarityAction);
 
 program
@@ -148,7 +148,7 @@ program
     process.cwd()
   )
   .description('upload the artworks and metadata to decentralized storage')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(uploadAction);
 
 program
@@ -161,7 +161,7 @@ program
     process.cwd()
   )
   .description('destroy the generated files and directories')
-  .option('-c, --config <path>', 'set config path', './config.json')
+  .option('-c, --config <path>', 'set config path', './galo.json')
   .action(destroyAction);
 
 program.parse(process.argv);
