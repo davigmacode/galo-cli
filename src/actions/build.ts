@@ -1,10 +1,14 @@
 import { buildGen, transformGen } from "../helpers/dna";
-import { setupDir, writeJson, readJson, pathJoin, findDirs, exists } from "../helpers/file";
+import {
+  setupDir, writeJson, readJson,
+  pathJoin, findDirs, exists,
+  deleteDir, deleteFile
+} from "../helpers/file";
 import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { shuffle, task, prompt, consoleWarn, consoleError } from "../helpers/utils";
+import { shuffle, task, prompt, consoleWarn, consoleError, isNil } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -20,32 +24,6 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Config: ${configPath}`,
     fn: async () => readJson(configPath),
   });
-
-  // check for the config file existence
-  const generationsPath = pathJoin(basePath, 'generations.json');
-  const generationsExists = exists(generationsPath);
-  if (generationsExists) {
-    const { reGeneration } : any = await prompt([
-      {
-        type: 'confirm',
-        name: 'reGeneration',
-        message: 'Generation found, would you like to re generating the collection?',
-        default: false,
-      },
-    ]).catch((error) => {
-      if (error.isTtyError) {
-        // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
-      }
-    });
-
-    // exit the action if not confirmed to re initiating
-    if (!reGeneration) {
-      consoleWarn(`Build collection canceled`);
-      return;
-    }
-  }
 
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);
@@ -66,14 +44,57 @@ export default async (basePath: string, opt: any) => {
     },
   });
 
+  // check for the config file existence
+  let needToBuildGenerations = opt.generations;
+  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsExists = exists(generationsPath);
+  if (generationsExists) {
+    const { cancelOperation, reGeneration } : any = await prompt([
+      {
+        type: 'confirm',
+        name: 'cancelOperation',
+        message: 'Generation found, would you like to cancel the operation?',
+        default: false,
+        when: () => isNil(needToBuildGenerations)
+      },
+      {
+        type: 'confirm',
+        name: 'reGeneration',
+        message: 'Would you like to re generating the collection?',
+        default: false,
+        when: ({ cancelOperation }) => isNil(needToBuildGenerations) && !cancelOperation
+      },
+    ]).catch((error) => {
+      if (error.isTtyError) {
+        // Prompt couldn't be rendered in the current environment
+      } else {
+        // Something else went wrong
+      }
+    });
+
+    // exit the action if not confirmed to re initiating
+    if (cancelOperation) {
+      consoleWarn(`Build collection canceled`);
+      return;
+    }
+
+    needToBuildGenerations = reGeneration || needToBuildGenerations;
+  } else {
+    needToBuildGenerations = true;
+  }
+
   // generate dna from traits, shuffle if required and write to config file
   let generations: Gen[];
   await task({
     processText: 'Preparing generations',
     successText: `Collection Generations: ${generationsPath}`,
     fn: async (spinner) => {
-      generations = buildGen(config.artworks.generations, traits, config.rarity, spinner);
-      writeJson(generationsPath, generations);
+      if (needToBuildGenerations) {
+        generations = buildGen(config.artworks.generations, traits, config.rarity, spinner);
+        writeJson(generationsPath, generations);
+      } else {
+        generations = readJson(generationsPath);
+      }
     },
   });
 
@@ -82,7 +103,10 @@ export default async (basePath: string, opt: any) => {
   await task({
     processText: 'Preparing artworks directory',
     successText: `Artworks Dir: ${artworksPath}`,
-    fn: async () => setupDir(artworksPath)
+    fn: async () => {
+      deleteDir(artworksPath);
+      setupDir(artworksPath);
+    }
   });
 
   // ensure metadata directory
@@ -90,7 +114,26 @@ export default async (basePath: string, opt: any) => {
   await task({
     processText: 'Preparing metadata directory',
     successText: `Metadata Dir: ${metadataPath}`,
-    fn: async () => setupDir(metadataPath)
+    fn: async () => {
+      deleteDir(metadataPath);
+      setupDir(metadataPath);
+    }
+  });
+
+  const metadataConfig = pathJoin(basePath, config.metadata.config);
+  const collagePath = pathJoin(basePath, config.collage.name);
+  const rarityJson = pathJoin(basePath, 'rarity.json');
+  const rarityCsv = pathJoin(basePath, 'rarity.csv');
+
+  await task({
+    processText: 'Removing previously generated content',
+    successText: `Removed previously generated content`,
+    fn: async () => {
+      deleteFile(metadataPath, '.json');
+      deleteFile(collagePath, '.png');
+      deleteFile(rarityJson, '.json');
+      deleteFile(rarityCsv, '.csv');
+    }
   });
 
   // define metadata collection
@@ -103,27 +146,29 @@ export default async (basePath: string, opt: any) => {
     const edition = gen.edition.toString();
     const editionOf = `${edition}/${generationsLength}`;
 
-    // create a single artwork
-    const artworkPath = pathJoin(artworksPath, edition);
-    await task({
-      processText: `Building artwork for edition [${editionOf}]`,
-      successText: `Artwork [${editionOf}]: ${artworkPath}`,
-      fn: async () => buildArtworks({
-        trait: {
-          width: config.traits.width,
-          height: config.traits.height,
-          attributes: gen.attributes,
-        },
-        artwork: {
-          path: artworkPath,
-          ext: config.artworks.ext,
-          width: config.artworks.width,
-          height: config.artworks.height,
-          minify: config.artworks.minify,
-          quality: config.artworks.quality,
-        }
-      }),
-    });
+    if (opt.artworks) {
+      // create a single artwork
+      const artworkPath = pathJoin(artworksPath, edition);
+      await task({
+        processText: `Building artwork for edition [${editionOf}]`,
+        successText: `Artwork [${editionOf}]: ${artworkPath}`,
+        fn: async () => buildArtworks({
+          trait: {
+            width: config.traits.width,
+            height: config.traits.height,
+            attributes: gen.attributes,
+          },
+          artwork: {
+            path: artworkPath,
+            ext: config.artworks.ext,
+            width: config.artworks.width,
+            height: config.artworks.height,
+            minify: config.artworks.minify,
+            quality: config.artworks.quality,
+          }
+        }),
+      });
+    }
 
     // create a single metadata
     const metaPath = pathJoin(metadataPath, edition);
@@ -154,44 +199,42 @@ export default async (basePath: string, opt: any) => {
   }
 
   // create metadata for all collection
-  const metadataConfig = pathJoin(basePath, config.metadata.config);
   await task({
     processText: 'Writing collection metadata into file',
     successText: `Collection Metadata: ${metadataConfig}`,
     fn: async () => writeJson(metadataConfig, metadata)
   });
 
-  // create a collection preview collage
-  const collagePath = pathJoin(basePath, config.collage.name);
-  await task({
-    processText: 'Creating a collection preview collage',
-    successText: `Collection Collage: ${collagePath}`,
-    fn: async () => buildCollage({
-      basePath: basePath,
-      artworksPath: config.artworks.path,
-      previewPath: config.collage.name,
-      thumbWidth: config.collage.width,
-      thumbPerRow: config.collage.perRow,
-      imageRatio: config.artworks.width / config.artworks.height,
-      generations: generations,
-    }),
-  });
+  if (opt.artworks) {
+    // create a collection preview collage
+    await task({
+      processText: 'Creating a collection preview collage',
+      successText: `Collection Collage: ${collagePath}`,
+      fn: async () => buildCollage({
+        basePath: basePath,
+        artworksPath: config.artworks.path,
+        previewPath: config.collage.name,
+        thumbWidth: config.collage.width,
+        thumbPerRow: config.collage.perRow,
+        imageRatio: config.artworks.width / config.artworks.height,
+        generations: generations,
+      }),
+    });
+  }
 
   // populating rarity
   const rarity = await task({
     processText: 'Populating rarity',
-    successText: `Collection rarity is ready`,
+    successText: `Collection Rarity is ready`,
     fn: async () => populateRarity(traits, generations),
   });
 
-  const rarityJson = pathJoin(basePath, 'rarity.json');
   await task({
     processText: 'Writing rarity to .json',
     successText: `Collection Rarity: ${rarityJson}`,
     fn: async () => writeJson(rarityJson, rarity),
   });
 
-  const rarityCsv = pathJoin(basePath, 'rarity.csv');
   await task({
     processText: 'Writing rarity to .csv',
     successText: `Collection Rarity: ${rarityCsv}`,
