@@ -12,12 +12,12 @@ export const getDefaultRarity = (tiers: Rarity): string => {
   return findKey(tiers, { default: true });
 }
 
-export const populateRarity = (traits: Traits, generations: Gen[]) => {
+export const populateRarity = (traits: TraitType[], generations: Gen[]) => {
   const editions = generations.length;
   const rarity = {};
   for (const gen of generations) {
     for (const attr of gen.attributes) {
-      const path = [attr.trait, attr.value];
+      const path = [attr.traitType.label, attr.traitItem.label];
       const occurrence = get(rarity, [ ...path, 'occurrence' ], 0) + 1;
       const chance = occurrence / editions * 100;
       set(rarity, [ ...path, 'occurrence' ], occurrence);
@@ -26,10 +26,10 @@ export const populateRarity = (traits: Traits, generations: Gen[]) => {
   }
 
   const traitsRarity = {};
-  Object.keys(traits).forEach((traitType) => {
-    Object.keys(traits[traitType].items).forEach((traitItem) => {
-      const traitRarity = get(rarity, [traitType, traitItem], { occurrence: 0, chance: '0%' });
-      set(traitsRarity, [traits[traitType].label, traits[traitType].items[traitItem].label], traitRarity);
+  traits.forEach((traitType) => {
+    traitType.items.forEach((traitItem) => {
+      const traitRarity = get(rarity, [traitType.label, traitItem.label], { occurrence: 0, chance: '0%' });
+      set(traitsRarity, [traitType.label, traitItem.label], traitRarity);
     });
   });
   return traitsRarity;

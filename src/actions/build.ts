@@ -34,12 +34,17 @@ export default async (basePath: string, opt: any) => {
 
   // populate traits and write to config file
   const traitsConfig = pathJoin(basePath, config.traits.config);
-  let traits: Traits;
+  let traits: TraitType[];
   await task({
     processText: 'Preparing traits',
     successText: `Collection Traits: ${traitsConfig}`,
     fn: async () => {
-      traits = populateTraits([basePath, config.traits.path], config.traits.extensions, config.rarity);
+      traits = populateTraits(
+        [basePath, config.traits.path],
+        config.traits.extensions,
+        config.rarity,
+        config.traits.delimiter
+      );
       writeJson(traitsConfig, traits);
     },
   });

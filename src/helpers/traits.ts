@@ -8,6 +8,7 @@ import {
   getDefaultRarity,
   weightFromRarity
 } from "./rarity";
+import { omit } from "./utils";
 
 // import debug from "debug";
 // const log = debug("traits");
@@ -15,11 +16,12 @@ import {
 export const populateTraits = (
   path: string | string[],
   exts: string | string[],
-  rarity: Rarity
-) : Traits => {
+  rarity: Rarity,
+  delimiter: string = '_',
+) : TraitType[] => {
   path = pathNormalize(path);
 
-  let traitsData = {};
+  let traitsData = [];
   for (const traitType of findDirs(path)) {
     const traitPath = [path, traitType];
 
@@ -27,43 +29,46 @@ export const populateTraits = (
     if (!exists(traitPath)) continue;
 
     const traitConfig = readJson(traitPath);
-    traitsData[traitType] = {
+    const traitData = {
       ...{},
       ...{
+        name: traitType,
         label: traitType,
         opacity: 1,
         blend: "source-over",
         path: pathJoin(...traitPath),
       },
       ...traitConfig
-    };
+    }
 
-    let traitItems = {};
+    let traitItems = [];
     const traitFiles = findTypes(traitPath, exts);
     for (const traitFile of traitFiles) {
       // @ts-ignore
       const [traitName, traitExt] = traitFile.split(".");
       const traitConfig = readJson([...traitPath, traitName]);
 
-      const traitNameSplit = traitName.split("_");
+      const traitNameSplit = traitName.split(delimiter);
       const traitLabel = traitNameSplit.length == 2 ? traitNameSplit[1] : traitNameSplit[0];
       const traitRarity = traitNameSplit.length == 2 ? traitNameSplit[0] : getDefaultRarity(rarity);
 
-      traitItems[traitName] = {
+      traitItems.push({
         ...{},
         ...{
+          name: traitName,
           label: traitLabel,
-          opacity: traitsData[traitType].opacity,
-          blend: traitsData[traitType].blend,
+          opacity: traitData.opacity,
+          blend: traitData.blend,
           filename: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           extension: traitExt,
           rarity: traitRarity,
         },
         ...traitConfig
-      };
+      })
     }
-    traitsData[traitType]["items"] = traitItems;
+
+    traitsData.push({ ...traitData, items: traitItems });
   }
   return traitsData;
 }
@@ -82,13 +87,17 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
       }
       const selection = weighted.select(options, weights);
       result.push({
-        trait: trait.label,
-        value: selection.label,
-        opacity: selection.opacity,
-        blend: selection.blend,
-        image: selection.image,
-        path: selection.path,
-      });
+        traitType: omit(trait, 'items'),
+        traitItem: selection
+      })
+      // result.push({
+      //   trait: trait.label,
+      //   value: selection.label,
+      //   opacity: selection.opacity,
+      //   blend: selection.blend,
+      //   image: selection.image,
+      //   path: selection.path,
+      // });
     }
   }
   return result;

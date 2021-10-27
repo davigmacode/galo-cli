@@ -33,6 +33,7 @@
     "config": "traits.json",
     "width": 1080,
     "height": 1080,
+    "delimiter": "__",
     "extensions": [".png", ".jpg"]
   },
   "metadata": {

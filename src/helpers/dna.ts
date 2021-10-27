@@ -1,6 +1,6 @@
 import hash from "object-hash";
 import { randomTraits } from "./traits";
-import { isArray, isEmpty, pick, omit } from "./utils";
+import { isArray, isEmpty } from "./utils";
 import faker from "faker";
 import st from "stjs";
 
@@ -11,7 +11,7 @@ export const createDna = (attrs: GenAttr[]) => hash(attrs);
 
 export const buildGen = (
   generations: Generation[],
-  traits: Traits,
+  traits: TraitType[],
   rarity: Rarity,
   spinner?: any,
 ) : Gen[] => {
@@ -20,19 +20,19 @@ export const buildGen = (
     let genTraits = []
     for (const order of genConfig.order) {
       const orderTrait: string = (order as GenerationOrder).name || (order as string);
-      let genTrait = traits[orderTrait];
+      let genTrait = traits.find((trait => trait.name == orderTrait));
       // only includes some items
       const genTraitItemsIncludes = (order as GenerationOrder).includes;
       if (isArray(genTraitItemsIncludes) && !isEmpty(genTraitItemsIncludes)) {
-        genTrait.items = pick(genTrait.items, genTraitItemsIncludes);
+        genTrait.items = genTrait.items.filter((e) => genTraitItemsIncludes.includes(e.name));
       }
       // excludes some items
       const genTraitItemsExcludes = (order as GenerationOrder).excludes;
       if (isArray(genTraitItemsExcludes) && !isEmpty(genTraitItemsExcludes)) {
-        genTrait.items = omit(genTrait.items, genTraitItemsExcludes);
+        genTrait.items = genTrait.items.filter((e) => !genTraitItemsExcludes.includes(e.name));
       }
       // if trait has no items don't includes to trait list
-      if (Object.keys(genTrait.items).length > 0) {
+      if (genTrait.items.length > 0) {
         genTraits.push(genTrait);
       } else {
         if (spinner) {

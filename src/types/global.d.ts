@@ -6,18 +6,24 @@ interface Gen {
 }
 
 interface GenAttr {
-  trait: string;
-  value: string;
-  image: string;
-  path: string;
-  opacity: number;
-  blend: 'saturate' | 'clear' | 'copy' | 'destination' | 'source-over' | 'destination-over' |
-  'source-in' | 'destination-in' | 'source-out' | 'destination-out' | 'source-atop' | 'destination-atop' |
-  'xor' | 'lighter' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' |
-  'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
+  traitType: TraitType;
+  traitItem: TraitItem;
 }
+
+// interface GenAttr {
+//   trait: string;
+//   value: string;
+//   image: string;
+//   path: string;
+//   opacity: number;
+//   blend: 'saturate' | 'clear' | 'copy' | 'destination' | 'source-over' | 'destination-over' |
+//   'source-in' | 'destination-in' | 'source-out' | 'destination-out' | 'source-atop' | 'destination-atop' |
+//   'xor' | 'lighter' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' |
+//   'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
+// }
 
 interface TraitType {
+  name: string;
   label: string;
   description: string;
   opacity: number;
@@ -25,12 +31,12 @@ interface TraitType {
   'source-in' | 'destination-in' | 'source-out' | 'destination-out' | 'source-atop' | 'destination-atop' |
   'xor' | 'lighter' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' |
   'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
-  items: TraitItem[];
+  items?: TraitItem[];
 }
 
-interface TraitItem {
-  label: string;
-  description: string;
+interface TraitItem extends TraitType {
+  image: string;
+  path: string;
   rarity: string | number;
 }
 
