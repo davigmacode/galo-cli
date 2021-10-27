@@ -87,3 +87,11 @@ export const consoleWarn = (msg: string) => {
 export const consoleInfo = (msg: string) => {
 	console.log(pen.green(msg));
 }
+
+export const print = {
+	error: (...msg: string[]) => console.log(symbols.error, chalk.red(...msg)),
+	warn: (...msg: string[]) => console.log(symbols.warning, chalk.yellow(...msg)),
+	success: (...msg: string[]) => console.log(symbols.success, chalk.green(...msg)),
+	info: (...msg: string[]) => console.log(symbols.info, chalk.blue(...msg)),
+	log: (...msg: string[]) => console.log(...msg),
+}

@@ -7,15 +7,19 @@
   "storage": {
     "ipfs": {
       "label": "IPFS",
+      "cache": "/storage/ipfs.json",
       "token": ""
     },
     "arweave": {
       "label": "Arweave",
+      "cache": "/storage/arweave.json",
       "token": ""
     },
     "gdrive": {
       "label": "Google Drive",
-      "token": ""
+      "cache": "/storage/gdrive.json",
+      "credentials": "/storage/gdrive-credentials.json",
+      "token": "/storage/gdrive-token.json"
     }
   },
   "collage": {

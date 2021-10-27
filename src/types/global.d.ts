@@ -91,3 +91,11 @@ interface RarityTier {
   weight: number;
   default: boolean;
 }
+
+interface UploadsConfig {
+  basePath: string;
+  configPath: string;
+  config: any;
+  provider: string;
+  metadata: any;
+}

@@ -30,8 +30,14 @@ export const setupDir = (...paths: string[]) => {
 };
 
 export const write = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
+  path = pathNormalize(path);
+
+  if (!exists(p.dirname(path))) {
+    setupDir(path);
+  }
+
   log(`write ${path}`);
-  fs.writeFileSync(pathNormalize(path), data);
+  fs.writeFileSync(path, data);
 };
 
 export const writeImage = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {

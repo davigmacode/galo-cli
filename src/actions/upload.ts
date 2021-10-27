@@ -1,12 +1,12 @@
-import { writeJson, readJson, readImage, pathJoin, exists } from "../helpers/file";
-import { task, prompt, symbols, isEmpty, consoleWarn } from "../helpers/utils";
-import { NFTStorage, File } from "nft.storage";
+import { readJson, pathJoin, exists } from "../helpers/file";
+import { task, prompt, print } from "../helpers/utils";
+import ipfs from "../storages/ipfs";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, init the collection first`);
+    print.warn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -20,7 +20,7 @@ export default async (basePath: string, opt: any) => {
   const metadataPath = pathJoin(basePath, config.metadata.config);
   const metadataExists = exists(metadataPath);
   if (!metadataExists) {
-    consoleWarn(`Metadata not found, build the collection first`);
+    print.warn(`Metadata not found, build the collection first`);
     return;
   }
 
@@ -31,10 +31,10 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(metadataPath),
   });
 
-  const { qStorageProvider } : any = await prompt([
+  const { qProvider } : any = await prompt([
     {
       type: 'list',
-      name: 'qStorageProvider',
+      name: 'qProvider',
       message: 'Where do you want to upload?',
       choices: Object
         .keys(config.storage)
@@ -43,72 +43,21 @@ export default async (basePath: string, opt: any) => {
           value: key
         })),
     },
-  ]).catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
-    }
-  });
+  ]).catch((error) => print.error(error));
 
-  const storageProvider = config.storage[qStorageProvider];
-
-  if(qStorageProvider != 'ipfs') {
-    consoleWarn(`Currently only support ${config.storage['ipfs'].label}`);
-    return;
-  }
-
-  if (isEmpty(storageProvider.token)) {
-    while (isEmpty(storageProvider.token)) {
-      const { qStorageToken } : any = await prompt([
-        {
-          type: 'input',
-          name: 'qStorageToken',
-          message: `Cant find ${storageProvider.label} token in the config file, please enter the token:`,
-        },
-      ]).catch((error) => {
-        console.log(symbols.error, error);
+  switch (qProvider) {
+    case 'ipfs':
+      await ipfs({
+        basePath,
+        configPath,
+        config,
+        metadata,
+        provider: qProvider
       });
-      storageProvider.token = qStorageToken;
-    }
+      break;
 
-    config.storage[qStorageProvider] = storageProvider;
-    await task({
-      processText: 'Updating Config File',
-      successText: `Collection Config: ${configPath}`,
-      fn: async () => writeJson(configPath, config),
-    });
-  }
-
-  // read metadata config file
-  const uploadsPath = pathJoin(basePath, 'uploads.json');
-  const uploads = await task({
-    processText: 'Loading cached uploads',
-    successText: `Cached Uploads: ${uploadsPath}`,
-    fn: async () => readJson(uploadsPath),
-  });
-
-  const n = metadata.length;
-  const storage = new NFTStorage({ token: storageProvider.token });
-  for (let i = 0; i < n; i++) {
-    const c = `[${i+1}/${n}]`;
-    const meta = metadata[i];
-    if (!uploads[meta.edition]) {
-      const uploaded = await task({
-        processText: `${c} Uploading artworks and metadata #${meta.edition}`,
-        successText: `${c} Uploaded artworks and metadata #${meta.edition}`,
-        fn: async () => {
-          const file = readImage([basePath, config.artworks.path, meta.image]);
-          meta.image = new File([file], meta.image, { type: 'image/png' });
-          return storage.store(meta);
-        },
-      }).catch((error) => {
-        console.log(symbols.success, c, error);
-      });
-      uploads[meta.edition] = uploaded;
-      writeJson(uploadsPath, uploads);
-    } else {
-      console.log(symbols.success, c, `Cached artworks and metadata #${meta.edition}`);
-    }
+    default:
+      print.warn(`${config.storage[qProvider].label} Storage is under development`);
+      break;
   }
 }
