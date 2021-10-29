@@ -61,7 +61,7 @@ export const populateTraits = (
           blend: traitData.blend,
           filename: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
-          extension: traitExt,
+          ext: traitExt,
           rarity: traitRarity,
         },
         ...traitConfig

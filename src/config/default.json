@@ -4,37 +4,13 @@
     "description": "Generative Artworks Lies Onchain",
     "version": 1.0
   },
-  "storage": {
-    "ipfs": {
-      "label": "IPFS",
-      "cache": "/storage/ipfs.json",
-      "token": ""
-    },
-    "arweave": {
-      "label": "Arweave",
-      "cache": "/storage/arweave.json",
-      "token": ""
-    },
-    "gdrive": {
-      "label": "Google Drive",
-      "cache": "/storage/gdrive.json",
-      "credentials": "/storage/gdrive-credentials.json",
-      "token": "/storage/gdrive-token.json"
-    }
-  },
-  "collage": {
-    "type": "image/png",
-    "name": "preview.png",
-    "perRow": 5,
-    "width": 50
-  },
   "traits": {
     "path": "/traits",
     "config": "traits.json",
     "width": 1080,
     "height": 1080,
     "delimiter": "__",
-    "extensions": [".png", ".jpg"]
+    "exts": [".png", ".jpg"]
   },
   "metadata": {
     "path": "/metadata",
@@ -86,6 +62,30 @@
     "width": 1080,
     "height": 1080,
     "generations": []
+  },
+  "collage": {
+    "type": "image/png",
+    "name": "preview.png",
+    "perRow": 5,
+    "width": 50
+  },
+  "storage": {
+    "ipfs": {
+      "label": "IPFS",
+      "cache": "/storage/ipfs.json",
+      "token": ""
+    },
+    "arweave": {
+      "label": "Arweave",
+      "cache": "/storage/arweave.json",
+      "token": ""
+    },
+    "gdrive": {
+      "label": "Google Drive",
+      "cache": "/storage/gdrive.json",
+      "credentials": "/storage/gdrive-credentials.json",
+      "token": "/storage/gdrive-token.json"
+    }
   },
   "rarity": {
     "C": {

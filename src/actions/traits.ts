@@ -33,7 +33,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => {
       traits = populateTraits(
         [basePath, config.traits.path],
-        config.traits.extensions,
+        config.traits.exts,
         config.rarity,
         config.traits.delimiter
       );
