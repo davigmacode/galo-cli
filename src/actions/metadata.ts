@@ -1,6 +1,6 @@
 import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, shuffle, consoleWarn } from "../helpers/utils";
-import { transformGen } from "../helpers/dna";
+import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);

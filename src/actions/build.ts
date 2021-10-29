@@ -1,4 +1,4 @@
-import { buildGen, transformGen } from "../helpers/dna";
+import { buildGen, transformGen } from "../helpers/gens";
 import {
   setupDir, writeJson, readJson,
   pathJoin, findDirs, exists,
