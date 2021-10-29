@@ -76,18 +76,6 @@ const symbolsFallback = {
 
 export const symbols = isUnicodeSupported() ? symbolsMain : symbolsFallback;
 
-export const consoleError = (msg: string) => {
-	console.log(pen.redBright(msg));
-}
-
-export const consoleWarn = (msg: string) => {
-	console.log(pen.yellowBright(msg));
-}
-
-export const consoleInfo = (msg: string) => {
-	console.log(pen.green(msg));
-}
-
 export const print = {
 	error: (...msg: string[]) => console.log(symbols.error, chalk.red(...msg)),
 	warn: (...msg: string[]) => console.log(symbols.warning, chalk.yellow(...msg)),

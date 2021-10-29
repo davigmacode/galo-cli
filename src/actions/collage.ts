@@ -1,12 +1,12 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { buildCollage } from "../helpers/collage";
-import { task, consoleWarn } from "../helpers/utils";
+import { task, print } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, run "galo init" first`);
+    print.warn(`Config file not found, run "galo init" first`);
     return;
   }
 
@@ -20,7 +20,7 @@ export default async (basePath: string, opt: any) => {
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
-    consoleWarn(`Generations not found, build the collection first`);
+    print.warn(`Generations not found, build the collection first`);
     return;
   }
 

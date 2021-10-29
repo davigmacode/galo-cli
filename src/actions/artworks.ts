@@ -1,5 +1,5 @@
 import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
-import { task, prompt, consoleWarn } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/utils";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 
@@ -7,7 +7,7 @@ export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, init the collection first`);
+    print.warn(`Config file not found, init the collection first`);
     return;
   }
 
@@ -21,7 +21,7 @@ export default async (basePath: string, opt: any) => {
   const generationsPath = pathJoin(basePath, 'generations.json');
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
-    consoleWarn(`Generations not found, build the collection first`);
+    print.warn(`Generations not found, build the collection first`);
     return;
   }
 
@@ -43,17 +43,11 @@ export default async (basePath: string, opt: any) => {
         message: 'Artworks found, would you like to rebuilding the artworks?',
         default: false,
       },
-    ]).catch((error) => {
-      if (error.isTtyError) {
-        // Prompt couldn't be rendered in the current environment
-      } else {
-        // Something else went wrong
-      }
-    });
+    ]).catch((error) => print.error(error));
 
     // exit the action if not confirmed to re initiating
     if (!rebuilding) {
-      consoleWarn(`Rebuilding artworks canceled`);
+      print.warn(`Rebuilding artworks canceled`);
       return;
     }
   }

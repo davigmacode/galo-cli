@@ -1,12 +1,12 @@
 import { writeJson, readJson, pathJoin, findDirs, exists } from "../helpers/file";
 import { populateTraits } from "../helpers/traits";
-import { task, consoleWarn, consoleError } from "../helpers/utils";
+import { task, print } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (!configExists) {
-    consoleWarn(`Config file not found, run "galo init" first`);
+    print.warn(`Config file not found, run "galo init" first`);
     return;
   }
 
@@ -20,7 +20,7 @@ export default async (basePath: string, opt: any) => {
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);
   if (traitsItems.length == 0) {
-    consoleError('Please adding traits manually first');
+    print.error('Please adding traits manually first');
     return;
   }
 
