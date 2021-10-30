@@ -27,7 +27,7 @@ export default async (basePath: string, opt: any) => {
   const configAnswers: any = await prompt(questions(basePath)).catch((e) => print.error(e));
   const configDefault = readJson([__dirname, '../config/default.json']);
   const configEngine = { engine: { version: LIB_VERSION } };
-  const configData = merge({ ...configDefault, ...configEngine }, configAnswers);
+  const configData = merge(merge(configDefault, configEngine), configAnswers);
 
   const basePathExists = exists(basePath);
   if (!basePathExists) {

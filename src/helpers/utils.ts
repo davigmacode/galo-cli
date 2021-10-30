@@ -6,7 +6,7 @@ import inquirer from "inquirer";
 
 export {
 	isEmpty, isArray, isString,
-	get, set, findKey, pick, omit,
+	get, set, has, findKey, pick, omit,
 	isNil, isNumber, isFinite, merge, isUndefined
 } from "lodash";
 
@@ -82,4 +82,29 @@ export const print = {
 	success: (...msg: string[]) => console.log(symbols.success, chalk.green(...msg)),
 	info: (...msg: string[]) => console.log(symbols.info, chalk.blue(...msg)),
 	log: (...msg: string[]) => console.log(...msg),
+}
+
+export const flattenObject = (object, separator = '.') => {
+
+	const isValidObject = value => {
+		if (!value) {
+			return false
+		}
+
+		const isArray  = Array.isArray(value)
+		const isObject = Object.prototype.toString.call(value) === '[object Object]'
+		const hasKeys  = !!Object.keys(value).length
+
+		return !isArray && isObject && hasKeys
+	}
+
+	const walker = (child, path = []) => {
+
+		return Object.assign({}, ...Object.keys(child).map(key => isValidObject(child[key])
+			? walker(child[key], path.concat([key]))
+			: { [path.concat([key]).join(separator)] : child[key] })
+		)
+	}
+
+	return Object.assign({}, walker(object))
 }

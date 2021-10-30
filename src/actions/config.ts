@@ -1,6 +1,5 @@
 import { readJson, writeJson, pathJoin, exists } from "../helpers/file";
-import { task, print, pen, get, set, isUndefined } from "../helpers/utils";
-import questions from "../questions/config";
+import { task, print, pen, get, set, has, omit, flattenObject } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -18,7 +17,7 @@ export default async (basePath: string, opt: any) => {
   });
 
   if (opt.key) {
-    if (isUndefined(get(config, opt.key))) {
+    if (!has(config, opt.key)) {
       print.error(`Can't find any configuration with key ${opt.key}`);
       return;
     }
@@ -38,7 +37,9 @@ export default async (basePath: string, opt: any) => {
     return;
   }
 
-  questions(basePath).forEach(e => {
-    print.log(e.name, '=', get(config, e.name))
+  const omitedConfig = omit(config, ['engine', 'metadata']);
+  const flattenedObject = flattenObject(omitedConfig);
+  Object.keys((flattenedObject)).forEach((key) => {
+    print.log('>', key, '=', flattenedObject[key]);
   });
 }
