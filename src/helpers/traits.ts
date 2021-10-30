@@ -87,17 +87,9 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
       }
       const selection = weighted.select(options, weights);
       result.push({
-        traitType: omit(trait, 'items'),
+        traitType: omit(trait, ['opacity', 'blend', 'path', 'items']),
         traitItem: selection
       })
-      // result.push({
-      //   trait: trait.label,
-      //   value: selection.label,
-      //   opacity: selection.opacity,
-      //   blend: selection.blend,
-      //   image: selection.image,
-      //   path: selection.path,
-      // });
     }
   }
   return result;
