@@ -5,6 +5,7 @@ import { LIB_NAME, LIB_VERSION } from "./constants";
 import { cwd } from "./helpers/file";
 
 import initAction from "./actions/init";
+import configAction from "./actions/config";
 import buildAction from "./actions/build";
 import traitsAction from "./actions/traits";
 import artworksAction from "./actions/artworks";
@@ -49,6 +50,21 @@ program
   )
   .option('-c, --config <path>', 'set config path', './galo.json')
   .action(initAction);
+
+program
+  .command('config')
+  .alias('c')
+  .description('display or update the configuration data')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-k, --key <path>', 'the configuration key to display or update')
+  .option('-v, --value <path>', 'the configuration value to update')
+  .action(configAction);
 
 program
   .command('build')
