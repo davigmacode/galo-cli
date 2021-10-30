@@ -12,6 +12,16 @@
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
+  "generations": [],
+  "artworks": {
+    "path": "/artworks",
+    "type": "image/png",
+    "ext": ".png",
+    "quality": "best",
+    "minify": false,
+    "width": 1080,
+    "height": 1080
+  },
   "metadata": {
     "path": "/metadata",
     "config": "metadata.json",
@@ -52,16 +62,6 @@
         ]
       }
     }
-  },
-  "artworks": {
-    "path": "/artworks",
-    "type": "image/png",
-    "ext": ".png",
-    "quality": "best",
-    "minify": false,
-    "width": 1080,
-    "height": 1080,
-    "generations": []
   },
   "collage": {
     "type": "image/png",

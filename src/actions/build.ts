@@ -83,7 +83,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   const traitsPath = pathJoin(basePath, config.traits.path);
-  const generationsConfig = config.artworks.generations;
+  const generationsConfig = config.generations;
   if (isNil(generationsConfig) || isEmpty(generationsConfig)) {
     const { qGenOrder, qGenSize } : any = await prompt([
       {
@@ -91,19 +91,19 @@ export default async (basePath: string, opt: any) => {
         name: 'qGenOrder',
         message: 'Generation Order (comma separated):',
         default: findDirs(traitsPath).join(','),
-        validate: (input) => !isNil(input) && !isEmpty(input),
-        filter: (input) => input.split(",").map(item => item.trim())
+        validate: (input: string) => !isNil(input) && !isEmpty(input),
+        filter: (input: string) => input.split(",").map(item => item.trim())
       },
       {
         type: 'number',
         name: 'qGenSize',
         message: 'Generation Size:',
         default: 15,
-        validate: (input) => isFinite(input)
+        validate: (input: number) => isFinite(input)
       },
     ]).catch((error) => print.error(error));
 
-    config.artworks.generations = [{ size: qGenSize, order: qGenOrder }];
+    config.generations = [{ size: qGenSize, order: qGenOrder }];
     await task({
       processText: 'Updating Config File',
       successText: `Collection Config: ${configPath}`,
@@ -118,7 +118,7 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Generations: ${generationsPath}`,
     fn: async (spinner) => {
       if (needToBuildGenerations) {
-        generations = buildGen(config.artworks.generations, traits, config.rarity, spinner);
+        generations = buildGen(config.generations, traits, config.rarity, spinner);
         writeJson(generationsPath, generations);
       } else {
         generations = readJson(generationsPath);

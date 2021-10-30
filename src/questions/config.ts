@@ -81,7 +81,7 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'input',
-    name: 'artworks.generations[0].order',
+    name: 'generations[0].order',
     message: 'Generation Order (comma separated):',
     default: (answer: any) => findDirs(pathJoin(basePath, answer.traits.path)).join(','),
     validate: (input: string) => !isNil(input) && !isEmpty(input),
@@ -89,7 +89,7 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'number',
-    name: 'artworks.generations[0].size',
+    name: 'generations[0].size',
     message: 'Generation Size:',
     default: 15,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
