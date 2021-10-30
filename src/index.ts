@@ -48,12 +48,6 @@ program
     process.cwd()
   )
   .option('-c, --config <path>', 'set config path', './galo.json')
-  .option('-tc, --traits-config <path>', 'set traits config', './traits.json')
-  .option('-mc, --metadata-config <path>', 'set metadata config', './metadata.json')
-  .option('-tp, --traits-path <path>', 'set traits path', './traits')
-  .option('-mp, --metadata-path <path>', 'set generated metadata path', './metadata')
-  .option('-ap, --artworks-path <path>', 'set generated artworks path', './artworks')
-  .option('-p, --preview-path <path>', 'set generated collage preview path', './collage.png')
   .action(initAction);
 
 program
