@@ -14,26 +14,31 @@ import { omit } from "./utils";
 // const log = debug("traits");
 
 export const populateTraits = (
-  path: string | string[],
+  basePath: string,
+  traitsPath: string,
   exts: string | string[],
   rarity: Rarity,
   delimiter: string = '_',
 ) : TraitType[] => {
-  path = pathNormalize(path);
+  const absoluteTraitsPath = pathNormalize([basePath, traitsPath]);
 
   let traitsData = [];
-  for (const traitType of findDirs(path)) {
-    const traitPath = [path, traitType];
+  for (const traitType of findDirs(absoluteTraitsPath)) {
+    const traitPath = [traitsPath, traitType];
+    const absoluteTraitPath = [basePath, ...traitPath];
 
     // skip if the layer directory is not exists
-    if (!exists(traitPath)) continue;
+    if (!exists(absoluteTraitPath)) continue;
 
-    const traitConfig = readJson(traitPath);
+    const traitTypeSplit = traitType.split(delimiter);
+    const traitTypeLabel = traitTypeSplit.length == 2 ? traitTypeSplit[1] : traitTypeSplit[0];
+
+    const traitConfig = readJson(absoluteTraitPath);
     const traitData = {
       ...{},
       ...{
         name: traitType,
-        label: traitType,
+        label: traitTypeLabel,
         opacity: 1,
         blend: "source-over",
         path: pathJoin(...traitPath),
@@ -42,11 +47,11 @@ export const populateTraits = (
     }
 
     let traitItems = [];
-    const traitFiles = findTypes(traitPath, exts);
+    const traitFiles = findTypes(absoluteTraitPath, exts);
     for (const traitFile of traitFiles) {
       // @ts-ignore
       const [traitName, traitExt] = traitFile.split(".");
-      const traitConfig = readJson([...traitPath, traitName]);
+      const traitConfig = readJson([...absoluteTraitPath, traitName]);
 
       const traitNameSplit = traitName.split(delimiter);
       const traitLabel = traitNameSplit.length == 2 ? traitNameSplit[1] : traitNameSplit[0];

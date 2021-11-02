@@ -32,7 +32,8 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Traits: ${traitsConfig}`,
     fn: async () => {
       traits = populateTraits(
-        [basePath, config.traits.path],
+        basePath,
+        config.traits.path,
         config.traits.exts,
         config.rarity,
         config.traits.delimiter

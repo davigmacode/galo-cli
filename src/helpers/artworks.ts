@@ -3,9 +3,11 @@ import imagemin from 'imagemin';
 import imageminPngquant from 'imagemin-pngquant';
 import { pathNormalize } from "./file";
 
-export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => {
+export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksConfig) => {
   // transform attributes to overlay images
-  const overlays = trait.attributes.map((attr) => ({ input: attr.traitItem.path }));
+  const overlays = trait.attributes.map((attr) => ({
+    input: pathNormalize([basePath, attr.traitItem.path])
+  }));
   let imageBuffer = await sharp({
     create: {
       width: trait.width,

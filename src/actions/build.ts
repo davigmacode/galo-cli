@@ -40,7 +40,8 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Traits: ${traitsConfig}`,
     fn: async () => {
       traits = populateTraits(
-        [basePath, config.traits.path],
+        basePath,
+        config.traits.path,
         config.traits.exts,
         config.rarity,
         config.traits.delimiter
@@ -179,8 +180,9 @@ export default async (basePath: string, opt: any) => {
       const artworkPath = pathJoin(artworksPath, edition);
       await task({
         processText: `Building artwork for edition [${editionOf}]`,
-        successText: `Artwork [${editionOf}]: ${artworkPath}`,
+        successText: `Artwork [${editionOf}]: ${artworkPath}${config.artworks.ext}`,
         fn: async () => buildArtworks({
+          basePath,
           trait: {
             width: config.traits.width,
             height: config.traits.height,

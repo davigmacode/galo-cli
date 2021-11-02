@@ -44,11 +44,12 @@ interface Generation {
 }
 
 interface BuildArtworksConfig {
+  basePath: string;
   trait: {
     width: number;
     height: number;
     attributes: GenAttr[];
-  }
+  };
   artwork: {
     path: string | string[];
     ext: string;
@@ -56,11 +57,11 @@ interface BuildArtworksConfig {
     height: number;
     minify: boolean;
     quality: "fast" | "good" | "best" | "nearest" | "bilinear";
-  }
+  };
 }
 
 interface BuildCollageConfig {
-  basePath: string | string[];
+  basePath: string;
   artworksPath: string | string[];
   previewPath: string | string[];
   generations: Gen[];
