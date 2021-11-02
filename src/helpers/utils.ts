@@ -6,7 +6,7 @@ import inquirer from "inquirer";
 
 export {
 	isEmpty, isArray, isString,
-	get, set, has, findKey, pick, omit,
+	get, set, has, findKey, pick, omit, sampleSize,
 	isNil, isNumber, isFinite, merge, isUndefined
 } from "lodash";
 

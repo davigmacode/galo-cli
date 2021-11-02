@@ -91,7 +91,7 @@ export const questionsInit = (basePath: string) => ([
     type: 'number',
     name: 'generations[0].size',
     message: 'Generation Size:',
-    default: 15,
+    default: 100,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
@@ -122,16 +122,23 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'number',
-    name: 'collage.perRow',
-    message: 'Collage Per Row:',
-    default: 5,
+    name: 'collage.editions',
+    message: 'Collage Editions:',
+    default: 50,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
     type: 'number',
-    name: 'collage.width',
+    name: 'collage.thumbWidth',
     message: 'Collage Width:',
     default: 50,
+    validate: (input: number) => isFinite(input) || 'Must be a finite number'
+  },
+  {
+    type: 'number',
+    name: 'collage.thumbPerRow',
+    message: 'Collage Thumb Per Row:',
+    default: 10,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {

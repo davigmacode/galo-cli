@@ -65,6 +65,7 @@ interface BuildCollageConfig {
   artworksPath: string | string[];
   previewPath: string | string[];
   generations: Gen[];
+  editions: number;
   thumbWidth: number;
   thumbPerRow: number;
   imageRatio: number;
