@@ -1,6 +1,6 @@
 {
-  "name": "galo",
-  "version": "1.2.1",
+  "name": "galo-cli",
+  "version": "2.0.0",
   "description": "Generative Artworks Lies Onchain",
   "repository": "https://github.com/davigmacode/galo",
   "author": "Irfan Vigma Taufik <davigmacode@gmail.com>",
