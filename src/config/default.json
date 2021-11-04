@@ -17,7 +17,6 @@
     "path": "/artworks",
     "ext": ".png",
     "quality": "best",
-    "minify": false,
     "width": 1080,
     "height": 1080
   },

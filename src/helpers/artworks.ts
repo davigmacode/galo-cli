@@ -1,6 +1,4 @@
 import sharp from "sharp";
-import imagemin from 'imagemin';
-import imageminPngquant from 'imagemin-pngquant';
 import { pathNormalize } from "./file";
 
 export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksConfig) => {
@@ -21,16 +19,6 @@ export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksC
   .withMetadata()
   .png({ compressionLevel: 9, adaptiveFiltering: true })
   .toBuffer();
-
-  if (artwork.minify) {
-    imageBuffer = await imagemin.buffer(imageBuffer, {
-      plugins: [
-        imageminPngquant({
-          quality: [0.6, 0.95],
-        }),
-      ],
-    });
-  }
 
   const artworkPath = pathNormalize(artwork.path, artwork.ext);
   await sharp(imageBuffer).resize(artwork.width, artwork.height).toFile(artworkPath);

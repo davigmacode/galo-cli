@@ -60,12 +60,6 @@ export const questionsInit = (basePath: string) => ([
     default: '.png',
   },
   {
-    type: 'confirm',
-    name: 'artworks.minify',
-    message: 'Artworks Minify',
-    default: false,
-  },
-  {
     type: 'number',
     name: 'artworks.width',
     message: 'Artworks Width:',
