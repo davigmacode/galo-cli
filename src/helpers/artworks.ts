@@ -6,7 +6,8 @@ import { pathNormalize } from "./file";
 export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksConfig) => {
   // transform attributes to overlay images
   const overlays = trait.attributes.map((attr) => ({
-    input: pathNormalize([basePath, attr.traitItem.path])
+    input: pathNormalize([basePath, attr.traitItem.path]),
+    blend: attr.traitItem.blend || 'over'
   }));
   let imageBuffer = await sharp({
     create: {

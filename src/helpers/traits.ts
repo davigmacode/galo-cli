@@ -40,7 +40,6 @@ export const populateTraits = (
         name: traitType,
         label: traitTypeLabel,
         opacity: 1,
-        blend: "source-over",
         path: pathJoin(...traitPath),
       },
       ...traitConfig
