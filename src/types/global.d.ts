@@ -41,6 +41,7 @@ interface GenerationOrder {
 interface Generation {
   size: number;
   order: string[] | GenerationOrder[];
+  dna: string[];
 }
 
 interface BuildArtworksConfig {

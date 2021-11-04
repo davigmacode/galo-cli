@@ -88,6 +88,12 @@ export const questionsInit = (basePath: string) => ([
     filter: (input: string) => input.split(",").map(item => item.trim())
   },
   {
+    type: 'input',
+    name: 'generations[0].dna',
+    message: 'Generation DNA (comma separated):',
+    filter: (input: string) => input.split(",").map(item => item.trim())
+  },
+  {
     type: 'number',
     name: 'generations[0].size',
     message: 'Generation Size:',

@@ -113,19 +113,28 @@ export default async (basePath: string, opt: any) => {
   }
 
   // generate dna from traits, shuffle if required and write to config file
-  let generations: Gen[];
-  await task({
-    processText: 'Preparing generations',
-    successText: `Collection Generations: ${generationsPath}`,
-    fn: async (spinner) => {
-      if (needToBuildGenerations) {
-        generations = buildGen(config.generations, traits, config.rarity, spinner);
-        writeJson(generationsPath, generations);
-      } else {
-        generations = readJson(generationsPath);
-      }
-    },
-  });
+  const generations = needToBuildGenerations == true
+    ? await task({
+        processText: 'Building generations',
+        successText: `Collection Generations: ${generationsPath}`,
+        fn: async (spinner) => {
+          try {
+            let createdGenerations: Gen[];
+            createdGenerations = buildGen(config.generations, traits, config.rarity, spinner);
+            writeJson(generationsPath, createdGenerations);
+            return createdGenerations;
+          } catch (err) {
+            return Promise.reject(err);
+          }
+        },
+      })
+    : await task({
+        processText: 'Loading generations from file',
+        successText: `Collection Generations: ${generationsPath}`,
+        fn: async () => readJson(generationsPath),
+      });
+
+  if (isNil(generations) || isEmpty(generations)) return;
 
   // ensure artworks directory
   const artworksPath = pathJoin(basePath, config.artworks.path);

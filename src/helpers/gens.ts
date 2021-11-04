@@ -1,13 +1,20 @@
 import hash from "object-hash";
 import { randomTraits } from "./traits";
-import { isArray, isEmpty } from "./utils";
+import { isArray, isEmpty, isNil, pick } from "./utils";
 import faker from "faker";
 import st from "stjs";
 
 import debug from "debug";
 const log = debug('dna');
 
-export const createDna = (attrs: GenAttr[]) => hash(attrs);
+export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
+  let dna = {};
+  attrs.forEach((e) => dna = { ...dna, [e.traitType.name]: e.traitItem.name });
+  if (!isNil(dnaAttrs) && !isEmpty(dnaAttrs)) {
+    dna = pick(dna, dnaAttrs);
+  }
+  return hash(dna);
+}
 
 export const buildGen = (
   generations: Generation[],
@@ -17,7 +24,7 @@ export const buildGen = (
 ) : Gen[] => {
   let genResult = [];
   for (const genConfig of generations) {
-    let genTraits = []
+    let genTraits = [];
     for (const order of genConfig.order) {
       const orderTrait: string = (order as GenerationOrder).name || (order as string);
       let genTrait = traits.find((trait => trait.name == orderTrait));
@@ -47,17 +54,26 @@ export const buildGen = (
         edition: number,
         image: string,
         attributes: GenAttr[],
-        unique: boolean;
+        unique: boolean,
+        duplicates = 0;
       do {
         edition = genResult.length + 1;
         image = `${edition}.png`;
         attributes = randomTraits(genTraits, rarity);
-        dna = createDna(attributes);
-        unique = genResult.some((gen) => gen.dna == dna) == false
-        if (unique)
+        dna = createDna(attributes, genConfig.dna);
+        unique = genResult.some((gen) => gen.dna == dna) == false;
+        if (unique) {
           log(`Generated DNA for #${edition}: Unique.`);
-        else
+        } else {
+          duplicates = duplicates + 1;
           log(`Generated DNA for #${edition}: Exists!`);
+          if (duplicates >= 100000) {
+            const additionalMessage = !isNil(genConfig.dna) && !isEmpty(genConfig.dna)
+              ? `to ${genConfig.dna.join('/')}`
+              : ''
+            throw new Error(`Generation break at edition #${edition}, please add more traits ${additionalMessage}`);
+          }
+        }
       } while (!unique);
       genResult.push({ edition, dna, image, attributes });
     }
