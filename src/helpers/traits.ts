@@ -39,7 +39,6 @@ export const populateTraits = (
       ...{
         name: traitType,
         label: traitTypeLabel,
-        opacity: 1,
         path: pathJoin(...traitPath),
       },
       ...traitConfig
@@ -61,8 +60,6 @@ export const populateTraits = (
         ...{
           name: traitName,
           label: traitLabel,
-          opacity: traitData.opacity,
-          blend: traitData.blend,
           filename: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
@@ -91,7 +88,7 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
       }
       const selection = weighted.select(options, weights);
       result.push({
-        traitType: omit(trait, ['opacity', 'blend', 'path', 'items']),
+        traitType: omit(trait, ['path', 'items']),
         traitItem: selection
       })
     }
