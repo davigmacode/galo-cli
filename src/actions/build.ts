@@ -191,8 +191,8 @@ export default async (basePath: string, opt: any) => {
         processText: `Building artwork for edition [${editionOf}]`,
         successText: `Artwork [${editionOf}]: ${artworkPath}${config.artworks.ext}`,
         fn: async () => buildArtworks({
-          basePath,
           trait: {
+            path: pathJoin(basePath, config.traits.path),
             width: config.traits.width,
             height: config.traits.height,
             attributes: gen.attributes,

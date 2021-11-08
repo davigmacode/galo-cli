@@ -11,8 +11,8 @@ interface GenAttr {
 }
 
 interface TraitType {
-  name: string;
-  label: string;
+  name?: string;
+  label?: string;
   description?: string;
   opacity?: number;
   blend?: 'clear' | 'source' | 'over' | 'in' | 'out' | 'atop' | 'dest' | 'dest-over' | 'dest-in' | 'dest-out' | 'dest-atop' | 'xor' | 'add' | 'saturate' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'colour-dodge' | 'colour-dodge' | 'colour-burn' | 'colour-burn' | 'hard-light' | 'soft-light' | 'difference' | 'exclusion';
@@ -21,8 +21,9 @@ interface TraitType {
 }
 
 interface TraitItem extends TraitType {
-  image: string;
-  rarity: string | number;
+  file?: string;
+  ext?: string;
+  rarity?: string | number;
 }
 
 interface Traits {
@@ -42,14 +43,14 @@ interface Generation {
 }
 
 interface BuildArtworksConfig {
-  basePath: string;
   trait: {
+    path: string;
     width: number;
     height: number;
     attributes: GenAttr[];
   };
   artwork: {
-    path: string | string[];
+    path: string;
     ext: string;
     width: number;
     height: number;

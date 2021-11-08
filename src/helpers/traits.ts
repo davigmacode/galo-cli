@@ -60,7 +60,7 @@ export const populateTraits = (
         ...{
           name: traitName,
           label: traitLabel,
-          filename: traitFile,
+          file: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
           rarity: traitRarity,
@@ -89,7 +89,7 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
       const selection = weighted.select(options, weights);
       result.push({
         traitType: omit(trait, ['path', 'items']),
-        traitItem: selection
+        traitItem: omit(selection, ['path', 'ext'])
       })
     }
   }
