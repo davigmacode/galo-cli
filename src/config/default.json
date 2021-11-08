@@ -1,7 +1,7 @@
 {
   "engine": {
     "name": "GALO",
-    "description": "Generative Artworks Lies Onchain",
+    "description": "Generative Artworks Lies On-chain",
     "version": 1.0
   },
   "traits": {
@@ -22,11 +22,9 @@
     "config": "metadata.json",
     "shuffle": 3,
     "template": {
-      "dna": "{{dna}}",
-      "edition": "{{edition}}",
       "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition}}",
       "symbol": "GALO",
-      "description": "Generative Artworks Lies Onchain",
+      "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
       "external_url": "https://example.com",
       "image": "{{artwork.ipfs}}",
@@ -48,7 +46,6 @@
           }
         ],
         "category": "image",
-        "maxSupply": 1,
         "creators": [
           {
             "address": "solana address for a creator",

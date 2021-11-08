@@ -46,6 +46,7 @@ export default async (basePath: string, opt: any) => {
     },
   ]).catch((error) => print.error(error));
 
+  const typeName = opt.metadata ? 'metadata' : 'artwork';
   switch (qProvider) {
     case 'ipfs':
       await ipfs({
@@ -53,7 +54,8 @@ export default async (basePath: string, opt: any) => {
         configPath,
         config,
         generations,
-        provider: qProvider
+        provider: qProvider,
+        typeName,
       });
       break;
     case 'arweave':
@@ -62,7 +64,8 @@ export default async (basePath: string, opt: any) => {
         configPath,
         config,
         generations,
-        provider: qProvider
+        provider: qProvider,
+        typeName,
       });
       break;
     default:

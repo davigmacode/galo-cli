@@ -93,4 +93,5 @@ interface UploadsConfig {
   config: any;
   provider: string;
   generations: any;
+  typeName: string;
 }

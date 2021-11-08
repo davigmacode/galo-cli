@@ -159,6 +159,7 @@ program
   )
   .description('upload the artworks and metadata to decentralized storage')
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-m, --metadata', 'upload metadata instead of artworks', false)
   .action(uploadAction);
 
 program

@@ -1,11 +1,18 @@
 import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
-import { writeJson, readJson, readImage, pathJoin } from "../helpers/file";
+import { writeJson, readJson, readFile, pathJoin } from "../helpers/file";
 import Arweave from "arweave";
 import Transaction from 'arweave/node/lib/transaction';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 import mime from "mime-types";
 
-export default async ({ basePath, configPath, config, provider, generations }: UploadsConfig) => {
+export default async ({
+  basePath,
+  configPath,
+  config,
+  provider,
+  generations,
+  typeName,
+}: UploadsConfig) => {
   const storage = config.storage[provider];
 
   if (isEmpty(storage.keyfile)) {
@@ -37,8 +44,8 @@ export default async ({ basePath, configPath, config, provider, generations }: U
 
   const n = generations.length;
   const generationsPath = pathJoin(basePath, 'generations.json');
-  const artworksPath = config.artworks.path;
-  const artworksExt = config.artworks.ext;
+  const typePath = typeName == 'artwork' ? config.artworks.path : config.metadata.path;
+  const typeExt = typeName == 'artwork' ? config.artworks.ext : '.json';
   const arweave = Arweave.init({
     host: 'arweave.net',
     port: 443,
@@ -47,15 +54,15 @@ export default async ({ basePath, configPath, config, provider, generations }: U
   for (let i = 0; i < n; i++) {
     const c = `[${i+1}/${n}]`;
     const gen = generations[i];
-    if (!get(gen, ['artwork', 'arweave'])) {
+    if (!get(gen, [typeName, 'arweave'])) {
       const uploaded = await task({
-        processText: `${c} Uploading artworks and metadata #${gen.edition}`,
-        successText: `${c} Uploaded artworks and metadata #${gen.edition}`,
+        processText: `${c} Uploading ${typeName} #${gen.edition}`,
+        successText: `${c} Uploaded ${typeName} #${gen.edition}`,
         fn: async (spinner) => {
-          const fileName = `${gen.edition}${artworksExt}`;
-          const filePath = pathJoin(basePath, artworksPath, fileName);
+          const fileName = `${gen.edition}${typeExt}`;
+          const filePath = pathJoin(basePath, typePath, fileName);
           const fileMime = mime.lookup(filePath) || 'application/octet-stream';
-          const fileData = readImage(filePath);
+          const fileData = readFile(filePath, typeExt);
           return arweaveUpload(
             arweave,
             fileData,
@@ -66,10 +73,10 @@ export default async ({ basePath, configPath, config, provider, generations }: U
           );
         },
       }).catch((error) => print.error(c, error));
-      set(gen, ['artwork', 'arweave'], uploaded.id);
+      set(gen, [typeName, 'arweave'], uploaded.id);
       writeJson(generationsPath, generations);
     } else {
-      print.success(c, `Cached artworks and metadata #${gen.edition}`);
+      print.success(c, `Cached ${typeName} #${gen.edition}`);
     }
   }
 }
@@ -90,7 +97,7 @@ export const arweaveUpload = async (
     const text = spinner.text;
     while (!uploader.isComplete) {
       await uploader.uploadChunk();
-      spinner.text = `${text} ${uploader.pctComplete}% complete`;
+      spinner.text = `${text} - ${uploader.pctComplete}% complete`;
     }
   }
   await arweave.transactions.post(tx);
