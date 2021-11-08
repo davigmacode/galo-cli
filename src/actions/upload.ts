@@ -1,6 +1,7 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { task, prompt, print } from "../helpers/utils";
 import ipfs from "../storages/ipfs";
+import arweave from "../storages/arweave";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -17,18 +18,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const metadataPath = pathJoin(basePath, config.metadata.config);
-  const metadataExists = exists(metadataPath);
-  if (!metadataExists) {
-    print.warn(`Metadata not found, build the collection first`);
+  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsExists = exists(generationsPath);
+  if (!generationsExists) {
+    print.warn(`Generations not found, build the collection first`);
     return;
   }
 
-  // read metadata config file
-  const metadata = await task({
-    processText: 'Loading collection metadata',
-    successText: `Collection Metadata: ${metadataPath}`,
-    fn: async () => readJson(metadataPath),
+  // read the generations from file
+  const generations = await task({
+    processText: 'Loading generations from file',
+    successText: `Collection Generations: ${generationsPath}`,
+    fn: async () => readJson(generationsPath),
   });
 
   const { qProvider } : any = await prompt([
@@ -51,11 +52,19 @@ export default async (basePath: string, opt: any) => {
         basePath,
         configPath,
         config,
-        metadata,
+        generations,
         provider: qProvider
       });
       break;
-
+    case 'arweave':
+      await arweave({
+        basePath,
+        configPath,
+        config,
+        generations,
+        provider: qProvider
+      });
+      break;
     default:
       print.warn(`${config.storage[qProvider].label} Storage is under development`);
       break;

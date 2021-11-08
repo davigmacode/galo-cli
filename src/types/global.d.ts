@@ -91,5 +91,5 @@ interface UploadsConfig {
   configPath: string;
   config: any;
   provider: string;
-  metadata: any;
+  generations: any;
 }

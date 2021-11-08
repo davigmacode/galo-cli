@@ -29,7 +29,7 @@
       "description": "Generative Artworks Lies Onchain",
       "seller_fee_basis_points": 500,
       "external_url": "https://example.com",
-      "image": "{{edition}}.png",
+      "image": "{{artwork.ipfs}}",
       "attributes": {
         "{{#each attributes}}": {
           "trait_type": "{{traitType.label}}",
@@ -43,7 +43,7 @@
       "properties": {
         "files": [
           {
-            "uri": "{{edition}}.png",
+            "uri": "{{artwork.ipfs}}",
             "type": "image/png"
           }
         ],
@@ -74,7 +74,7 @@
     "arweave": {
       "label": "Arweave",
       "cache": "/storage/arweave.json",
-      "token": ""
+      "keyfile": "/storage/arweave-key.json"
     },
     "gdrive": {
       "label": "Google Drive",

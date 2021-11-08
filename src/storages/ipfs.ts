@@ -1,8 +1,9 @@
-import { task, prompt, isEmpty, omit, print } from "../helpers/utils";
-import { writeJson, readJson, readImage, pathJoin } from "../helpers/file";
+import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
+import { writeJson, readImage, pathJoin } from "../helpers/file";
 import { NFTStorage, File } from "nft.storage";
+import mime from "mime-types";
 
-export default async ({ basePath, configPath, config, provider, metadata }: UploadsConfig) => {
+export default async ({ basePath, configPath, config, provider, generations }: UploadsConfig) => {
   const storage = config.storage[provider];
 
   if (isEmpty(storage.token)) {
@@ -25,33 +26,31 @@ export default async ({ basePath, configPath, config, provider, metadata }: Uplo
     });
   }
 
-  // read uploads cache file
-  const uploadsPath = pathJoin(basePath, storage.cache);
-  const uploads = await task({
-    processText: 'Loading cached uploads',
-    successText: `Cached Uploads: ${uploadsPath}`,
-    fn: async () => readJson(uploadsPath),
-  });
-
-  const n = metadata.length;
+  const n = generations.length;
+  const generationsPath = pathJoin(basePath, 'generations.json');
+  const artworksPath = config.artworks.path;
+  const artworksExt = config.artworks.ext;
   const ipfs = new NFTStorage({ token: storage.token });
   for (let i = 0; i < n; i++) {
     const c = `[${i+1}/${n}]`;
-    const meta = metadata[i];
-    if (!uploads[meta.edition]) {
+    const gen = generations[i];
+    if (!get(gen, ['artwork', 'ipfs'])) {
       const uploaded = await task({
-        processText: `${c} Uploading artworks and metadata #${meta.edition}`,
-        successText: `${c} Uploaded artworks and metadata #${meta.edition}`,
+        processText: `${c} Uploading artworks and metadata #${gen.edition}`,
+        successText: `${c} Uploaded artworks and metadata #${gen.edition}`,
         fn: async () => {
-          const file = readImage([basePath, config.artworks.path, meta.image]);
-          meta.image = new File([file], meta.image, { type: 'image/png' });
-          return ipfs.store(meta);
+          const fileName = `${gen.edition}${artworksExt}`;
+          const filePath = pathJoin(basePath, artworksPath, fileName);
+          const fileMime = mime.lookup(filePath) || 'application/octet-stream';
+          const fileData = readImage(filePath);
+          const fileBlob = new File([fileData], fileName, { type: fileMime });
+          return ipfs.storeBlob(fileBlob);
         },
       }).catch((error) => print.error(c, error));
-      uploads[meta.edition] = uploaded;
-      writeJson(uploadsPath, uploads);
+      set(gen, ['artwork', 'ipfs'], uploaded);
+      writeJson(generationsPath, generations);
     } else {
-      print.success(c, `Cached artworks and metadata #${meta.edition}`);
+      print.success(c, `Cached artworks and metadata #${gen.edition}`);
     }
   }
 }
