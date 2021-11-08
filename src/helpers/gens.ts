@@ -52,13 +52,11 @@ export const buildGen = (
     for (let i = 0; i < genConfig.size; i++) {
       let dna: string,
         edition: number,
-        image: string,
         attributes: GenAttr[],
         unique: boolean,
         duplicates = 0;
       do {
         edition = genResult.length + 1;
-        image = `${edition}.png`;
         attributes = randomTraits(genTraits, rarity);
         dna = createDna(attributes, genConfig.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
@@ -75,7 +73,7 @@ export const buildGen = (
           }
         }
       } while (!unique);
-      genResult.push({ edition, dna, image, attributes });
+      genResult.push({ edition, dna, attributes });
     }
   }
   return genResult;
