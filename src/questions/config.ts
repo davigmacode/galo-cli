@@ -17,20 +17,6 @@ export const questionsInit = (basePath: string) => ([
     validate: (input: string) => extname(input) == '.json' || 'Must be json file'
   },
   {
-    type: 'number',
-    name: 'traits.width',
-    message: 'Traits Width:',
-    default: 600,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'number',
-    name: 'traits.height',
-    message: 'Traits Height:',
-    default: 600,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
     type: 'input',
     name: 'traits.delimiter',
     message: 'Traits Filename Delimiter between Rarity and Label:',
@@ -63,14 +49,14 @@ export const questionsInit = (basePath: string) => ([
     type: 'number',
     name: 'artworks.width',
     message: 'Artworks Width:',
-    default: 600,
+    default: 800,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
     type: 'number',
     name: 'artworks.height',
     message: 'Artworks Height:',
-    default: 600,
+    default: 800,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {

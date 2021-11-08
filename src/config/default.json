@@ -7,8 +7,6 @@
   "traits": {
     "path": "/traits",
     "config": "traits.json",
-    "width": 1080,
-    "height": 1080,
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
@@ -16,7 +14,6 @@
   "artworks": {
     "path": "/artworks",
     "ext": ".png",
-    "quality": "best",
     "width": 1080,
     "height": 1080
   },
@@ -53,10 +50,10 @@
         "category": "image",
         "maxSupply": 1,
         "creators": [
-            {
-              "address": "solana address for a creator",
-              "share": 100
-            }
+          {
+            "address": "solana address for a creator",
+            "share": 100
+          }
         ]
       }
     }

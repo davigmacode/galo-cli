@@ -3,14 +3,20 @@ import { pathNormalize } from "./file";
 
 export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksConfig) => {
   // transform attributes to overlay images
-  const overlays = trait.attributes.map((attr) => ({
-    input: pathNormalize([basePath, attr.traitItem.path]),
-    blend: attr.traitItem.blend || attr.traitType.blend || 'over'
-  }));
-  let imageBuffer = await sharp({
+  let overlays = [];
+  for await (const attr of trait.attributes) {
+    const traitPath = pathNormalize([basePath, attr.traitItem.path]);
+    overlays.push({
+      input: await sharp(traitPath).resize(artwork.width, artwork.height).toBuffer(),
+      blend: attr.traitItem.blend || attr.traitType.blend || 'over'
+    });
+  }
+
+  const artworkPath = pathNormalize(artwork.path, artwork.ext);
+  await sharp({
     create: {
-      width: trait.width,
-      height: trait.height,
+      width: artwork.width,
+      height: artwork.height,
       channels: 3,
       background: { r: 0, g: 0, b: 0 }
     }
@@ -18,8 +24,5 @@ export const buildArtworks = async ({ basePath, trait, artwork }: BuildArtworksC
   .composite(overlays)
   .withMetadata()
   .png({ compressionLevel: 9, adaptiveFiltering: true })
-  .toBuffer();
-
-  const artworkPath = pathNormalize(artwork.path, artwork.ext);
-  await sharp(imageBuffer).resize(artwork.width, artwork.height).toFile(artworkPath);
+  .toFile(artworkPath);
 }
