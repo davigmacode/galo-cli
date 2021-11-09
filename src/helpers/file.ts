@@ -5,7 +5,7 @@ import mime from "mime-types";
 import debug from "debug";
 const log = debug("file");
 
-export const cwd = (...paths: string[]) => {
+export const cwdJoin = (...paths: string[]) => {
   paths = [ process.cwd(), ...paths ];
   return p.join(...paths);
 }
