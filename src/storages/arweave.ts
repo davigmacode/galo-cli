@@ -1,5 +1,5 @@
 import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
-import { writeJson, readJson, readFile, pathJoin } from "../helpers/file";
+import { writeJson, readJson, readFile, pathJoin, exists } from "../helpers/file";
 import Arweave from "arweave";
 import Transaction from 'arweave/node/lib/transaction';
 import { JWKInterface } from 'arweave/node/lib/wallet';
@@ -15,16 +15,16 @@ export default async ({
 }: UploadsConfig) => {
   const storage = config.storage[provider];
 
-  if (isEmpty(storage.keyfile)) {
-    while (isEmpty(storage.keyfile)) {
-      const { qKeyfile } : any = await prompt([
+  if (isEmpty(storage.token)) {
+    while (isEmpty(storage.token)) {
+      const { qToken } : any = await prompt([
         {
           type: 'input',
-          name: 'qKeyfile',
-          message: `Cant find ${storage.label} keyfile in the config file, please enter the keyfile:`,
+          name: 'qToken',
+          message: `Cant find ${storage.label} token in the config file, please enter the token:`,
         },
       ]).catch((error) => print.error(error));
-      storage.keyfile = qKeyfile;
+      storage.token = qToken;
     }
 
     config.storage[provider] = omit(storage, 'name');
@@ -35,11 +35,16 @@ export default async ({
     });
   }
 
-  const keyfilePath = pathJoin(basePath, storage.keyfile);
-  const keyfile = await task({
-    processText: 'Loading arweave keyfile',
-    successText: `Arweave Keyfile: ${keyfilePath}`,
-    fn: async () => readJson(keyfilePath),
+  const tokenPath = pathJoin(basePath, storage.token);
+  const tokenExists = exists(tokenPath);
+  if (!tokenExists) {
+    print.warn(`${storage.label} key not found, build the collection first`);
+    return;
+  }
+  const token = await task({
+    processText: `Loading ${storage.label} token`,
+    successText: `${storage.label} Token: ${tokenPath}`,
+    fn: async () => readJson(tokenPath),
   });
 
   const n = generations.length;
@@ -56,8 +61,8 @@ export default async ({
     const gen = generations[i];
     if (!get(gen, [typeName, 'arweave'])) {
       const { id } = await task({
-        processText: `${c} Uploading ${typeName} #${gen.edition}`,
-        successText: `${c} Uploaded ${typeName} #${gen.edition}`,
+        processText: `${c} Uploading ${typeName} #${gen.edition} to ${storage.label}`,
+        successText: `${c} Uploaded ${typeName} #${gen.edition} to ${storage.label}`,
         fn: async (spinner) => {
           const fileName = `${gen.edition}${typeExt}`;
           const filePath = pathJoin(basePath, typePath, fileName);
@@ -67,7 +72,7 @@ export default async ({
             arweave,
             fileData,
             fileMime,
-            keyfile,
+            token,
             true,
             spinner
           );

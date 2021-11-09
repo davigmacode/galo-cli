@@ -70,18 +70,18 @@
     "ipfs": {
       "label": "IPFS",
       "cache": "/storage/ipfs.json",
-      "token": ""
+      "token": "/.secret/ipfs-key.json"
     },
     "arweave": {
       "label": "Arweave",
       "cache": "/storage/arweave.json",
-      "keyfile": "/storage/arweave-key.json"
+      "token": "/.secret/arweave-key.json"
     },
     "gdrive": {
       "label": "Google Drive",
       "cache": "/storage/gdrive.json",
-      "credentials": "/storage/gdrive-credentials.json",
-      "token": "/storage/gdrive-token.json"
+      "credentials": "/.secret/gdrive-credentials.json",
+      "token": "/.secret/gdrive-token.json"
     }
   },
   "rarity": {

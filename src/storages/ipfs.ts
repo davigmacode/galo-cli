@@ -1,5 +1,5 @@
 import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
-import { writeJson, readFile, pathJoin } from "../helpers/file";
+import { writeJson, readFile, pathJoin, readJson, exists } from "../helpers/file";
 import { NFTStorage, File } from "nft.storage";
 import mime from "mime-types";
 
@@ -33,18 +33,30 @@ export default async ({
     });
   }
 
+  const tokenPath = pathJoin(basePath, storage.token);
+  const tokenExists = exists(tokenPath);
+  if (!tokenExists) {
+    print.warn(`${storage.label} key not found, build the collection first`);
+    return;
+  }
+  const { token } = await task({
+    processText: `Loading ${storage.label} token`,
+    successText: `${storage.label} Token: ${tokenPath}`,
+    fn: async () => readJson(tokenPath),
+  });
+
   const n = generations.length;
   const generationsPath = pathJoin(basePath, 'generations.json');
   const typePath = typeName == 'artwork' ? config.artworks.path : config.metadata.path;
   const typeExt = typeName == 'artwork' ? config.artworks.ext : '.json';
-  const ipfs = new NFTStorage({ token: storage.token });
+  const ipfs = new NFTStorage({ token });
   for (let i = 0; i < n; i++) {
     const c = `[${i+1}/${n}]`;
     const gen = generations[i];
     if (!get(gen, [typeName, 'ipfs'])) {
       const id = await task({
-        processText: `${c} Uploading ${typeName} #${gen.edition}`,
-        successText: `${c} Uploaded ${typeName} #${gen.edition}`,
+        processText: `${c} Uploading ${typeName} #${gen.edition} to ${storage.label}`,
+        successText: `${c} Uploaded ${typeName} #${gen.edition} to ${storage.label}`,
         fn: async () => {
           const fileName = `${gen.edition}${typeExt}`;
           const filePath = pathJoin(basePath, typePath, fileName);

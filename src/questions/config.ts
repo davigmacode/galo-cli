@@ -140,40 +140,7 @@ export const questionsInit = (basePath: string) => ([
     message: 'Collage Thumb Per Row:',
     default: 10,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'input',
-    name: 'storage.ipfs.cache',
-    message: 'Storage IPFS Cache:',
-    default: '/storage/ipfs.json',
-    validate: (input: string) => !isNil(input) && !isEmpty(input)
-  },
-  {
-    type: 'input',
-    name: 'storage.ipfs.token',
-    message: 'Storage IPFS Token:',
-  },
-  {
-    type: 'input',
-    name: 'storage.gdrive.cache',
-    message: 'Storage Google Drive Cache:',
-    default: '/storage/gdrive.json',
-    validate: (input: string) => !isNil(input) && !isEmpty(input)
-  },
-  {
-    type: 'input',
-    name: 'storage.gdrive.credentials',
-    message: 'Storage Google Drive Credentials:',
-    default: '/storage/gdrive-credentials.json',
-    validate: (input: string) => !isNil(input) && !isEmpty(input)
-  },
-  {
-    type: 'input',
-    name: 'storage.gdrive.token',
-    message: 'Storage Google Drive Token:',
-    default: '/storage/gdrive-token.json',
-    validate: (input: string) => !isNil(input) && !isEmpty(input)
-  },
+  }
 ]);
 
 export default questionsInit;
