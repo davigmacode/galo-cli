@@ -64,7 +64,7 @@ export default async (basePath: string, opt: any) => {
   for (let i = 0; i < generationsLength; i++) {
     const gen = generations[i];
     const edition = gen.edition.toString();
-    const editionOf = `${edition}/${generationsLength}`;
+    const editionOf = `${i+1}/${generationsLength}`;
 
     // create a single artwork
     const artworkPath = pathJoin(artworksPath, edition);

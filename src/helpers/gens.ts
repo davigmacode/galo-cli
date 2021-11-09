@@ -17,15 +17,15 @@ export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
 }
 
 export const buildGen = (
-  generations: Generation[],
+  generations: GenerationConfig,
   traits: TraitType[],
   rarity: Rarity,
   spinner?: any,
 ) : Gen[] => {
   let genResult = [];
-  for (const genConfig of generations) {
+  for (const genThread of generations.thread) {
     let genTraits = [];
-    for (const order of genConfig.order) {
+    for (const order of genThread.order) {
       const orderTrait: string = (order as GenerationOrder).name || (order as string);
       let genTrait = traits.find((trait => trait.name == orderTrait));
       // only includes some items
@@ -49,25 +49,25 @@ export const buildGen = (
       }
     }
 
-    for (let i = 0; i < genConfig.size; i++) {
+    for (let i = 0; i < genThread.size; i++) {
       let dna: string,
         edition: number,
         attributes: GenAttr[],
         unique: boolean,
         duplicates = 0;
       do {
-        edition = genResult.length + 1;
+        edition = generations.startAt + genResult.length;
         attributes = randomTraits(genTraits, rarity);
-        dna = createDna(attributes, genConfig.dna);
+        dna = createDna(attributes, genThread.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
         if (unique) {
           log(`Generated DNA for #${edition}: Unique.`);
         } else {
           duplicates = duplicates + 1;
           log(`Generated DNA for #${edition}: Exists!`);
-          if (duplicates >= 100000) {
-            const additionalMessage = !isNil(genConfig.dna) && !isEmpty(genConfig.dna)
-              ? `to ${genConfig.dna.join('/')}`
+          if (duplicates >= generations.duplicateTolerance) {
+            const additionalMessage = !isNil(genThread.dna) && !isEmpty(genThread.dna)
+              ? `to ${genThread.dna.join('/')}`
               : ''
             throw new Error(`Generation break at edition #${edition}, please add more traits ${additionalMessage}`);
           }

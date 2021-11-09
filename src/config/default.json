@@ -10,7 +10,11 @@
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
-  "generations": [],
+  "generations": {
+    "duplicateTolerance": 10000,
+    "startAt": 1,
+    "thread": []
+  },
   "artworks": {
     "path": "/artworks",
     "ext": ".png",

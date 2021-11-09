@@ -30,13 +30,20 @@ interface Traits {
   [index: string]: TraitType;
 }
 
-interface GenerationOrder {
-  name: string;
-  includes: string[];
-  excludes: string[];
+interface GenerationConfig {
+  config: string,
+  duplicateTolerance: number,
+  startAt: number,
+  thread: GenerationThread[]
 }
 
-interface Generation {
+interface GenerationOrder {
+  name: string;
+  includes?: string[];
+  excludes?: string[];
+}
+
+interface GenerationThread {
   size: number;
   order: string[] | GenerationOrder[];
   dna: string[];

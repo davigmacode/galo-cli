@@ -61,7 +61,7 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'input',
-    name: 'generations[0].order',
+    name: 'generations.thread[0].order',
     message: 'Generation Order (comma separated):',
     default: (answer: any) => findDirs(pathJoin(basePath, answer.traits.path)).join(','),
     validate: (input: string) => !isNil(input) && !isEmpty(input),
@@ -69,15 +69,29 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'input',
-    name: 'generations[0].dna',
+    name: 'generations.thread[0].dna',
     message: 'Generation DNA (comma separated):',
     filter: (input: string) => input.split(",").map(item => item.trim())
   },
   {
     type: 'number',
-    name: 'generations[0].size',
+    name: 'generations.thread[0].size',
     message: 'Generation Size:',
     default: 100,
+    validate: (input: number) => isFinite(input) || 'Must be a finite number'
+  },
+  {
+    type: 'number',
+    name: 'generations.duplicateTolerance',
+    message: 'Generation Duplicate Tolerance:',
+    default: 10000,
+    validate: (input: number) => isFinite(input) || 'Must be a finite number'
+  },
+  {
+    type: 'number',
+    name: 'generations.startAt',
+    message: 'Generation Start At:',
+    default: 1,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {

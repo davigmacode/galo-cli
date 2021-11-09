@@ -84,7 +84,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   const traitsPath = pathJoin(basePath, config.traits.path);
-  const generationsConfig = config.generations;
+  let generationsConfig = config.generations.thread;
   if (isNil(generationsConfig) || isEmpty(generationsConfig)) {
     const { qGenOrder, qGenSize } : any = await prompt([
       {
@@ -104,7 +104,7 @@ export default async (basePath: string, opt: any) => {
       },
     ]).catch((error) => print.error(error));
 
-    config.generations = [{ size: qGenSize, order: qGenOrder }];
+    generationsConfig = [{ size: qGenSize, order: qGenOrder }];
     await task({
       processText: 'Updating Config File',
       successText: `Collection Config: ${configPath}`,
@@ -182,7 +182,7 @@ export default async (basePath: string, opt: any) => {
   for (let i = 0; i < generationsLength; i++) {
     const gen = generations[i];
     const edition = gen.edition.toString();
-    const editionOf = `${edition}/${generationsLength}`;
+    const editionOf = `${i+1}/${generationsLength}`;
 
     if (opt.artworks) {
       // create a single artwork
