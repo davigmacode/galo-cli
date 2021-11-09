@@ -13,6 +13,7 @@ import metadataAction from "./actions/metadata";
 import collageAction from "./actions/collage";
 import rarityAction from "./actions/rarity";
 import uploadAction from "./actions/upload";
+import exportAction from "./actions/export";
 import destroyAction from "./actions/destroy";
 
 import chalk from "chalk";
@@ -161,6 +162,22 @@ program
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-m, --metadata', 'upload metadata instead of artworks', false)
   .action(uploadAction);
+
+program
+  .command('export')
+  .alias('e')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => cwd(val),
+    process.cwd()
+  )
+  .description('export to metaplex compatible data')
+  .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-s, --storage <provider>', 'set storage provider', 'ipfs')
+  .option('-e, --env <env>', 'set environment', 'devnet')
+  .option('-n, --name <name>', 'set cache name', 'galo')
+  .action(exportAction);
 
 program
   .command('destroy')
