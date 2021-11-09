@@ -7,10 +7,10 @@ export default async ({
   basePath,
   configPath,
   config,
-  provider,
   generations,
   typeName,
 }: UploadsConfig) => {
+  const provider = 'ipfs';
   const storage = config.storage[provider];
 
   if (isEmpty(storage.token)) {

@@ -1,5 +1,6 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
+import { isNil } from "../helpers/utils";
 import ipfs from "../storages/ipfs";
 import arweave from "../storages/arweave";
 
@@ -32,29 +33,31 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(generationsPath),
   });
 
-  const { qProvider } : any = await prompt([
-    {
-      type: 'list',
-      name: 'qProvider',
-      message: 'Where do you want to upload?',
-      choices: Object
-        .keys(config.storage)
-        .map((key) => ({
-          name: config.storage[key].label,
-          value: key
-        })),
-    },
-  ]).catch((error) => print.error(error));
+  if (isNil(opt.storage)) {
+    const { qProvider } : any = await prompt([
+      {
+        type: 'list',
+        name: 'qProvider',
+        message: 'Where do you want to upload?',
+        choices: Object
+          .keys(config.storage)
+          .map((key) => ({
+            name: config.storage[key].label,
+            value: key
+          })),
+      },
+    ]).catch((error) => print.error(error));
+    opt.storage = qProvider;
+  }
 
   const typeName = opt.metadata ? 'metadata' : 'artwork';
-  switch (qProvider) {
+  switch (opt.storage) {
     case 'ipfs':
       await ipfs({
         basePath,
         configPath,
         config,
         generations,
-        provider: qProvider,
         typeName,
       });
       break;
@@ -64,12 +67,11 @@ export default async (basePath: string, opt: any) => {
         configPath,
         config,
         generations,
-        provider: qProvider,
         typeName,
       });
       break;
     default:
-      print.warn(`${config.storage[qProvider].label} Storage is under development`);
+      print.warn(`${config.storage[opt.storage].label} Storage is under development`);
       break;
   }
 }

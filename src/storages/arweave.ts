@@ -9,10 +9,10 @@ export default async ({
   basePath,
   configPath,
   config,
-  provider,
   generations,
   typeName,
 }: UploadsConfig) => {
+  const provider = 'arweave';
   const storage = config.storage[provider];
 
   if (isEmpty(storage.token)) {

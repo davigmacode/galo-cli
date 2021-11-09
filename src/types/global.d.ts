@@ -99,7 +99,6 @@ interface UploadsConfig {
   basePath: string;
   configPath: string;
   config: any;
-  provider: string;
   generations: any;
   typeName: string;
 }
