@@ -188,8 +188,8 @@ export default async (basePath: string, opt: any) => {
       // create a single artwork
       const artworkPath = pathJoin(artworksPath, edition);
       await task({
-        processText: `Building artwork for edition [${editionOf}]`,
-        successText: `Artwork [${editionOf}]: ${artworkPath}${config.artworks.ext}`,
+        processText: `[${editionOf}] Building artwork #${edition}`,
+        successText: `[${editionOf}] Artwork #${edition}: ${artworkPath}${config.artworks.ext}`,
         fn: async () => buildArtworks({
           trait: {
             path: pathJoin(basePath, config.traits.path),
@@ -212,8 +212,8 @@ export default async (basePath: string, opt: any) => {
     // create a single metadata
     const metaPath = pathJoin(metadataPath, edition);
     await task({
-      processText: `Building metadata for edition [${editionOf}]`,
-      successText: `Metadata [${editionOf}]: ${metaPath}.json`,
+      processText: `[${editionOf}] Building metadata #${edition}`,
+      successText: `[${editionOf}] Metadata #${edition}: ${metaPath}.json`,
       fn: async () => {
         // transform gen into metadata based on configurable template
         const meta = transformGen(gen, config.metadata.template);
