@@ -52,36 +52,35 @@ export default async (basePath: string, opt: any) => {
   });
 
   // check for the config file existence
-  let needToBuildGenerations = opt.generations;
   const generationsPath = pathJoin(basePath, config.generations.config);
   const generationsExists = exists(generationsPath);
   if (generationsExists) {
-    const { cancelOperation, reGeneration } : any = await prompt([
-      {
-        type: 'confirm',
-        name: 'cancelOperation',
-        message: 'Generation found, would you like to cancel the operation?',
-        default: false,
-        when: () => isNil(needToBuildGenerations)
-      },
-      {
-        type: 'confirm',
-        name: 'reGeneration',
-        message: 'Would you like to re generating the collection?',
-        default: false,
-        when: ({ cancelOperation }) => isNil(needToBuildGenerations) && !cancelOperation
-      },
-    ]).catch((error) => print.error(error));
+    if (isNil(opt.buildGenerations)) {
+      const { qCancelOperation, qReGeneration } : any = await prompt([
+        {
+          type: 'confirm',
+          name: 'qCancelOperation',
+          message: 'Generation found, would you like to cancel the operation?',
+          default: false
+        },
+        {
+          type: 'confirm',
+          name: 'qReGeneration',
+          message: 'Would you like to re generating the collection?',
+          default: false,
+          when: ({ qCancelOperation }) => !qCancelOperation
+        },
+      ]).catch((error) => print.error(error));
 
-    // exit the action if not confirmed to re initiating
-    if (cancelOperation) {
-      print.warn(`Build collection canceled`);
-      return;
+      // exit the action if not confirmed to re initiating
+      if (qCancelOperation) {
+        print.warn(`Build collection canceled`);
+        return;
+      }
+      opt.buildGenerations = qReGeneration;
     }
-
-    needToBuildGenerations = reGeneration || needToBuildGenerations;
   } else {
-    needToBuildGenerations = true;
+    opt.buildGenerations = true;
   }
 
   const traitsPath = pathJoin(basePath, config.traits.path);
@@ -114,7 +113,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // generate dna from traits, shuffle if required and write to config file
-  const generations = needToBuildGenerations == true
+  const generations = opt.buildGenerations == true
     ? await task({
         processText: 'Building generations',
         successText: `Collection Generations: ${generationsPath}`,
@@ -131,7 +130,7 @@ export default async (basePath: string, opt: any) => {
       })
     : await task({
         processText: 'Loading generations from file',
-        successText: `Collection Generations: ${generationsPath}`,
+        successText: `Loaded Generations: ${generationsPath}`,
         fn: async () => readJson(generationsPath),
       });
 
@@ -204,7 +203,7 @@ export default async (basePath: string, opt: any) => {
     const edition = gen.edition.toString();
     const editionOf = `${i+1}/${generationsLength}`;
 
-    if (opt.artworks) {
+    if (opt.buildArtworks) {
       // create a single artwork
       const artworkPath = pathJoin(artworksPath, edition);
       await task({
@@ -272,7 +271,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => writeJson(metadataConfig, metadata)
   });
 
-  if (opt.artworks) {
+  if (opt.buildArtworks) {
     // create a collection preview collage
     await task({
       processText: 'Creating a collection preview collage',

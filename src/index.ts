@@ -78,10 +78,10 @@ program
   )
   .description('build the generations of artworks, metadata, rarity, and collage')
   .option('-c, --config <path>', 'set config path', './galo.json')
-  .option('-g, --generations', 'with build new generations')
-  .option('-a, --artworks', 'with build the artworks', true)
-  .option('-ng, --no-generations', 'without build new generations')
-  .option('-na, --no-artworks', 'without build the artworks')
+  .option('-bg, --build-generations', 'with build new generations')
+  .option('-ba, --build-artworks', 'with build the artworks', true)
+  .option('-nbg, --no-build-generations', 'without build new generations')
+  .option('-nba, --no-build-artworks', 'without build the artworks')
   .action(buildAction);
 
 program
