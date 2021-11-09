@@ -1,15 +1,19 @@
 import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
+import { isNil } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
-  const { qRemoveConfig } : any = await prompt([
-    {
-      type: 'confirm',
-      name: 'qRemoveConfig',
-      message: 'Do you want to also remove the config file?',
-      default: false,
-    },
-  ]).catch((error) => print.error(error));
+  if (isNil(opt.removeConfig)) {
+    const { qRemoveConfig } : any = await prompt([
+      {
+        type: 'confirm',
+        name: 'qRemoveConfig',
+        message: 'Do you want to also remove the config file?',
+        default: false,
+      },
+    ]).catch((error) => print.error(error));
+    opt.removeConfig = qRemoveConfig;
+  }
 
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
@@ -88,7 +92,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteDir(metadataPath),
   });
 
-  if (qRemoveConfig) {
+  if (opt.removeConfig) {
     await task({
       processText: 'Removing config file',
       successText: `Removed: ${configPath}`,

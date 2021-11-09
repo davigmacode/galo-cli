@@ -189,6 +189,8 @@ program
   )
   .description('destroy the generated files and directories')
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-rc, --remove-config', 'remove the config file')
+  .option('-nrc, --no-remove-config', 'without remove the config file')
   .action(destroyAction);
 
 program.parse(process.argv);
