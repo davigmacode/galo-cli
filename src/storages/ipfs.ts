@@ -42,7 +42,7 @@ export default async ({
     const c = `[${i+1}/${n}]`;
     const gen = generations[i];
     if (!get(gen, [typeName, 'ipfs'])) {
-      const uploaded = await task({
+      const id = await task({
         processText: `${c} Uploading ${typeName} #${gen.edition}`,
         successText: `${c} Uploaded ${typeName} #${gen.edition}`,
         fn: async () => {
@@ -54,7 +54,7 @@ export default async ({
           return ipfs.storeBlob(fileBlob);
         },
       }).catch((error) => print.error(c, error));
-      set(gen, [typeName, 'ipfs'], uploaded);
+      set(gen, [typeName, 'ipfs'], { id, url: `https://ipfs.io/ipfs/${id}` });
       writeJson(generationsPath, generations);
     } else {
       print.success(c, `Cached ${typeName} #${gen.edition}`);

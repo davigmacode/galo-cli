@@ -55,7 +55,7 @@ export default async ({
     const c = `[${i+1}/${n}]`;
     const gen = generations[i];
     if (!get(gen, [typeName, 'arweave'])) {
-      const uploaded = await task({
+      const { id } = await task({
         processText: `${c} Uploading ${typeName} #${gen.edition}`,
         successText: `${c} Uploaded ${typeName} #${gen.edition}`,
         fn: async (spinner) => {
@@ -73,7 +73,7 @@ export default async ({
           );
         },
       }).catch((error) => print.error(c, error));
-      set(gen, [typeName, 'arweave'], uploaded.id);
+      set(gen, [typeName, 'arweave'], { id, url: `https://arweave.net/${id}` });
       writeJson(generationsPath, generations);
     } else {
       print.success(c, `Cached ${typeName} #${gen.edition}`);
