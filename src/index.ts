@@ -2,7 +2,7 @@
 
 import { Command } from "commander";
 import { LIB_NAME, LIB_VERSION } from "./constants";
-import { cwd } from "./helpers/file";
+import { cwd, pathIsAbsolute } from "./helpers/file";
 
 import initAction from "./actions/init";
 import configAction from "./actions/config";
@@ -46,7 +46,7 @@ program
   .argument(
     '[dir]',
     'directory to init the artworks collection',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .option('-c, --config <path>', 'set config path', './galo.json')
@@ -61,7 +61,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .option('-c, --config <path>', 'set config path', './galo.json')
@@ -75,7 +75,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('build the generations of artworks, metadata, rarity, and collage')
@@ -92,7 +92,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('populate collection traits without building the generations')
@@ -105,7 +105,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('create collection artworks without rebuilding the generations')
@@ -120,7 +120,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('create collection metadata without rebuilding the generations')
@@ -135,7 +135,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('create collection preview without rebuilding the generations')
@@ -148,7 +148,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('create collection rarity without rebuilding the generations')
@@ -161,7 +161,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('upload the artworks and metadata to decentralized storage')
@@ -175,7 +175,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('export to metaplex compatible data')
@@ -192,7 +192,7 @@ program
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',
-    (val) => cwd(val),
+    (val) => pathIsAbsolute(val) ? val : cwd(val),
     process.cwd()
   )
   .description('destroy the generated files and directories')

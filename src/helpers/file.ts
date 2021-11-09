@@ -14,6 +14,8 @@ export const mimeLookup = mime.lookup;
 
 export const pathJoin = p.join;
 
+export const pathIsAbsolute = p.isAbsolute;
+
 export const pathNormalize = (path: string | string[], ext?: string) => {
   // join path if is array
   path = Array.isArray(path) ? pathJoin(...path) : path;
