@@ -26,7 +26,7 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   let thumbs = [];
   for (let index = 0; index < sample.length; index++) {
     const gen = sample[index];
-    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.edition}`], '.png');
+    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.edition}`], opt.artworksExt);
     const thumbBuffer = await sharp(thumbPath).resize(thumbWidth, thumbHeight).toBuffer();
     const xPos = thumbWidth * (index % thumbPerRow);
     const yPos = thumbHeight * Math.trunc(index / thumbPerRow);

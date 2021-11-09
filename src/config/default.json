@@ -61,7 +61,6 @@
     }
   },
   "collage": {
-    "type": "image/png",
     "name": "preview.png",
     "editions": 100,
     "thumbWidth": 50,

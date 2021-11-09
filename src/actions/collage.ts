@@ -39,6 +39,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => buildCollage({
       basePath: basePath,
       artworksPath: config.artworks.path,
+      artworksExt: config.artworks.ext,
       previewPath: config.collage.name,
       thumbWidth: config.collage.thumbWidth,
       thumbPerRow: config.collage.thumbPerRow,

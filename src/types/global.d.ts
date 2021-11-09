@@ -70,6 +70,7 @@ interface BuildCollageConfig {
   basePath: string;
   artworksPath: string | string[];
   previewPath: string | string[];
+  artworksExt: string;
   generations: Gen[];
   editions: number;
   thumbWidth: number;
