@@ -30,7 +30,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(generationsPath),
   });
 
-  const exportPath = pathNormalize([basePath, '.cache', `${opt.env}-${opt.name}`]);
+  const exportPath = pathNormalize([basePath, opt.output]);
   await task({
     processText: 'Writing metaplex compatible data',
     successText: `Metaplex data: ${exportPath}`,

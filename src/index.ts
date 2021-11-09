@@ -175,8 +175,7 @@ program
   .description('export to metaplex compatible data')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-s, --storage <provider>', 'set storage provider', 'ipfs')
-  .option('-e, --env <env>', 'set environment', 'devnet')
-  .option('-n, --name <name>', 'set cache name', 'galo')
+  .option('-o, --output <path>', 'set output path', './.cache/devnet-galo')
   .action(exportAction);
 
 program
