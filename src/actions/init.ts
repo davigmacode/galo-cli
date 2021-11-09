@@ -1,6 +1,6 @@
 import { setupDir, writeJson, readJson, pathJoin, exists } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { merge } from "../helpers/utils";
+import { merge, isNil } from "../helpers/utils";
 import { LIB_VERSION } from "../constants";
 import questions from "../questions/config";
 
@@ -9,17 +9,20 @@ export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
   const configExists = exists(configPath);
   if (configExists) {
-    const { qReInitiating } : any = await prompt([
-      {
-        type: 'confirm',
-        name: 'qReInitiating',
-        message: 'Config file found, would you like to overwrite it to default value?',
-        default: false,
-      },
-    ]).catch((error) => print.error(error));
+    if (isNil(opt.force)) {
+      const { qOverwrite } : any = await prompt([
+        {
+          type: 'confirm',
+          name: 'qOverwrite',
+          message: 'Config file found, would you like to overwrite it to default value?',
+          default: false,
+        },
+      ]).catch((error) => print.error(error));
+      opt.force = qOverwrite;
+    }
 
     // exit the action if not confirmed to re initiating
-    if (!qReInitiating) {
+    if (!opt.force) {
       print.warn(`Initialization canceled`);
       return;
     }

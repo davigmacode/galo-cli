@@ -50,6 +50,8 @@ program
     process.cwd()
   )
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-f, --force', 'force overwrite the config')
+  .option('-nf, --no-force', 'not force overwrite the config')
   .action(initAction);
 
 program
@@ -108,6 +110,8 @@ program
   )
   .description('create collection artworks without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-f, --force', 'force rebuilding the artworks')
+  .option('-nf, --no-force', 'not force rebuilding the artworks')
   .action(artworksAction);
 
 program
@@ -121,6 +125,8 @@ program
   )
   .description('create collection metadata without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-f, --force', 'force rebuilding the metadata')
+  .option('-nf, --no-force', 'not force rebuilding the metadata')
   .action(metadataAction);
 
 program
@@ -176,6 +182,8 @@ program
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-s, --storage <provider>', 'set storage provider', 'ipfs')
   .option('-o, --output <path>', 'set output path', './.cache/devnet-galo')
+  .option('-f, --force', 'force overwrite the output')
+  .option('-nf, --no-force', 'not force overwrite the output')
   .action(exportAction);
 
 program

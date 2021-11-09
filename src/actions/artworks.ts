@@ -2,6 +2,7 @@ import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
+import { isNil } from "lodash";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -36,17 +37,20 @@ export default async (basePath: string, opt: any) => {
   const artworksPath = pathJoin(basePath, config.artworks.path);
   const artworksExists = exists(artworksPath);
   if (artworksExists) {
-    const { rebuilding } : any = await prompt([
-      {
-        type: 'confirm',
-        name: 'rebuilding',
-        message: 'Artworks found, would you like to rebuilding the artworks?',
-        default: false,
-      },
-    ]).catch((error) => print.error(error));
+    if (isNil(opt.force)) {
+      const { qRebuilding } : any = await prompt([
+        {
+          type: 'confirm',
+          name: 'qRebuilding',
+          message: 'Artworks found, would you like to rebuilding the artworks?',
+          default: false,
+        },
+      ]).catch((error) => print.error(error));
+      opt.force = qRebuilding;
+    }
 
     // exit the action if not confirmed to re initiating
-    if (!rebuilding) {
+    if (!opt.force) {
       print.warn(`Rebuilding artworks canceled`);
       return;
     }

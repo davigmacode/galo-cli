@@ -1,6 +1,6 @@
 import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { shuffle } from "../helpers/utils";
+import { shuffle, isNil } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
@@ -36,17 +36,20 @@ export default async (basePath: string, opt: any) => {
   const metadataPath = pathJoin(basePath, config.metadata.path);
   const metadataExists = exists(metadataPath);
   if (metadataExists) {
-    const { rebuilding } : any = await prompt([
-      {
-        type: 'confirm',
-        name: 'rebuilding',
-        message: 'Metadata found, would you like to rebuilding the metadata?',
-        default: false,
-      },
-    ]).catch((error) => print.error(error));
+    if (isNil(opt.force)) {
+      const { qRebuilding } : any = await prompt([
+        {
+          type: 'confirm',
+          name: 'qRebuilding',
+          message: 'Metadata found, would you like to rebuilding the metadata?',
+          default: false,
+        },
+      ]).catch((error) => print.error(error));
+      opt.force = qRebuilding;
+    }
 
     // exit the action if not confirmed to re initiating
-    if (!rebuilding) {
+    if (!opt.force) {
       print.warn(`Rebuilding metadata canceled`);
       return;
     }
