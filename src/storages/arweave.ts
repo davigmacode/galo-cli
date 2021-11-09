@@ -1,4 +1,5 @@
-import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
+import { isEmpty, omit, get, set } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 import { writeJson, readJson, readFile, pathJoin, exists } from "../helpers/file";
 import Arweave from "arweave";
 import Transaction from 'arweave/node/lib/transaction';

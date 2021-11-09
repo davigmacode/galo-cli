@@ -8,7 +8,8 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { shuffle, task, prompt, isNil, isEmpty, print } from "../helpers/utils";
+import { shuffle, isNil, isEmpty } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);

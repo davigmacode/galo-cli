@@ -1,4 +1,5 @@
-import { task, prompt, isEmpty, omit, print, get, set } from "../helpers/utils";
+import { isEmpty, omit, get, set } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 import { writeJson, readFile, pathJoin, readJson, exists } from "../helpers/file";
 import { NFTStorage, File } from "nft.storage";
 import mime from "mime-types";

@@ -1,5 +1,5 @@
 import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir, deleteFile } from "../helpers/file";
-import { task, prompt, print } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
   const { qRemoveConfig } : any = await prompt([

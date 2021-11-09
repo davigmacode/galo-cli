@@ -1,5 +1,6 @@
 import { setupDir, writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { task, prompt, print, merge } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
+import { merge } from "../helpers/utils";
 import { LIB_VERSION } from "../constants";
 import questions from "../questions/config";
 

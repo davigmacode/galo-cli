@@ -1,5 +1,5 @@
 import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
-import { task, prompt, print } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 

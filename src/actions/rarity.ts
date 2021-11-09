@@ -1,6 +1,6 @@
 import { writeJson, readJson, pathJoin, exists } from "../helpers/file";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { print, task } from "../helpers/utils";
+import { print, task } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);

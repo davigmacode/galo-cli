@@ -1,6 +1,6 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { buildCollage } from "../helpers/collage";
-import { task, print } from "../helpers/utils";
+import { task, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);

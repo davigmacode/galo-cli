@@ -1,5 +1,6 @@
 import { readJson, writeJson, pathJoin, exists } from "../helpers/file";
-import { task, print, pen, get, set, has, omit, flattenObject } from "../helpers/utils";
+import { get, set, has, omit, flattenObject } from "../helpers/utils";
+import { task, print, pen } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);

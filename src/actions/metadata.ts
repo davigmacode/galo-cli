@@ -1,5 +1,6 @@
 import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
-import { task, prompt, shuffle, print } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
+import { shuffle } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {

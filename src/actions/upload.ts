@@ -1,5 +1,5 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
-import { task, prompt, print } from "../helpers/utils";
+import { task, prompt, print } from "../helpers/ui";
 import ipfs from "../storages/ipfs";
 import arweave from "../storages/arweave";
 
