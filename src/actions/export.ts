@@ -16,7 +16,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsPath = pathJoin(basePath, config.generations.config);
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
     print.warn(`Generations not found, build the collection first`);

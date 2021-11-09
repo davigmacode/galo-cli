@@ -52,7 +52,7 @@ export default async (basePath: string, opt: any) => {
 
   // check for the config file existence
   let needToBuildGenerations = opt.generations;
-  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsPath = pathJoin(basePath, config.generations.config);
   const generationsExists = exists(generationsPath);
   if (generationsExists) {
     const { cancelOperation, reGeneration } : any = await prompt([

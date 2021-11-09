@@ -25,7 +25,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationsPath = pathJoin(basePath, 'generations.json');
+  const generationsPath = pathJoin(basePath, config.generations.config);
   await task({
     processText: 'Removing collection generations',
     successText: `Removed: ${generationsPath}`,

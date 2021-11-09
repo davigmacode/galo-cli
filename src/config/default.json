@@ -11,8 +11,9 @@
     "exts": [".png", ".jpg"]
   },
   "generations": {
+    "config": "generations.json",
     "duplicateTolerance": 10000,
-    "startAt": 1,
+    "startAt": 0,
     "thread": []
   },
   "artworks": {
@@ -26,12 +27,12 @@
     "config": "metadata.json",
     "shuffle": 3,
     "template": {
-      "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition}}",
+      "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition+1}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
       "external_url": "https://example.com",
-      "image": "{{artwork.ipfs}}",
+      "image": "{{artwork.ipfs.url}}",
       "attributes": {
         "{{#each attributes}}": {
           "trait_type": "{{traitType.label}}",
@@ -45,7 +46,7 @@
       "properties": {
         "files": [
           {
-            "uri": "{{artwork.ipfs}}",
+            "uri": "{{artwork.ipfs.url}}",
             "type": "image/png"
           }
         ],
