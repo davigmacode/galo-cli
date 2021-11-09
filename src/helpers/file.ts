@@ -1,5 +1,6 @@
 import fs from "fs";
 import p from "path";
+import mime from "mime-types";
 
 import debug from "debug";
 const log = debug("file");
@@ -8,6 +9,8 @@ export const cwd = (...paths: string[]) => {
   paths = [ process.cwd(), ...paths ];
   return p.join(...paths);
 }
+
+export const mimeLookup = mime.lookup;
 
 export const pathJoin = p.join;
 

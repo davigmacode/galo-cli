@@ -1,10 +1,9 @@
 import { isEmpty, omit, get, set } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
-import { writeJson, readJson, readFile, pathJoin, exists } from "../helpers/file";
+import { writeJson, readJson, readFile, pathJoin, exists, mimeLookup } from "../helpers/file";
 import Arweave from "arweave";
 import Transaction from 'arweave/node/lib/transaction';
 import { JWKInterface } from 'arweave/node/lib/wallet';
-import mime from "mime-types";
 
 export default async ({
   basePath,
@@ -67,7 +66,7 @@ export default async ({
         fn: async (spinner) => {
           const fileName = `${gen.edition}${typeExt}`;
           const filePath = pathJoin(basePath, typePath, fileName);
-          const fileMime = mime.lookup(filePath) || 'application/octet-stream';
+          const fileMime = mimeLookup(filePath) || 'application/octet-stream';
           const fileData = readFile(filePath, typeExt);
           return arweaveUpload(
             arweave,

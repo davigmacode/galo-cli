@@ -1,8 +1,7 @@
 import { isEmpty, omit, get, set } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
-import { writeJson, readFile, pathJoin, readJson, exists } from "../helpers/file";
+import { writeJson, readFile, pathJoin, readJson, exists, mimeLookup } from "../helpers/file";
 import { NFTStorage, File } from "nft.storage";
-import mime from "mime-types";
 
 export default async ({
   basePath,
@@ -61,7 +60,7 @@ export default async ({
         fn: async () => {
           const fileName = `${gen.edition}${typeExt}`;
           const filePath = pathJoin(basePath, typePath, fileName);
-          const fileMime = mime.lookup(filePath) || 'application/octet-stream';
+          const fileMime = mimeLookup(filePath) || 'application/octet-stream';
           const fileData = readFile(filePath, typeExt);
           const fileBlob = new File([fileData], fileName, { type: fileMime });
           return ipfs.storeBlob(fileBlob);
