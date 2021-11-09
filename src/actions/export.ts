@@ -1,4 +1,4 @@
-import { readJson, pathJoin, exists, write, pathNormalize } from "../helpers/file";
+import { readJson, pathJoin, exists, writeFile, pathNormalize } from "../helpers/file";
 import { task, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
@@ -44,7 +44,7 @@ export default async (basePath: string, opt: any) => {
           onChain: false,
         }
       }
-      write(exportPath, JSON.stringify(cache));
+      writeFile(exportPath, JSON.stringify(cache));
     },
   });
 }

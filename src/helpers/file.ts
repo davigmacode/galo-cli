@@ -29,7 +29,7 @@ export const setupDir = (...paths: string[]) => {
   log(`create ${path}`);
 };
 
-export const write = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
+export const writeFile = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
   path = pathNormalize(path);
 
   if (!exists(p.dirname(path))) {
@@ -42,12 +42,12 @@ export const write = (path: string | string[], data: string | NodeJS.ArrayBuffer
 
 export const writeImage = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
   path = pathNormalize(path, '.png');
-  write(path, data);
+  writeFile(path, data);
 };
 
 export const writeJson = (path: string | string[], data: object) => {
   path = pathNormalize(path, '.json');
-  write(path, JSON.stringify(data, null, 2));
+  writeFile(path, JSON.stringify(data, null, 2));
 }
 
 export const readFile = (path: string | string[], ext?: string) => {
