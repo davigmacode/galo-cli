@@ -50,28 +50,47 @@ export default async (basePath: string, opt: any) => {
     opt.storage = qProvider;
   }
 
-  const typeName = opt.metadata ? 'metadata' : 'artwork';
-  switch (opt.storage) {
+  // read the cached data from file
+  const provider = opt.storage;
+  const storage = config.storage[provider];
+  if (!storage) {
+    print.warn(`"${provider}" is not a supported storage provider`);
+    return;
+  }
+
+  const cachedPath = pathJoin(basePath, storage.cache);
+  const cached = await task({
+    processText: 'Loading cached data from file',
+    successText: `Cached storage: ${cachedPath}`,
+    fn: async () => readJson(cachedPath),
+  });
+
+  const uploadType = opt.metadata ? 'metadata' : 'artwork';
+  switch (provider) {
     case 'ipfs':
       await ipfs({
+        uploadType,
         basePath,
         configPath,
         config,
+        cachedPath,
+        cached,
         generations,
-        typeName,
       });
       break;
     case 'arweave':
       await arweave({
+        uploadType,
         basePath,
         configPath,
         config,
+        cachedPath,
+        cached,
         generations,
-        typeName,
       });
       break;
     default:
-      print.warn(`${config.storage[opt.storage].label} Storage is under development`);
+      print.warn(`${storage.label} Storage is under development`);
       break;
   }
 }

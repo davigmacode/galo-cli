@@ -32,7 +32,7 @@
       "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
       "external_url": "https://example.com",
-      "image": "{{artwork.ipfs.url}}",
+      "image": "{{artwork.url}}",
       "attributes": {
         "{{#each attributes}}": {
           "trait_type": "{{traitType.label}}",
@@ -46,7 +46,7 @@
       "properties": {
         "files": [
           {
-            "uri": "{{artwork.ipfs.url}}",
+            "uri": "{{artwork.url}}",
             "type": "image/png"
           }
         ],

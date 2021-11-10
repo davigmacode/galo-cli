@@ -39,6 +39,14 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
+  // read the cached data from file
+  const provider = opt.storage;
+  const storage = config.storage[provider];
+  if (!storage) {
+    print.warn(`"${provider}" is not a supported storage provider`);
+    return;
+  }
+
   const generationsPath = pathJoin(basePath, config.generations.config);
   const generationsExists = exists(generationsPath);
   if (!generationsExists) {
@@ -53,20 +61,28 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(generationsPath),
   });
 
+  const cachedPath = pathJoin(basePath, storage.cache);
+  const cached = await task({
+    processText: 'Loading cached data from file',
+    successText: `Cached storage: ${cachedPath}`,
+    fn: async () => readJson(cachedPath),
+  });
+
   await task({
     processText: 'Writing metaplex compatible data',
     successText: `Metaplex data: ${outputPath}`,
     fn: async () => {
-      let cache = { items: {} }
+      let output = { items: {} }
       for (const gen of generations) {
-        const meta = readJson([basePath, config.metadata.path, gen.edition.toString()]);
-        cache.items[gen.edition] = {
-          link: gen.metadata[opt.storage].url,
+        const edition = gen.edition.toString();
+        const meta = readJson([basePath, config.metadata.path, edition]);
+        output.items[edition] = {
+          link: cached[edition].metadata.url,
           name: meta.name,
           onChain: false,
         }
       }
-      writeFile(outputPath, JSON.stringify(cache));
+      writeFile(outputPath, JSON.stringify(output));
     },
   });
 }

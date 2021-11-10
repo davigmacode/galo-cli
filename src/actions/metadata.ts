@@ -1,6 +1,6 @@
 import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { shuffle, isNil } from "../helpers/utils";
+import { shuffle, isNil, mapValues } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
@@ -62,24 +62,37 @@ export default async (basePath: string, opt: any) => {
     fn: async () => setupDir(metadataPath)
   });
 
+  const storedArtworks = await task({
+    processText: 'Loading stored artworks',
+    successText: `Stored artworks is ready`,
+    fn: async () => {
+      const provider = opt.storage;
+      const storage = config.storage[provider];
+      if (!storage) return {};
+      const cache = readJson([basePath, storage.cache]);
+      return mapValues(cache, 'artwork');
+    }
+  });
+
   // define metadata collection
   let metadata = [];
 
   // generate artworks and metadata
   const generationsLength = generations.length;
   for (let i = 0; i < generationsLength; i++) {
+    const progress = `${i+1}/${generationsLength}`;
     const gen = generations[i];
     const edition = gen.edition.toString();
-    const editionOf = `${i+1}/${generationsLength}`;
+    const artwork = storedArtworks[edition];
 
     // create a single metadata
     const metaPath = pathJoin(metadataPath, edition);
     await task({
-      processText: `Building metadata for edition [${editionOf}]`,
-      successText: `Metadata [${editionOf}]: ${metaPath}.json`,
+      processText: `[${progress}] Building metadata #${edition}`,
+      successText: `[${progress}] Metadata #${edition}: ${metaPath}.json`,
       fn: async () => {
         // transform gen into metadata based on configurable template
-        const meta = transformGen(gen, config.metadata.template);
+        const meta = transformGen({ ...gen, artwork }, config.metadata.template);
         // create a single metadata
         writeJson(metaPath, meta);
         // add to metadata collection

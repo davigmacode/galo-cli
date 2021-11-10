@@ -125,6 +125,7 @@ program
   )
   .description('create collection metadata without rebuilding the generations')
   .option('-c, --config <path>', 'set config path', './galo.json')
+  .option('-s, --storage <provider>', 'set the artwork storage provider')
   .option('-f, --force', 'force rebuilding the metadata')
   .option('-nf, --no-force', 'not force rebuilding the metadata')
   .action(metadataAction);

@@ -6,14 +6,16 @@ import Transaction from 'arweave/node/lib/transaction';
 import { JWKInterface } from 'arweave/node/lib/wallet';
 
 export default async ({
+  uploadType,
   basePath,
   configPath,
   config,
+  cachedPath,
+  cached,
   generations,
-  typeName,
 }: UploadsConfig) => {
   const provider = 'arweave';
-  const storage = config.storage[provider];
+  let storage = config.storage[provider];
 
   if (isEmpty(storage.token)) {
     while (isEmpty(storage.token)) {
@@ -27,7 +29,7 @@ export default async ({
       storage.token = qToken;
     }
 
-    config.storage[provider] = omit(storage, 'name');
+    storage = omit(storage, 'name');
     await task({
       processText: 'Updating Config File',
       successText: `Collection Config: ${configPath}`,
@@ -48,23 +50,23 @@ export default async ({
   });
 
   const n = generations.length;
-  const generationsPath = pathJoin(basePath, 'generations.json');
-  const typePath = typeName == 'artwork' ? config.artworks.path : config.metadata.path;
-  const typeExt = typeName == 'artwork' ? config.artworks.ext : '.json';
+  const typePath = uploadType == 'artwork' ? config.artworks.path : config.metadata.path;
+  const typeExt = uploadType == 'artwork' ? config.artworks.ext : '.json';
   const arweave = Arweave.init({
     host: 'arweave.net',
     port: 443,
     protocol: 'https'
   });
   for (let i = 0; i < n; i++) {
-    const c = `[${i+1}/${n}]`;
+    const progress = `[${i+1}/${n}]`;
     const gen = generations[i];
-    if (!get(gen, [typeName, 'arweave'])) {
+    const edition = gen.edition;
+    if (!get(cached, [edition, uploadType])) {
       const { id } = await task({
-        processText: `${c} Uploading ${typeName} #${gen.edition} to ${storage.label}`,
-        successText: `${c} Uploaded ${typeName} #${gen.edition} to ${storage.label}`,
+        processText: `${progress} Uploading ${uploadType} #${edition} to ${storage.label}`,
+        successText: `${progress} Uploaded ${uploadType} #${edition} to ${storage.label}`,
         fn: async (spinner) => {
-          const fileName = `${gen.edition}${typeExt}`;
+          const fileName = `${edition}${typeExt}`;
           const filePath = pathJoin(basePath, typePath, fileName);
           const fileMime = mimeLookup(filePath) || 'application/octet-stream';
           const fileData = readFile(filePath, typeExt);
@@ -77,11 +79,11 @@ export default async ({
             spinner
           );
         },
-      }).catch((error) => print.error(c, error));
-      set(gen, [typeName, 'arweave'], { id, url: `https://arweave.net/${id}` });
-      writeJson(generationsPath, generations);
+      }).catch((error) => print.error(progress, error));
+      set(cached, [edition, uploadType], { id, url: `https://arweave.net/${id}` });
+      writeJson(cachedPath, cached);
     } else {
-      print.success(c, `Cached ${typeName} #${gen.edition}`);
+      print.success(progress, `Cached ${uploadType} #${edition}`);
     }
   }
 }

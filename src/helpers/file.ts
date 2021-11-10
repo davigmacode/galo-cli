@@ -37,8 +37,9 @@ export const setupDir = (...paths: string[]) => {
 export const writeFile = (path: string | string[], data: string | NodeJS.ArrayBufferView) => {
   path = pathNormalize(path);
 
-  if (!exists(p.dirname(path))) {
-    setupDir(path);
+  const pathDir = p.dirname(path);
+  if (!exists(pathDir)) {
+    setupDir(pathDir);
   }
 
   log(`write ${path}`);

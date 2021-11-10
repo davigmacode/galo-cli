@@ -96,9 +96,11 @@ interface RarityTier {
 }
 
 interface UploadsConfig {
+  uploadType: string;
   basePath: string;
   configPath: string;
   config: any;
+  cachedPath: string;
+  cached: any;
   generations: any;
-  typeName: string;
 }
