@@ -27,7 +27,7 @@
     "config": "metadata.json",
     "shuffle": 3,
     "template": {
-      "name": "{{faker.hacker.adjective()}} {{faker.animal.type()}} #{{edition+1}}",
+      "name": "{{faker.name.findName().capitalize()}} #{{edition+1}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
@@ -53,7 +53,7 @@
         "category": "image",
         "creators": [
           {
-            "address": "solana address for a creator",
+            "address": "wallet address for a creator",
             "share": 100
           }
         ]

@@ -10,6 +10,13 @@ const log = debug("utils");
 
 export const capitalize = (s: string) => s && s[0].toUpperCase() + s.slice(1);
 
+Object.defineProperty(String.prototype, 'capitalize', {
+  value() {
+    return capitalize(this);
+  },
+  enumerable: false
+});
+
 export const shuffle = (array: any[], round: number = 1) : any[] => {
   log(`shuffle #${round}`);
   for (let i = array.length - 1; i > 0; i--) {
