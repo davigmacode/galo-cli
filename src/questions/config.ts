@@ -1,4 +1,3 @@
-import { extname } from "path";
 import { findDirs, pathJoin } from "../helpers/file";
 import { isNil, isEmpty, isFinite } from "../helpers/utils";
 
@@ -8,13 +7,6 @@ export const questionsInit = (basePath: string) => ([
     name: 'traits.path',
     message: 'Traits Path:',
     default: '/traits',
-  },
-  {
-    type: 'input',
-    name: 'traits.config',
-    message: 'Traits Config Name:',
-    default: 'traits.json',
-    validate: (input: string) => extname(input) == '.json' || 'Must be json file'
   },
   {
     type: 'input',
@@ -37,7 +29,7 @@ export const questionsInit = (basePath: string) => ([
     type: 'input',
     name: 'artworks.path',
     message: 'Artworks Path:',
-    default: '/artworks',
+    default: '/assets',
   },
   {
     type: 'input',
@@ -60,6 +52,13 @@ export const questionsInit = (basePath: string) => ([
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
+    type: 'number',
+    name: 'generations.startAt',
+    message: 'Generation Start At:',
+    default: 0,
+    validate: (input: number) => isFinite(input) || 'Must be a finite number'
+  },
+  {
     type: 'input',
     name: 'generations.thread[0].order',
     message: 'Generation Order (comma separated):',
@@ -71,6 +70,7 @@ export const questionsInit = (basePath: string) => ([
     type: 'input',
     name: 'generations.thread[0].dna',
     message: 'Generation DNA (comma separated):',
+    default: (answer: any) => answer.generations.thread[0].order.join(','),
     filter: (input: string) => input.split(",").map(item => item.trim())
   },
   {
@@ -81,64 +81,16 @@ export const questionsInit = (basePath: string) => ([
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
-    type: 'number',
-    name: 'generations.duplicateTolerance',
-    message: 'Generation Duplicate Tolerance:',
-    default: 10000,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'number',
-    name: 'generations.startAt',
-    message: 'Generation Start At:',
-    default: 1,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
     type: 'input',
     name: 'metadata.path',
     message: 'Metadata Path:',
-    default: '/metadata',
-  },
-  {
-    type: 'input',
-    name: 'metadata.config',
-    message: 'Metadata Config Name:',
-    default: 'metadata.json',
-    validate: (input: string) => extname(input) == '.json' || 'Must be json file'
+    default: '/assets',
   },
   {
     type: 'number',
     name: 'metadata.shuffle',
     message: 'Metadata Shuffle:',
     default: 0,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'input',
-    name: 'collage.name',
-    message: 'Collage Name:',
-    default: 'preview.png',
-  },
-  {
-    type: 'number',
-    name: 'collage.editions',
-    message: 'Collage Editions:',
-    default: 50,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'number',
-    name: 'collage.thumbWidth',
-    message: 'Collage Width:',
-    default: 50,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'number',
-    name: 'collage.thumbPerRow',
-    message: 'Collage Thumb Per Row:',
-    default: 10,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   }
 ]);
