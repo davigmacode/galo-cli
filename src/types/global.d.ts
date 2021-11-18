@@ -71,10 +71,13 @@ interface BuildCollageConfig {
   previewPath: string | string[];
   artworksExt: string;
   generations: Gen[];
-  editions: number;
+  order: string;
+  limit: number;
+  background: string;
   thumbWidth: number;
   thumbPerRow: number;
   imageRatio: number;
+  formatOption: any;
 }
 
 interface TaskConfig {

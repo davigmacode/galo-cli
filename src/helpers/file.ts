@@ -12,6 +12,8 @@ export const cwdJoin = (...paths: string[]) => {
 
 export const mimeLookup = mime.lookup;
 
+export const extname = p.extname;
+
 export const pathJoin = p.join;
 
 export const pathIsAbsolute = p.isAbsolute;

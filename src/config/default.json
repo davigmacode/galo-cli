@@ -61,10 +61,12 @@
     }
   },
   "collage": {
-    "name": "preview.png",
-    "editions": 100,
-    "thumbWidth": 50,
-    "thumbPerRow": 5
+    "name": "preview.jpg",
+    "background": "#fff",
+    "order": "random",
+    "limit": 0.5,
+    "thumbPerRow": -1,
+    "thumbWidth": 50
   },
   "storage": {
     "ipfs": {

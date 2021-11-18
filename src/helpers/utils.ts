@@ -1,7 +1,7 @@
 import debug from "debug";
 
 export {
-	isEmpty, isArray, isString, mapValues,
+	isEmpty, isArray, isString, isInteger, mapValues,
 	get, set, has, findKey, pick, omit, sampleSize,
 	isNil, isNumber, isFinite, merge, isUndefined
 } from "lodash";

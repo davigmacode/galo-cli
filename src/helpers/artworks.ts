@@ -23,8 +23,8 @@ export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => 
     create: {
       width: artwork.width,
       height: artwork.height,
+      background: { r: 0, g: 0, b: 0 },
       channels: 3,
-      background: { r: 0, g: 0, b: 0 }
     }
   })
   .composite(overlays)

@@ -282,9 +282,15 @@ export default async (basePath: string, opt: any) => {
         previewPath: config.collage.name,
         thumbWidth: config.collage.thumbWidth,
         thumbPerRow: config.collage.thumbPerRow,
-        editions: config.collage.editions,
+        order: config.collage.order,
+        limit: config.collage.limit,
+        background: config.collage.background,
         imageRatio: config.artworks.width / config.artworks.height,
         generations: generations,
+        formatOption: omit(config.collage, [
+          'name', 'background', 'order',
+          'limit', 'thumbWidth', 'thumbPerRow'
+        ])
       }),
     });
   }

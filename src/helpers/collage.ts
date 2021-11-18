@@ -1,5 +1,5 @@
-import { pathNormalize, pathJoin } from "./file";
-import { sampleSize } from "./utils";
+import { pathNormalize, pathJoin, extname } from "./file";
+import { sampleSize, isInteger } from "./utils";
 import sharp from "sharp";
 
 import debug from "debug";
@@ -8,12 +8,21 @@ const log = debug("collage");
 export const buildCollage = async (opt: BuildCollageConfig) => {
   const basePath = pathNormalize(opt.basePath);
   const artworksPath = pathNormalize(opt.artworksPath);
-  const thumbWidth = opt.thumbWidth;
-  const thumbPerRow = opt.thumbPerRow;
   const imageRatio = opt.imageRatio;
   const generations = opt.generations;
-  const sample = sampleSize(generations, opt.editions);
+  const limit = !opt.limit
+    ? generations.length // if value 0 or false use generation length
+    : isInteger(opt.limit)
+      ? opt.limit // use as exact number of limit
+      : Math.round(opt.limit * generations.length) // use as percentage of generation length
+  const sample = opt.order.toLowerCase() == 'asc'
+    ? generations.sort((a, b) => a.edition - b.edition).slice(0, limit)
+    : opt.order.toLowerCase() == 'desc'
+      ? generations.sort((a, b) => b.edition - a.edition).slice(0, limit)
+      : sampleSize(generations, limit); // else is random
 
+  const thumbWidth = opt.thumbWidth;
+  const thumbPerRow = opt.thumbPerRow <= 0 ? Math.round(Math.sqrt(limit)) : opt.thumbPerRow;
   // Calculate height on the fly
   const thumbHeight = thumbWidth * imageRatio;
   // Prepare canvas
@@ -38,15 +47,16 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   }
 
   const previewPath = pathJoin(basePath, pathNormalize(opt.previewPath));
+  const previewFormat = extname(previewPath).substring(1) as any;
   await sharp({
     create: {
       width: previewWidth,
       height: previewHeight,
+      background: opt.background || '#fff',
       channels: 3,
-      background: { r: 0, g: 0, b: 0 }
     }
   })
   .composite(thumbs)
-  .png({ compressionLevel: 9, adaptiveFiltering: true })
+  .toFormat(previewFormat, opt.formatOption)
   .toFile(previewPath);
 }
