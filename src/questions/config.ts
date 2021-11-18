@@ -52,35 +52,6 @@ export const questionsInit = (basePath: string) => ([
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   },
   {
-    type: 'number',
-    name: 'generations.startAt',
-    message: 'Generation Start At:',
-    default: 0,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'input',
-    name: 'generations.thread[0].order',
-    message: 'Generation Order (comma separated):',
-    default: (answer: any) => findDirs(pathJoin(basePath, answer.traits.path)).join(','),
-    validate: (input: string) => !isNil(input) && !isEmpty(input),
-    filter: (input: string) => input.split(",").map(item => item.trim())
-  },
-  {
-    type: 'input',
-    name: 'generations.thread[0].dna',
-    message: 'Generation DNA (comma separated):',
-    default: (answer: any) => answer.generations.thread[0].order.join(','),
-    filter: (input: string) => input.split(",").map(item => item.trim())
-  },
-  {
-    type: 'number',
-    name: 'generations.thread[0].size',
-    message: 'Generation Size:',
-    default: 100,
-    validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
     type: 'input',
     name: 'metadata.path',
     message: 'Metadata Path:',
@@ -88,9 +59,31 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'number',
-    name: 'metadata.shuffle',
-    message: 'Metadata Shuffle:',
+    name: 'generation.startAt',
+    message: 'Generation Start At:',
     default: 0,
+    validate: (input: number) => isFinite(input) || 'Must be a finite number'
+  },
+  {
+    type: 'input',
+    name: 'generation.threads[0].order',
+    message: 'Generation Order (comma separated):',
+    default: (answer: any) => findDirs(pathJoin(basePath, answer.traits.path)).join(','),
+    validate: (input: string) => !isNil(input) && !isEmpty(input),
+    filter: (input: string) => input.split(",").map(item => item.trim())
+  },
+  {
+    type: 'input',
+    name: 'generation.threads[0].dna',
+    message: 'Generation DNA (comma separated):',
+    default: (answer: any) => answer.generation.threads[0].order.join(','),
+    filter: (input: string) => input.split(",").map(item => item.trim())
+  },
+  {
+    type: 'number',
+    name: 'generation.threads[0].size',
+    message: 'Generation Size:',
+    default: 100,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
   }
 ]);

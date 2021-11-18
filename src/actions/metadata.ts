@@ -18,18 +18,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationsPath = pathJoin(basePath, config.generations.config);
-  const generationsExists = exists(generationsPath);
-  if (!generationsExists) {
-    print.warn(`Generations not found, build the collection first`);
+  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationExists = exists(generationPath);
+  if (!generationExists) {
+    print.warn(`generation not found, build the collection first`);
     return;
   }
 
-  // read the generations from file
-  const generations = await task({
-    processText: 'Loading generations from file',
-    successText: `Collection Generations: ${generationsPath}`,
-    fn: async () => readJson(generationsPath),
+  // read the generation from file
+  const generation = await task({
+    processText: 'Loading generation from file',
+    successText: `Collection generation: ${generationPath}`,
+    fn: async () => readJson(generationPath),
   });
 
   // confirm to overwrite the metadata
@@ -78,10 +78,10 @@ export default async (basePath: string, opt: any) => {
   let metadata = [];
 
   // generate artworks and metadata
-  const generationsLength = generations.length;
-  for (let i = 0; i < generationsLength; i++) {
-    const progress = `${i+1}/${generationsLength}`;
-    const gen = generations[i];
+  const generationLength = generation.length;
+  for (let i = 0; i < generationLength; i++) {
+    const progress = `${i+1}/${generationLength}`;
+    const gen = generation[i];
     const edition = gen.edition.toString();
     const artwork = storedArtworks[edition];
 

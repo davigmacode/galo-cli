@@ -10,11 +10,11 @@
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
-  "generations": {
-    "config": "generations.json",
+  "generation": {
+    "config": "generation.json",
     "duplicateTolerance": 10000,
     "startAt": 0,
-    "thread": []
+    "threads": []
   },
   "artworks": {
     "path": "/artworks",
@@ -25,7 +25,7 @@
   "metadata": {
     "path": "/metadata",
     "config": "metadata.json",
-    "shuffle": 3,
+    "shuffle": false,
     "template": {
       "name": "{{faker.name.findName().capitalize()}} #{{edition+1}}",
       "symbol": "GALO",
@@ -47,7 +47,7 @@
         "files": [
           {
             "uri": "{{artwork.url}}",
-            "type": "image/png"
+            "type": "{{artwork.type}}"
           }
         ],
         "category": "image",

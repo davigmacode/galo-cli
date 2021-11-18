@@ -19,18 +19,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationsPath = pathJoin(basePath, config.generations.config);
-  const generationsExists = exists(generationsPath);
-  if (!generationsExists) {
-    print.warn(`Generations not found, build the collection first`);
+  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationExists = exists(generationPath);
+  if (!generationExists) {
+    print.warn(`generation not found, build the collection first`);
     return;
   }
 
-  // read the generations from file
-  const generations = await task({
-    processText: 'Loading generations from file',
-    successText: `Collection Generations: ${generationsPath}`,
-    fn: async () => readJson(generationsPath),
+  // read the generation from file
+  const generation = await task({
+    processText: 'Loading generation from file',
+    successText: `Collection generation: ${generationPath}`,
+    fn: async () => readJson(generationPath),
   });
 
   if (isNil(opt.storage)) {
@@ -75,7 +75,7 @@ export default async (basePath: string, opt: any) => {
         config,
         cachedPath,
         cached,
-        generations,
+        generation,
       });
       break;
     case 'arweave':
@@ -86,7 +86,7 @@ export default async (basePath: string, opt: any) => {
         config,
         cachedPath,
         cached,
-        generations,
+        generation,
       });
       break;
     default:

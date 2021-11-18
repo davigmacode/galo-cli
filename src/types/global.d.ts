@@ -34,7 +34,7 @@ interface GenerationConfig {
   config: string,
   duplicateTolerance: number,
   startAt: number,
-  thread: GenerationThread[]
+  threads: GenerationThread[]
 }
 
 interface GenerationOrder {
@@ -70,7 +70,7 @@ interface BuildCollageConfig {
   artworksPath: string | string[];
   previewPath: string | string[];
   artworksExt: string;
-  generations: Gen[];
+  generation: Gen[];
   order: string;
   limit: number;
   background: string;
@@ -104,5 +104,5 @@ interface UploadsConfig {
   config: any;
   cachedPath: string;
   cached: any;
-  generations: any;
+  generation: any;
 }

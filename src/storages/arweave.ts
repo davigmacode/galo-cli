@@ -12,7 +12,7 @@ export default async ({
   config,
   cachedPath,
   cached,
-  generations,
+  generation,
 }: UploadsConfig) => {
   const provider = 'arweave';
   let storage = config.storage[provider];
@@ -49,7 +49,7 @@ export default async ({
     fn: async () => readJson(tokenPath),
   });
 
-  const n = generations.length;
+  const n = generation.length;
   const typePath = uploadType == 'artwork' ? config.artworks.path : config.metadata.path;
   const typeExt = uploadType == 'artwork' ? config.artworks.ext : '.json';
   const arweave = Arweave.init({
@@ -59,28 +59,31 @@ export default async ({
   });
   for (let i = 0; i < n; i++) {
     const progress = `[${i+1}/${n}]`;
-    const gen = generations[i];
+    const gen = generation[i];
     const edition = gen.edition;
     if (!get(cached, [edition, uploadType])) {
+      const fileName = `${edition}${typeExt}`;
+      const filePath = pathJoin(basePath, typePath, fileName);
+      const fileMime = mimeLookup(filePath) || 'application/octet-stream';
+      const fileData = readFile(filePath, typeExt);
       const { id } = await task({
         processText: `${progress} Uploading ${uploadType} #${edition} to ${storage.label}`,
         successText: `${progress} Uploaded ${uploadType} #${edition} to ${storage.label}`,
-        fn: async (spinner) => {
-          const fileName = `${edition}${typeExt}`;
-          const filePath = pathJoin(basePath, typePath, fileName);
-          const fileMime = mimeLookup(filePath) || 'application/octet-stream';
-          const fileData = readFile(filePath, typeExt);
-          return arweaveUpload(
-            arweave,
-            fileData,
-            fileMime,
-            token,
-            true,
-            spinner
-          );
-        },
+        fn: async (spinner) => arweaveUpload(
+          arweave,
+          fileData,
+          fileMime,
+          token,
+          true,
+          spinner
+        ),
       }).catch((error) => print.error(progress, error));
-      const cacheData = { id, uri: `ar://${id}`, url: `https://arweave.net/${id}` };
+      const cacheData = {
+        id,
+        uri: `ar://${id}`,
+        url: `https://arweave.net/${id}`,
+        type: fileMime
+      };
       set(cached, [edition, uploadType], cacheData);
       writeJson(cachedPath, cached);
     } else {

@@ -9,17 +9,17 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   const basePath = pathNormalize(opt.basePath);
   const artworksPath = pathNormalize(opt.artworksPath);
   const imageRatio = opt.imageRatio;
-  const generations = opt.generations;
+  const generation = opt.generation;
   const limit = !opt.limit
-    ? generations.length // if value 0 or false use generation length
+    ? generation.length // if value 0 or false use generation length
     : isInteger(opt.limit)
       ? opt.limit // use as exact number of limit
-      : Math.round(opt.limit * generations.length) // use as percentage of generation length
+      : Math.round(opt.limit * generation.length) // use as percentage of generation length
   const sample = opt.order.toLowerCase() == 'asc'
-    ? generations.sort((a, b) => a.edition - b.edition).slice(0, limit)
+    ? generation.sort((a, b) => a.edition - b.edition).slice(0, limit)
     : opt.order.toLowerCase() == 'desc'
-      ? generations.sort((a, b) => b.edition - a.edition).slice(0, limit)
-      : sampleSize(generations, limit); // else is random
+      ? generation.sort((a, b) => b.edition - a.edition).slice(0, limit)
+      : sampleSize(generation, limit); // else is random
 
   const thumbWidth = opt.thumbWidth;
   const thumbPerRow = opt.thumbPerRow <= 0 ? Math.round(Math.sqrt(limit)) : opt.thumbPerRow;

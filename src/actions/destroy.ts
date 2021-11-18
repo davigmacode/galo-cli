@@ -1,4 +1,4 @@
-import { pathJoin, exists, readJson, deleteJson, deleteImage, deleteDir, deleteFile } from "../helpers/file";
+import { pathJoin, exists, readJson, deleteJson, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil } from "../helpers/utils";
 
@@ -29,11 +29,11 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationsPath = pathJoin(basePath, config.generations.config);
+  const generationPath = pathJoin(basePath, config.generation.config);
   await task({
-    processText: 'Removing collection generations',
-    successText: `Removed: ${generationsPath}`,
-    fn: async () => deleteJson(generationsPath),
+    processText: 'Removing collection generation',
+    successText: `Removed: ${generationPath}`,
+    fn: async () => deleteJson(generationPath),
   });
 
   const ipfsCache = pathJoin(basePath, config.storage.ipfs.cache);
@@ -41,6 +41,13 @@ export default async (basePath: string, opt: any) => {
     processText: 'Removing IPFS upload cache',
     successText: `Removed: ${ipfsCache}`,
     fn: async () => deleteJson(ipfsCache),
+  });
+
+  const arweaveCache = pathJoin(basePath, config.storage.arweave.cache);
+  await task({
+    processText: 'Removing Arweave upload cache',
+    successText: `Removed: ${arweaveCache}`,
+    fn: async () => deleteJson(arweaveCache),
   });
 
   const metadataConfig = pathJoin(basePath, config.metadata.config);
@@ -75,7 +82,7 @@ export default async (basePath: string, opt: any) => {
   await task({
     processText: 'Removing collection collage',
     successText: `Removed: ${collagePath}`,
-    fn: async () => deleteImage(collagePath),
+    fn: async () => deleteFile(collagePath),
   });
 
   const artworksPath = pathJoin(basePath, config.artworks.path);

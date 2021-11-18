@@ -78,11 +78,11 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('build the generations of artworks, metadata, rarity, and collage')
+  .description('build the generation of artworks, metadata, rarity, and collage')
   .option('-c, --config <path>', 'set config path', './galo.json')
-  .option('-bg, --build-generations', 'with build new generations')
+  .option('-bg, --build-generation', 'with build new generation')
   .option('-ba, --build-artworks', 'with build the artworks', true)
-  .option('-nbg, --no-build-generations', 'without build new generations')
+  .option('-nbg, --no-build-generation', 'without build new generation')
   .option('-nba, --no-build-artworks', 'without build the artworks')
   .action(buildAction);
 
@@ -95,7 +95,7 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('populate collection traits without building the generations')
+  .description('populate collection traits without building the generation')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .action(traitsAction);
 
@@ -108,7 +108,7 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('create collection artworks without rebuilding the generations')
+  .description('create collection artworks without rebuilding the generation')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-f, --force', 'force rebuilding the artworks')
   .option('-nf, --no-force', 'not force rebuilding the artworks')
@@ -123,7 +123,7 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('create collection metadata without rebuilding the generations')
+  .description('create collection metadata without rebuilding the generation')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-s, --storage <provider>', 'set the artwork storage provider')
   .option('-f, --force', 'force rebuilding the metadata')
@@ -139,7 +139,7 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('create collection preview without rebuilding the generations')
+  .description('create collection preview without rebuilding the generation')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .action(collageAction);
 
@@ -152,7 +152,7 @@ program
     (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
     process.cwd()
   )
-  .description('create collection rarity without rebuilding the generations')
+  .description('create collection rarity without rebuilding the generation')
   .option('-c, --config <path>', 'set config path', './galo.json')
   .action(rarityAction);
 

@@ -17,13 +17,13 @@ export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
 }
 
 export const buildGen = (
-  generations: GenerationConfig,
+  generation: GenerationConfig,
   traits: TraitType[],
   rarity: Rarity,
   spinner?: any,
 ) : Gen[] => {
   let genResult = [];
-  for (const genThread of generations.thread) {
+  for (const genThread of generation.threads) {
     let genTraits = [];
     for (const order of genThread.order) {
       const orderTrait: string = (order as GenerationOrder).name || (order as string);
@@ -56,7 +56,7 @@ export const buildGen = (
         unique: boolean,
         duplicates = 0;
       do {
-        edition = generations.startAt + genResult.length;
+        edition = generation.startAt + genResult.length;
         attributes = randomTraits(genTraits, rarity);
         dna = createDna(attributes, genThread.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
@@ -65,7 +65,7 @@ export const buildGen = (
         } else {
           duplicates = duplicates + 1;
           log(`Generated DNA for #${edition}: Exists!`);
-          if (duplicates >= generations.duplicateTolerance) {
+          if (duplicates >= generation.duplicateTolerance) {
             const additionalMessage = !isNil(genThread.dna) && !isEmpty(genThread.dna)
               ? `to ${genThread.dna.join('/')}`
               : ''

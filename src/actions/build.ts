@@ -52,10 +52,10 @@ export default async (basePath: string, opt: any) => {
   });
 
   // check for the config file existence
-  const generationsPath = pathJoin(basePath, config.generations.config);
-  const generationsExists = exists(generationsPath);
-  if (generationsExists) {
-    if (isNil(opt.buildGenerations)) {
+  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationExists = exists(generationPath);
+  if (generationExists) {
+    if (isNil(opt.buildGeneration)) {
       const { qCancelOperation, qReGeneration } : any = await prompt([
         {
           type: 'confirm',
@@ -77,15 +77,15 @@ export default async (basePath: string, opt: any) => {
         print.warn(`Build collection canceled`);
         return;
       }
-      opt.buildGenerations = qReGeneration;
+      opt.buildGeneration = qReGeneration;
     }
   } else {
-    opt.buildGenerations = true;
+    opt.buildGeneration = true;
   }
 
   const traitsPath = pathJoin(basePath, config.traits.path);
-  let generationsConfig = config.generations.thread;
-  if (isNil(generationsConfig) || isEmpty(generationsConfig)) {
+  let generationConfig = config.generation.threads;
+  if (isNil(generationConfig) || isEmpty(generationConfig)) {
     const { qGenOrder, qGenSize } : any = await prompt([
       {
         type: 'input',
@@ -104,7 +104,7 @@ export default async (basePath: string, opt: any) => {
       },
     ]).catch((error) => print.error(error));
 
-    generationsConfig = [{ size: qGenSize, order: qGenOrder }];
+    generationConfig = [{ size: qGenSize, order: qGenOrder }];
     await task({
       processText: 'Updating Config File',
       successText: `Collection Config: ${configPath}`,
@@ -113,28 +113,28 @@ export default async (basePath: string, opt: any) => {
   }
 
   // generate dna from traits, shuffle if required and write to config file
-  const generations = opt.buildGenerations == true
+  const generation = opt.buildGeneration == true
     ? await task({
-        processText: 'Building generations',
-        successText: `Collection Generations: ${generationsPath}`,
+        processText: 'Building generation',
+        successText: `Collection generation: ${generationPath}`,
         fn: async (spinner) => {
           try {
-            let createdGenerations: Gen[];
-            createdGenerations = buildGen(config.generations, traits, config.rarity, spinner);
-            writeJson(generationsPath, createdGenerations);
-            return createdGenerations;
+            let createdGeneration: Gen[];
+            createdGeneration = buildGen(config.generation, traits, config.rarity, spinner);
+            writeJson(generationPath, createdGeneration);
+            return createdGeneration;
           } catch (err) {
             return Promise.reject(err);
           }
         },
       })
     : await task({
-        processText: 'Loading generations from file',
-        successText: `Loaded Generations: ${generationsPath}`,
-        fn: async () => readJson(generationsPath),
+        processText: 'Loading generation from file',
+        successText: `Loaded generation: ${generationPath}`,
+        fn: async () => readJson(generationPath),
       });
 
-  if (isNil(generations) || isEmpty(generations)) return;
+  if (isNil(generation) || isEmpty(generation)) return;
 
   const metadataConfig = pathJoin(basePath, config.metadata.config);
   const collagePath = pathJoin(basePath, config.collage.name);
@@ -156,7 +156,7 @@ export default async (basePath: string, opt: any) => {
   const rarity = await task({
     processText: 'Populating rarity',
     successText: `Collection Rarity is ready`,
-    fn: async () => populateRarity(traits, generations),
+    fn: async () => populateRarity(traits, generation),
   });
 
   await task({
@@ -197,11 +197,11 @@ export default async (basePath: string, opt: any) => {
   let metadata = [];
 
   // generate artworks and metadata
-  const generationsLength = generations.length;
-  for (let i = 0; i < generationsLength; i++) {
-    let gen = generations[i];
+  const generationLength = generation.length;
+  for (let i = 0; i < generationLength; i++) {
+    let gen = generation[i];
     const edition = gen.edition.toString();
-    const editionOf = `${i+1}/${generationsLength}`;
+    const editionOf = `${i+1}/${generationLength}`;
 
     if (opt.buildArtworks) {
       // create a single artwork
@@ -248,8 +248,8 @@ export default async (basePath: string, opt: any) => {
     });
   }
 
-  // write generations with rarity
-  writeJson(generationsPath, generations);
+  // write generation with rarity
+  writeJson(generationPath, generation);
 
   // shuffle metadata collection if required
   const shuffleCount = config.metadata.shuffle;
@@ -286,7 +286,7 @@ export default async (basePath: string, opt: any) => {
         limit: config.collage.limit,
         background: config.collage.background,
         imageRatio: config.artworks.width / config.artworks.height,
-        generations: generations,
+        generation: generation,
         formatOption: omit(config.collage, [
           'name', 'background', 'order',
           'limit', 'thumbWidth', 'thumbPerRow'
