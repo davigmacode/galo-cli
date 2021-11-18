@@ -80,7 +80,8 @@ export default async ({
           );
         },
       }).catch((error) => print.error(progress, error));
-      set(cached, [edition, uploadType], { id, url: `https://arweave.net/${id}` });
+      const cacheData = { id, uri: `ar://${id}`, url: `https://arweave.net/${id}` };
+      set(cached, [edition, uploadType], cacheData);
       writeJson(cachedPath, cached);
     } else {
       print.success(progress, `Cached ${uploadType} #${edition}`);

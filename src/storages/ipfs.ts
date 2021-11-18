@@ -68,7 +68,8 @@ export default async ({
           return ipfs.storeBlob(fileBlob);
         },
       }).catch((error) => print.error(progress, error));
-      set(cached, [edition, uploadType], { id, url: `https://ipfs.io/ipfs/${id}` });
+      const cacheData = { id, uri: `ipfs://${id}`, url: `https://ipfs.io/ipfs/${id}` };
+      set(cached, [edition, uploadType], cacheData);
       writeJson(cachedPath, cached);
     } else {
       print.success(progress, `Cached ${uploadType} #${edition}`);
