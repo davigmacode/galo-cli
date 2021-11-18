@@ -61,8 +61,7 @@ interface BuildArtworksConfig {
     ext: string;
     width: number;
     height: number;
-    minify: boolean;
-    quality: "fast" | "good" | "best" | "nearest" | "bilinear";
+    option: any;
   };
 }
 

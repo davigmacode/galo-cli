@@ -2,7 +2,7 @@ import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
-import { isNil } from "lodash";
+import { isNil, omit } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -87,8 +87,7 @@ export default async (basePath: string, opt: any) => {
           ext: config.artworks.ext,
           width: config.artworks.width,
           height: config.artworks.height,
-          minify: config.artworks.minify,
-          quality: config.artworks.quality,
+          option: omit(config.artworks, ['path', 'ext', 'width', 'height'])
         }
       }),
     });

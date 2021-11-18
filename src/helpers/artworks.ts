@@ -6,12 +6,18 @@ export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => 
   let overlays = [];
   for await (const attr of trait.attributes) {
     const traitPath = pathNormalize([trait.path, attr.traitType.name, attr.traitItem.file]);
+    const traitBlend = attr.traitItem.blend || attr.traitType.blend || 'over';
+    const traitOpacity = attr.traitItem.opacity || attr.traitType.opacity || 1;
     overlays.push({
-      input: await sharp(traitPath).resize(artwork.width, artwork.height).toBuffer(),
-      blend: attr.traitItem.blend || attr.traitType.blend || 'over'
+      blend: traitBlend,
+      input: await sharp(traitPath)
+        .resize(artwork.width, artwork.height)
+        .ensureAlpha(traitOpacity)
+        .toBuffer(),
     });
   }
 
+  const artworkFormat = artwork.ext.substring(1) as any;
   const artworkPath = pathNormalize(artwork.path, artwork.ext);
   await sharp({
     create: {
@@ -23,6 +29,6 @@ export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => 
   })
   .composite(overlays)
   .withMetadata()
-  .png({ compressionLevel: 9, adaptiveFiltering: true })
+  .toFormat(artworkFormat, artwork.option)
   .toFile(artworkPath);
 }
