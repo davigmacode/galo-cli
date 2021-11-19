@@ -3,7 +3,8 @@ import debug from "debug";
 export {
 	isEmpty, isArray, isString, isInteger, mapValues,
 	get, set, has, findKey, pick, omit, sampleSize,
-	isNil, isNumber, isFinite, merge, isUndefined
+	isNil, isNumber, isFinite, merge, isUndefined,
+	meanBy, ceil
 } from "lodash";
 
 const log = debug("utils");

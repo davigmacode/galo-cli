@@ -3,11 +3,14 @@ interface Gen {
   edition: number;
   image: string;
   attributes: GenAttr[];
+  rarity?: number;
+  rank?: number;
 }
 
 interface GenAttr {
   traitType: TraitType;
   traitItem: TraitItem;
+  traitRarity?: TraitRarity;
 }
 
 interface TraitType {
@@ -24,6 +27,12 @@ interface TraitItem extends TraitType {
   file?: string;
   ext?: string;
   rarity?: string | number;
+}
+
+interface TraitRarity {
+  occurrence: number;
+  chance: number;
+  percentage: string;
 }
 
 interface Traits {

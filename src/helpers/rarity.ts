@@ -1,4 +1,4 @@
-import { get, set, findKey } from "./utils";
+import { get, set, findKey, ceil } from "./utils";
 import { createWriteStream } from "fs";
 import * as csv from 'fast-csv';
 
@@ -19,17 +19,21 @@ export const populateRarity = (traits: TraitType[], generations: Gen[]) => {
     for (const attr of gen.attributes) {
       const path = [attr.traitType.label, attr.traitItem.label];
       const occurrence = get(rarity, [ ...path, 'occurrence' ], 0) + 1;
-      const chance = occurrence / editions * 100;
+      const chance = ceil(occurrence / editions, 2);
+      const percentage = chance * 100;
       set(rarity, [ ...path, 'occurrence' ], occurrence);
-      set(rarity, [ ...path, 'chance' ], `${chance.toFixed(0)}%`);
+      set(rarity, [ ...path, 'chance' ], chance);
+      set(rarity, [ ...path, 'percentage' ], `${percentage.toFixed(0)}%`);
     }
   }
 
   const traitsRarity = {};
   traits.forEach((traitType) => {
     traitType.items.forEach((traitItem) => {
-      const traitRarity = get(rarity, [traitType.label, traitItem.label], { occurrence: 0, chance: '0%' });
-      set(traitsRarity, [traitType.label, traitItem.label], traitRarity);
+      const rarityPath = [traitType.label, traitItem.label];
+      const rarityData = { occurrence: 0, chance: 0, percentage: '0%' };
+      const traitRarity = get(rarity, rarityPath, rarityData);
+      set(traitsRarity, rarityPath, traitRarity);
     });
   });
   return traitsRarity;
@@ -47,6 +51,7 @@ export const rarityToCSV = (path: string, rarity: any) => {
         "Trait Item": traitItem,
         "Occurrence": traitRarity.occurrence,
         "Chance": traitRarity.chance,
+        "Percentage": traitRarity.percentage,
       });
     });
   });

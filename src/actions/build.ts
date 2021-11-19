@@ -8,7 +8,7 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { shuffle, isNil, isEmpty, omit } from "../helpers/utils";
+import { shuffle, isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
@@ -113,7 +113,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // generate dna from traits, shuffle if required and write to config file
-  const generation = opt.buildGeneration == true
+  const generation: Gen[] = opt.buildGeneration == true
     ? await task({
         processText: 'Building generation',
         successText: `Collection generation: ${generationPath}`,
@@ -193,6 +193,34 @@ export default async (basePath: string, opt: any) => {
     }
   });
 
+  await task({
+    processText: 'Building generation rarity and rank',
+    successText: 'Updated generation with rarity and rank',
+    fn: async () => {
+      for (const gen of generation) {
+        // attach rarity to each gen attributes
+        for (const genAttr of gen.attributes) {
+          genAttr.traitRarity = rarity[genAttr.traitType.label][genAttr.traitItem.label];
+        }
+
+        // attach rarity score, the less is better rank
+        gen.rarity = meanBy(gen.attributes, (attr) => attr.traitRarity.chance);
+        gen.rarity = ceil(gen.rarity, 2);
+      }
+
+      const ranks = generation
+        .map((gen) => pick(gen, ['edition', 'rarity']))
+        .sort((a, b) => a.rarity - b.rarity);
+
+      generation.forEach((gen) => {
+        gen.rank = 1 + ranks.findIndex((rank) => gen.edition == rank.edition)
+      });
+
+      // write generation with rarity
+      writeJson(generationPath, generation);
+    },
+  });
+
   // define metadata collection
   let metadata = [];
 
@@ -227,11 +255,6 @@ export default async (basePath: string, opt: any) => {
       });
     }
 
-    // attach rarity to each gen attributes
-    for (const genAttr of gen.attributes) {
-      genAttr.traitRarity = rarity[genAttr.traitType.label][genAttr.traitItem.label];
-    }
-
     // create a single metadata
     const metaPath = pathJoin(metadataPath, edition);
     await task({
@@ -247,9 +270,6 @@ export default async (basePath: string, opt: any) => {
       },
     });
   }
-
-  // write generation with rarity
-  writeJson(generationPath, generation);
 
   // shuffle metadata collection if required
   const shuffleCount = config.metadata.shuffle;
