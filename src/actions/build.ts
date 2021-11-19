@@ -8,7 +8,7 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { shuffle, isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
+import { isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
@@ -267,18 +267,6 @@ export default async (basePath: string, opt: any) => {
         writeJson(metaPath, meta);
         // add to metadata collection
         metadata.push(meta);
-      },
-    });
-  }
-
-  // shuffle metadata collection if required
-  const shuffleCount = config.metadata.shuffle;
-  if (shuffleCount) {
-    await task({
-      processText: 'Shuffling metadata collection',
-      successText: `Collection Shuffled: ${shuffleCount} time(s)`,
-      fn: async () => {
-        shuffle(metadata, shuffleCount)
       },
     });
   }

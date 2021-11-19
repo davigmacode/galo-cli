@@ -1,6 +1,6 @@
 import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { shuffle, isNil, mapValues } from "../helpers/utils";
+import { isNil, mapValues } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
@@ -97,18 +97,6 @@ export default async (basePath: string, opt: any) => {
         writeJson(metaPath, meta);
         // add to metadata collection
         metadata.push(meta);
-      },
-    });
-  }
-
-  // shuffle metadata collection if required
-  const shuffleCount = config.metadata.shuffle;
-  if (shuffleCount) {
-    await task({
-      processText: 'Shuffling metadata collection',
-      successText: `Metadata Shuffled: ${shuffleCount} time(s)`,
-      fn: async () => {
-        shuffle(metadata, shuffleCount)
       },
     });
   }

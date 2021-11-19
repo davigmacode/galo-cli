@@ -1,7 +1,6 @@
 interface Gen {
   dna: string;
   edition: number;
-  image: string;
   attributes: GenAttr[];
   rarity?: number;
   rank?: number;

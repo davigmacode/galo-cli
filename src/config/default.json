@@ -26,7 +26,6 @@
   "metadata": {
     "path": "/metadata",
     "config": "metadata.json",
-    "shuffle": false,
     "template": {
       "name": "{{faker.name.findName().capitalize()}} #{{rank}}",
       "symbol": "GALO",
