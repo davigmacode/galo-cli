@@ -44,7 +44,7 @@ export default async (basePath: string, opt: any) => {
         basePath,
         config.traits.path,
         config.traits.exts,
-        config.rarity,
+        config.traits.rarity,
         config.traits.delimiter
       );
       writeJson(traitsConfig, traits);
@@ -120,7 +120,7 @@ export default async (basePath: string, opt: any) => {
         fn: async (spinner) => {
           try {
             let createdGeneration: Gen[];
-            createdGeneration = buildGen(config.generation, traits, config.rarity, spinner);
+            createdGeneration = buildGen(config.generation, traits, config.traits.rarity, spinner);
             writeJson(generationPath, createdGeneration);
             return createdGeneration;
           } catch (err) {

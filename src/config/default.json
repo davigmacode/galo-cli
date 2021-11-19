@@ -8,7 +8,14 @@
     "path": "/traits",
     "config": "traits.json",
     "delimiter": "__",
-    "exts": [".png", ".jpg"]
+    "exts": [".png", ".jpg"],
+    "rarity": {
+      "C": { "label": "Common", "weight": 0.5, "default": true },
+      "U": { "label": "Uncommon", "weight": 0.05 },
+      "R": { "label": "Rare", "weight": 0.005 },
+      "E": { "label": "Epic", "weight": 0.0005 },
+      "L": { "label": "Legend", "weight": 0.00005 }
+    }
   },
   "generation": {
     "config": "generation.json",
@@ -16,18 +23,12 @@
     "startAt": 0,
     "threads": []
   },
-  "artworks": {
-    "path": "/artworks",
-    "ext": ".png",
-    "width": 1080,
-    "height": 1080
-  },
   "metadata": {
     "path": "/metadata",
     "config": "metadata.json",
     "shuffle": false,
     "template": {
-      "name": "{{faker.name.findName().capitalize()}} #{{edition+1}}",
+      "name": "{{faker.name.findName().capitalize()}} #{{rank}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
@@ -60,6 +61,12 @@
       }
     }
   },
+  "artworks": {
+    "path": "/artworks",
+    "ext": ".png",
+    "width": 1080,
+    "height": 1080
+  },
   "collage": {
     "name": "preview.jpg",
     "background": "#fff",
@@ -84,29 +91,6 @@
       "cache": "/storage/gdrive.json",
       "credentials": "/.secret/gdrive-credentials.json",
       "token": "/.secret/gdrive-token.json"
-    }
-  },
-  "rarity": {
-    "C": {
-      "label": "Common",
-      "weight": 0.9,
-      "default": true
-    },
-    "U": {
-      "label": "Uncommon",
-      "weight": 0.7
-    },
-    "R": {
-      "label": "Rare",
-      "weight": 0.5
-    },
-    "E": {
-      "label": "Epic",
-      "weight": 0.3
-    },
-    "L": {
-      "label": "Legend",
-      "weight": 0.1
     }
   }
 }

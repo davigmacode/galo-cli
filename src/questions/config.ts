@@ -27,6 +27,12 @@ export const questionsInit = (basePath: string) => ([
   },
   {
     type: 'input',
+    name: 'metadata.path',
+    message: 'Metadata Path:',
+    default: '/assets',
+  },
+  {
+    type: 'input',
     name: 'artworks.path',
     message: 'Artworks Path:',
     default: '/assets',
@@ -50,12 +56,6 @@ export const questionsInit = (basePath: string) => ([
     message: 'Artworks Height:',
     default: 800,
     validate: (input: number) => isFinite(input) || 'Must be a finite number'
-  },
-  {
-    type: 'input',
-    name: 'metadata.path',
-    message: 'Metadata Path:',
-    default: '/assets',
   },
   {
     type: 'number',
