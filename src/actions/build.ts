@@ -51,7 +51,7 @@ export default async (basePath: string, opt: any) => {
     },
   });
 
-  // check for the config file existence
+  // check for the generation config file existence
   const generationPath = pathJoin(basePath, config.generation.config);
   const generationExists = exists(generationPath);
   if (generationExists) {
@@ -136,10 +136,19 @@ export default async (basePath: string, opt: any) => {
 
   if (isNil(generation) || isEmpty(generation)) return;
 
+  // populating rarity
+  const traitsWithRarity : TraitType[] = await task({
+    processText: 'Populating rarity',
+    successText: `Updated collection traits with rarity`,
+    fn: async () => {
+      const rarity = populateRarity(traits, generation);
+      writeJson(traitsConfig, rarity);
+      return rarity;
+    },
+  });
+
   const metadataConfig = pathJoin(basePath, config.metadata.config);
   const collagePath = pathJoin(basePath, config.collage.name);
-  // const rarityJson = pathJoin(basePath, 'rarity.json');
-  // const rarityCsv = pathJoin(basePath, 'rarity.csv');
 
   await task({
     processText: 'Removing previously generated content',
@@ -147,18 +156,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => {
       deleteFile(metadataConfig, '.json');
       deleteFile(collagePath, '.png');
-      // deleteFile(rarityJson, '.json');
-      // deleteFile(rarityCsv, '.csv');
     }
   });
-
-  // populating rarity
-  const traitsWithRarity : TraitType[] = await task({
-    processText: 'Populating rarity',
-    successText: `Collection Rarity is ready`,
-    fn: async () => populateRarity(traits, generation),
-  });
-  writeJson(traitsConfig, traitsWithRarity);
 
   // ensure artworks directory
   const artworksPath = pathJoin(basePath, config.artworks.path);
@@ -183,8 +182,8 @@ export default async (basePath: string, opt: any) => {
   });
 
   await task({
-    processText: 'Building generation rarity and rank',
-    successText: 'Updated generation with rarity and rank',
+    processText: 'Building collection generation rarity and rank',
+    successText: 'Updated collection generation with rarity and rank',
     fn: async () => {
       for (const gen of generation) {
         // attach trait rarity to each gen attributes
@@ -213,6 +212,9 @@ export default async (basePath: string, opt: any) => {
       writeJson(generationPath, generation);
     },
   });
+
+  // end here if no need to build artworks and metadata
+  if (!opt.buildArtworks && !opt.buildMetadata) return;
 
   // define metadata collection
   let metadata = [];
@@ -248,28 +250,32 @@ export default async (basePath: string, opt: any) => {
       });
     }
 
-    // create a single metadata
-    const metaPath = pathJoin(metadataPath, edition);
-    await task({
-      processText: `[${editionOf}] Building metadata #${edition}`,
-      successText: `[${editionOf}] Metadata #${edition}: ${metaPath}.json`,
-      fn: async () => {
-        // transform gen into metadata based on configurable template
-        const meta = transformGen(gen, config.metadata.template);
-        // create a single metadata
-        writeJson(metaPath, meta);
-        // add to metadata collection
-        metadata.push(meta);
-      },
-    });
+    if (opt.buildMetadata) {
+      // create a single metadata
+      const metaPath = pathJoin(metadataPath, edition);
+      await task({
+        processText: `[${editionOf}] Building metadata #${edition}`,
+        successText: `[${editionOf}] Metadata #${edition}: ${metaPath}.json`,
+        fn: async () => {
+          // transform gen into metadata based on configurable template
+          const meta = transformGen(gen, config.metadata.template);
+          // create a single metadata
+          writeJson(metaPath, meta);
+          // add to metadata collection
+          metadata.push(meta);
+        },
+      });
+    }
   }
 
-  // create metadata for all collection
-  await task({
-    processText: 'Writing collection metadata into file',
-    successText: `Collection Metadata: ${metadataConfig}`,
-    fn: async () => writeJson(metadataConfig, metadata)
-  });
+  if (opt.buildMetadata) {
+    // create metadata for all collection
+    await task({
+      processText: 'Writing collection metadata into file',
+      successText: `Collection Metadata: ${metadataConfig}`,
+      fn: async () => writeJson(metadataConfig, metadata)
+    });
+  }
 
   if (opt.buildArtworks) {
     // create a collection preview collage

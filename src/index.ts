@@ -82,8 +82,10 @@ program
   .option('-c, --config <path>', 'set config path', './galo.json')
   .option('-bg, --build-generation', 'with build new generation')
   .option('-ba, --build-artworks', 'with build the artworks', true)
+  .option('-bm, --build-metadata', 'with build the metadata', true)
   .option('-nbg, --no-build-generation', 'without build new generation')
   .option('-nba, --no-build-artworks', 'without build the artworks')
+  .option('-nbm, --no-build-metadata', 'without build the metadata')
   .action(buildAction);
 
 program
