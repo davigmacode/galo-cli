@@ -1,25 +1,25 @@
-import { get, set, findKey, ceil } from "./utils";
+import { get, set, findKey, ceil, omit } from "./utils";
 import { createWriteStream } from "fs";
-import * as csv from 'fast-csv';
+import * as csv from "fast-csv";
 
-export const weightFromRarity = (rarity: string, tiers: Rarity): number => {
-  return tiers[rarity]
-    ? tiers[rarity].weight
-    : parseInt(rarity);
+export const getRarityFromName = (key: string, tiers: TraitRarityTier): TraitRarity => {
+  return tiers[key]
+    ? omit({ name: key, ...tiers[key] }, ['default'])
+    : null;
 }
 
-export const getDefaultRarity = (tiers: Rarity): string => {
-  return findKey(tiers, { default: true });
+export const getDefaultRarity = (tiers: TraitRarityTier): TraitRarity => {
+  const key = findKey(tiers, { default: true })
+  return getRarityFromName(key, tiers);
 }
 
-export const populateRarity = (traits: TraitType[], generations: Gen[]) => {
-  const editions = generations.length;
+export const populateRarity = (traits: TraitType[], generations: Gen[]): TraitType[] => {
   const rarity = {};
   for (const gen of generations) {
     for (const attr of gen.attributes) {
       const path = [attr.traitType.label, attr.traitItem.label];
       const occurrence = get(rarity, [ ...path, 'occurrence' ], 0) + 1;
-      const chance = ceil(occurrence / editions, 2);
+      const chance = ceil(occurrence / generations.length, 2);
       const percentage = chance * 100;
       set(rarity, [ ...path, 'occurrence' ], occurrence);
       set(rarity, [ ...path, 'chance' ], chance);
@@ -27,16 +27,15 @@ export const populateRarity = (traits: TraitType[], generations: Gen[]) => {
     }
   }
 
-  const traitsRarity = {};
   traits.forEach((traitType) => {
     traitType.items.forEach((traitItem) => {
       const rarityPath = [traitType.label, traitItem.label];
-      const rarityData = { occurrence: 0, chance: 0, percentage: '0%' };
-      const traitRarity = get(rarity, rarityPath, rarityData);
-      set(traitsRarity, rarityPath, traitRarity);
+      const rarityDefault = { name: traitItem.rarity, occurrence: 0, chance: 0, percentage: '0%' };
+      const rarityData = get(rarity, rarityPath, rarityDefault);
+      traitItem.rarity = { ...traitItem.rarity, ...rarityData };
     });
   });
-  return traitsRarity;
+  return traits;
 }
 
 export const rarityToCSV = (path: string, rarity: any) => {

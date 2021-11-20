@@ -57,13 +57,6 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(metadataConfig),
   });
 
-  const rarityJson = pathJoin(basePath, 'rarity.json');
-  await task({
-    processText: 'Removing collection rarity',
-    successText: `Removed: ${rarityJson}`,
-    fn: async () => deleteJson(rarityJson),
-  });
-
   const rarityCsv = pathJoin(basePath, 'rarity.csv');
   await task({
     processText: 'Removing collection rarity',

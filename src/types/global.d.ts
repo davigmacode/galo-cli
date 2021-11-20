@@ -25,13 +25,21 @@ interface TraitType {
 interface TraitItem extends TraitType {
   file?: string;
   ext?: string;
-  rarity?: string | number;
+  rarity?: TraitRarity;
 }
 
 interface TraitRarity {
-  occurrence: number;
-  chance: number;
-  percentage: string;
+  name?: string;
+  label?: string;
+  weight?: number;
+  default?: boolean;
+  occurrence?: number;
+  chance?: number;
+  percentage?: string;
+}
+
+interface TraitRarityTier {
+  [key: string]: TraitRarity
 }
 
 interface Traits {
@@ -93,16 +101,6 @@ interface TaskConfig {
   successText: string;
   delay?: number;
   fn: (spinner: any) => Promise<any>;
-}
-
-interface Rarity {
-  [key: string]: RarityTier
-}
-
-interface RarityTier {
-  label: string;
-  weight: number;
-  default: boolean;
 }
 
 interface UploadsConfig {

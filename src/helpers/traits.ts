@@ -6,7 +6,7 @@ import {
 } from "./file";
 import {
   getDefaultRarity,
-  weightFromRarity
+  getRarityFromName
 } from "./rarity";
 import { omit } from "./utils";
 
@@ -17,10 +17,11 @@ export const populateTraits = (
   basePath: string,
   traitsPath: string,
   exts: string | string[],
-  rarity: Rarity,
+  rarity: TraitRarityTier,
   delimiter: string = '_',
 ) : TraitType[] => {
   const absoluteTraitsPath = pathNormalize([basePath, traitsPath]);
+  const defaultRarityData = getDefaultRarity(rarity);
 
   let traitsData = [];
   for (const traitType of findDirs(absoluteTraitsPath)) {
@@ -47,23 +48,24 @@ export const populateTraits = (
     let traitItems = [];
     const traitFiles = findTypes(absoluteTraitPath, exts);
     for (const traitFile of traitFiles) {
-      // @ts-ignore
-      const [traitName, traitExt] = traitFile.split(".");
-      const traitConfig = readJson([...absoluteTraitPath, traitName]);
+      const [traitFilename, traitExt] = traitFile.split(".");
+      const traitConfig = readJson([...absoluteTraitPath, traitFilename]);
 
-      const traitNameSplit = traitName.split(delimiter);
-      const traitLabel = traitNameSplit.length == 2 ? traitNameSplit[1] : traitNameSplit[0];
-      const traitRarity = traitNameSplit.length == 2 ? traitNameSplit[0] : getDefaultRarity(rarity);
+      const [traitRarity, traitName] = traitFilename.split(delimiter);
+      const traitLabel = traitName || traitRarity;
+      const traitRarityData = traitName
+        ? getRarityFromName(traitRarity, rarity) || { weight: parseInt(traitRarity) }
+        : defaultRarityData;
 
       traitItems.push({
         ...{},
         ...{
-          name: traitName,
+          name: traitFilename,
           label: traitLabel,
           file: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
-          rarity: traitRarity,
+          rarity: traitRarityData,
         },
         ...traitConfig
       })
@@ -74,7 +76,7 @@ export const populateTraits = (
   return traitsData;
 }
 
-export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] => {
+export const randomTraits = (traits: TraitType[]) : GenAttr[] => {
   let result: GenAttr[] = [];
   for (const trait of traits) {
     let options = [];
@@ -84,7 +86,7 @@ export const randomTraits = (traits: TraitType[], rarity: Rarity) : GenAttr[] =>
       for (const key of traitItems) {
         const item = trait.items[key];
         options.push(item);
-        weights.push(weightFromRarity(item.rarity, rarity));
+        weights.push(item.rarity.weight);
       }
       const selection = weighted.select(options, weights);
       result.push({

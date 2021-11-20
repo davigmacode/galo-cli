@@ -19,7 +19,6 @@ export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
 export const buildGen = (
   generation: GenerationConfig,
   traits: TraitType[],
-  rarity: Rarity,
   spinner?: any,
 ) : Gen[] => {
   let genResult = [];
@@ -57,7 +56,7 @@ export const buildGen = (
         duplicates = 0;
       do {
         edition = generation.startAt + genResult.length;
-        attributes = randomTraits(genTraits, rarity);
+        attributes = randomTraits(genTraits);
         dna = createDna(attributes, genThread.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
         if (unique) {

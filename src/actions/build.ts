@@ -7,7 +7,7 @@ import {
 import { populateTraits } from "../helpers/traits";
 import { buildArtworks } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
-import { populateRarity, rarityToCSV } from "../helpers/rarity";
+import { populateRarity } from "../helpers/rarity";
 import { isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
 
@@ -120,7 +120,7 @@ export default async (basePath: string, opt: any) => {
         fn: async (spinner) => {
           try {
             let createdGeneration: Gen[];
-            createdGeneration = buildGen(config.generation, traits, config.traits.rarity, spinner);
+            createdGeneration = buildGen(config.generation, traits, spinner);
             writeJson(generationPath, createdGeneration);
             return createdGeneration;
           } catch (err) {
@@ -138,8 +138,8 @@ export default async (basePath: string, opt: any) => {
 
   const metadataConfig = pathJoin(basePath, config.metadata.config);
   const collagePath = pathJoin(basePath, config.collage.name);
-  const rarityJson = pathJoin(basePath, 'rarity.json');
-  const rarityCsv = pathJoin(basePath, 'rarity.csv');
+  // const rarityJson = pathJoin(basePath, 'rarity.json');
+  // const rarityCsv = pathJoin(basePath, 'rarity.csv');
 
   await task({
     processText: 'Removing previously generated content',
@@ -147,29 +147,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => {
       deleteFile(metadataConfig, '.json');
       deleteFile(collagePath, '.png');
-      deleteFile(rarityJson, '.json');
-      deleteFile(rarityCsv, '.csv');
+      // deleteFile(rarityJson, '.json');
+      // deleteFile(rarityCsv, '.csv');
     }
   });
 
   // populating rarity
-  const rarity = await task({
+  const traitsWithRarity : TraitType[] = await task({
     processText: 'Populating rarity',
     successText: `Collection Rarity is ready`,
     fn: async () => populateRarity(traits, generation),
   });
-
-  await task({
-    processText: 'Writing rarity to .json',
-    successText: `Collection Rarity: ${rarityJson}`,
-    fn: async () => writeJson(rarityJson, rarity),
-  });
-
-  await task({
-    processText: 'Writing rarity to .csv',
-    successText: `Collection Rarity: ${rarityCsv}`,
-    fn: async () => rarityToCSV(rarityCsv, rarity),
-  });
+  writeJson(traitsConfig, traitsWithRarity);
 
   // ensure artworks directory
   const artworksPath = pathJoin(basePath, config.artworks.path);
@@ -198,9 +187,11 @@ export default async (basePath: string, opt: any) => {
     successText: 'Updated generation with rarity and rank',
     fn: async () => {
       for (const gen of generation) {
-        // attach rarity to each gen attributes
+        // attach trait rarity to each gen attributes
         for (const genAttr of gen.attributes) {
-          genAttr.traitRarity = rarity[genAttr.traitType.label][genAttr.traitItem.label];
+          const traitType = traitsWithRarity.find((type) => genAttr.traitType.name == type.name);
+          const traitItem = traitType.items.find((item) => genAttr.traitItem.name == item.name);
+          genAttr.traitRarity = traitItem.rarity;
         }
 
         // attach rarity score, the less is better rank
@@ -208,10 +199,12 @@ export default async (basePath: string, opt: any) => {
         gen.rarity = ceil(gen.rarity, 2);
       }
 
+      // sort generation by rarity score
       const ranks = generation
         .map((gen) => pick(gen, ['edition', 'rarity']))
         .sort((a, b) => a.rarity - b.rarity);
 
+      // attach rank to each gen
       generation.forEach((gen) => {
         gen.rank = 1 + ranks.findIndex((rank) => gen.edition == rank.edition)
       });
