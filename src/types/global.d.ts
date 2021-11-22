@@ -18,8 +18,6 @@ interface TraitType {
   name?: string;
   label?: string;
   description?: string;
-  opacity?: number;
-  blend?: 'clear' | 'source' | 'over' | 'in' | 'out' | 'atop' | 'dest' | 'dest-over' | 'dest-in' | 'dest-out' | 'dest-atop' | 'xor' | 'add' | 'saturate' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'colour-dodge' | 'colour-dodge' | 'colour-burn' | 'colour-burn' | 'hard-light' | 'soft-light' | 'difference' | 'exclusion';
   path?: string;
   items?: TraitItem[];
 }
@@ -61,6 +59,7 @@ interface BuildArtworksConfig {
     path: string;
     width: number;
     height: number;
+    scale: any;
     attributes: GenAttr[];
   };
   artwork: {
@@ -68,6 +67,8 @@ interface BuildArtworksConfig {
     ext: string;
     width: number;
     height: number;
+    background: any;
+    transparent: boolean;
     option: any;
   };
 }
@@ -80,7 +81,8 @@ interface BuildCollageConfig {
   generation: Gen[];
   order: string;
   limit: number;
-  background: string;
+  background: any;
+  transparent: boolean;
   thumbWidth: number;
   thumbPerRow: number;
   imageRatio: number;

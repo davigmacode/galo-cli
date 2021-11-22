@@ -57,12 +57,15 @@
   "artworks": {
     "path": "/artworks",
     "ext": ".png",
+    "background": "#fff",
+    "transparent": false,
     "width": 1080,
     "height": 1080
   },
   "collage": {
     "name": "preview.jpg",
     "background": "#fff",
+    "transparent": true,
     "order": "random",
     "limit": 0.5,
     "thumbPerRow": -1,

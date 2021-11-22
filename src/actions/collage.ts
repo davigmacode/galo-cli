@@ -47,6 +47,7 @@ export default async (basePath: string, opt: any) => {
       order: config.collage.order,
       limit: config.collage.limit,
       background: config.collage.background,
+      transparent: config.collage.transparent,
       imageRatio: config.artworks.width / config.artworks.height,
       generation: generation,
       formatOption: omit(config.collage, [

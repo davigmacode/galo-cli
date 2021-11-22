@@ -80,14 +80,21 @@ export default async (basePath: string, opt: any) => {
           path: pathJoin(basePath, config.traits.path),
           width: config.traits.width,
           height: config.traits.height,
+          scale: config.traits.scale,
           attributes: gen.attributes,
         },
         artwork: {
           path: artworkPath,
           ext: config.artworks.ext,
+          background: config.artworks.background,
+          transparent: config.artworks.transparent,
           width: config.artworks.width,
           height: config.artworks.height,
-          option: omit(config.artworks, ['path', 'ext', 'width', 'height'])
+          option: omit(config.artworks, [
+            'path', 'ext',
+            'width', 'height',
+            'background', 'transparent'
+          ])
         }
       }),
     });
@@ -108,6 +115,7 @@ export default async (basePath: string, opt: any) => {
       order: config.collage.order,
       limit: config.collage.limit,
       background: config.collage.background,
+      transparent: config.collage.transparent,
       imageRatio: config.artworks.width / config.artworks.height,
       generation: generation,
       formatOption: omit(config.collage, [

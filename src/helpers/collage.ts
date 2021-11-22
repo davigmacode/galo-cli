@@ -53,7 +53,7 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
       width: previewWidth,
       height: previewHeight,
       background: opt.background || '#fff',
-      channels: 3,
+      channels: opt.transparent ? 4 : 3,
     }
   })
   .composite(thumbs)

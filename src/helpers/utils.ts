@@ -1,8 +1,8 @@
 export {
 	isEmpty, isArray, isString, isInteger, mapValues,
 	get, set, has, findKey, pick, omit, sampleSize,
-	isNil, isNumber, isFinite, merge, isUndefined,
-	meanBy, ceil
+	isNil, isNumber, isFinite, isUndefined,
+	meanBy, ceil, merge, assign
 } from "lodash";
 
 export const capitalize = (s: string) => s && s[0].toUpperCase() + s.slice(1);
