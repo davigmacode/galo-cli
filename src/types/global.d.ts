@@ -9,9 +9,9 @@ interface Gen {
 }
 
 interface GenAttr {
-  traitType: TraitType;
-  traitItem: TraitItem;
-  traitRarity?: TraitRarity;
+  type: TraitType;
+  trait: TraitItem;
+  rarity?: TraitRarity;
 }
 
 interface TraitType {

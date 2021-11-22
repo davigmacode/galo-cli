@@ -20,8 +20,8 @@ export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => 
   ];
   let overlays = [];
   for await (const attr of trait.attributes) {
-    const traitPath = pathNormalize([trait.path, attr.traitType.name, attr.traitItem.file]);
-    const traitOption = assign(defaultTraitOption, attr.traitType, attr.traitItem);
+    const traitPath = pathNormalize([trait.path, attr.type.name, attr.trait.file]);
+    const traitOption = assign(defaultTraitOption, attr.type, attr.trait);
     let traitImage = sharp(traitPath).ensureAlpha(traitOption.opacity);
 
     // scale the trait image

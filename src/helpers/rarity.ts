@@ -4,7 +4,7 @@ export const populateRarity = (traits: TraitType[], generations: Gen[]): TraitTy
   const rarity = {};
   for (const gen of generations) {
     for (const attr of gen.attributes) {
-      const path = [attr.traitType.label, attr.traitItem.label];
+      const path = [attr.type.label, attr.trait.label];
       const occurrence = get(rarity, [ ...path, 'occurrence' ], 0) + 1;
       const chance = ceil(occurrence / generations.length, 2);
       const percentage = chance * 100;

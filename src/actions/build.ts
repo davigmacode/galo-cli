@@ -187,13 +187,13 @@ export default async (basePath: string, opt: any) => {
       for (const gen of generation) {
         // attach trait rarity to each gen attributes
         for (const genAttr of gen.attributes) {
-          const traitType = traitsWithRarity.find((type) => genAttr.traitType.name == type.name);
-          const traitItem = traitType.items.find((item) => genAttr.traitItem.name == item.name);
-          genAttr.traitRarity = traitItem.rarity;
+          const traitType = traitsWithRarity.find((type) => genAttr.type.name == type.name);
+          const traitItem = traitType.items.find((item) => genAttr.trait.name == item.name);
+          genAttr.rarity = traitItem.rarity;
         }
 
         // attach rarity score, the less is better rank
-        const rarity = meanBy(gen.attributes, (attr) => attr.traitRarity.chance);
+        const rarity = meanBy(gen.attributes, (attr) => attr.rarity.chance);
         gen.rarity = { score: ceil(rarity, 2) };
       }
 

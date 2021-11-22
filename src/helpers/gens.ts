@@ -9,7 +9,7 @@ const log = debug('dna');
 
 export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
   let dna = {};
-  attrs.forEach((e) => dna = { ...dna, [e.traitType.name]: e.traitItem.name });
+  attrs.forEach((e) => dna = { ...dna, [e.type.name]: e.trait.name });
   if (!isNil(dnaAttrs) && !isEmpty(dnaAttrs)) {
     dna = pick(dna, dnaAttrs);
   }

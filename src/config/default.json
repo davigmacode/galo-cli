@@ -21,7 +21,7 @@
     "path": "/metadata",
     "config": "metadata.json",
     "template": {
-      "name": "{{faker.name.findName().capitalize()}} #{{rank}}",
+      "name": "{{faker.name.findName().capitalize()}} #{{rarity.rank}}",
       "symbol": "GALO",
       "description": "Generative Artworks Lies On-chain",
       "seller_fee_basis_points": 500,
@@ -29,8 +29,8 @@
       "image": "{{artwork.url}}",
       "attributes": {
         "{{#each attributes}}": {
-          "trait_type": "{{traitType.label}}",
-          "value": "{{traitItem.label}}"
+          "trait_type": "{{type.label}}",
+          "value": "{{trait.label}}"
         }
       },
       "collection": {
