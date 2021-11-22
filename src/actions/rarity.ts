@@ -55,7 +55,7 @@ export default async (basePath: string, opt: any) => {
     for (const traitItem of traitType.items) {
       rarityTable.push([
         traitItem.label,
-        traitItem.rarity.weight,
+        traitItem.weight,
         traitItem.rarity.occurrence,
         traitItem.rarity.chance,
         traitItem.rarity.percentage

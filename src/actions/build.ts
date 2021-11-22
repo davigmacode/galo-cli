@@ -193,18 +193,18 @@ export default async (basePath: string, opt: any) => {
         }
 
         // attach rarity score, the less is better rank
-        gen.rarity = meanBy(gen.attributes, (attr) => attr.traitRarity.chance);
-        gen.rarity = ceil(gen.rarity, 2);
+        const rarity = meanBy(gen.attributes, (attr) => attr.traitRarity.chance);
+        gen.rarity = { score: ceil(rarity, 2) };
       }
 
       // sort generation by rarity score
       const ranks = generation
         .map((gen) => pick(gen, ['edition', 'rarity']))
-        .sort((a, b) => a.rarity - b.rarity);
+        .sort((a, b) => a.rarity.score - b.rarity.score);
 
       // attach rank to each gen
       generation.forEach((gen) => {
-        gen.rank = 1 + ranks.findIndex((rank) => gen.edition == rank.edition)
+        gen.rarity.rank = 1 + ranks.findIndex((rank) => gen.edition == rank.edition)
       });
 
       // write generation with rarity

@@ -2,8 +2,10 @@ interface Gen {
   dna: string;
   edition: number;
   attributes: GenAttr[];
-  rarity?: number;
-  rank?: number;
+  rarity?: {
+    score?: number;
+    rank?: number;
+  }
 }
 
 interface GenAttr {
@@ -25,14 +27,11 @@ interface TraitType {
 interface TraitItem extends TraitType {
   file?: string;
   ext?: string;
+  weight?: number;
   rarity?: TraitRarity;
 }
 
 interface TraitRarity {
-  name?: string;
-  label?: string;
-  weight?: number;
-  default?: boolean;
   occurrence?: number;
   chance?: number;
   percentage?: string;

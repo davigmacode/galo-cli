@@ -58,7 +58,7 @@ export const populateTraits = (
           file: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
-          rarity: { weight: parseInt(traitRarity) || 1 },
+          weight: parseInt(traitRarity) || 1 ,
         },
         ...traitConfig
       })
@@ -77,7 +77,7 @@ export const randomTraits = (traits: TraitType[]) : GenAttr[] => {
     if (traitType.items.length == 0) continue;
     for (const traitItem of traitType.items) {
       options.push(traitItem);
-      weights.push(traitItem.rarity.weight);
+      weights.push(traitItem.weight);
     }
     const selection = weighted.select(options, weights);
     result.push({
@@ -97,7 +97,7 @@ export const traitsToCSV = (path: string, traits: TraitType[]) => {
       csvStream.write({
         "Trait Type": traitType.label,
         "Trait Item": traitItem.label,
-        "Weight": traitItem.rarity.weight,
+        "Weight": traitItem.weight,
         "Occurrence": traitItem.rarity.occurrence,
         "Chance": traitItem.rarity.chance,
         "Percentage": traitItem.rarity.percentage
