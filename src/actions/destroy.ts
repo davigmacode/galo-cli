@@ -57,18 +57,18 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(metadataConfig),
   });
 
-  const rarityCsv = pathJoin(basePath, 'rarity.csv');
-  await task({
-    processText: 'Removing collection rarity',
-    successText: `Removed: ${rarityCsv}`,
-    fn: async () => deleteFile(rarityCsv, '.csv'),
-  });
-
   const traitsConfig = pathJoin(basePath, config.traits.config);
   await task({
     processText: 'Removing collection traits',
     successText: `Removed: ${traitsConfig}`,
     fn: async () => deleteJson(traitsConfig),
+  });
+
+  const traitsRarity = pathJoin(basePath, config.traits.rarity);
+  await task({
+    processText: 'Removing collection traits rarity table',
+    successText: `Removed: ${traitsRarity}`,
+    fn: async () => deleteFile(traitsRarity, '.csv'),
   });
 
   const collagePath = pathJoin(basePath, config.collage.name);

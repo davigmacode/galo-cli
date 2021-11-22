@@ -32,11 +32,11 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(traitsPath),
   });
 
-  const csvPath = pathJoin(basePath, 'traits.csv');
+  const traitsRarity = pathJoin(basePath, config.traits.rarity);
   await task({
     processText: 'Writing rarity to .csv',
-    successText: `Collection Rarity: ${csvPath}`,
-    fn: async () => traitsToCSV(csvPath, traits),
+    successText: `Collection Rarity: ${traitsRarity}`,
+    fn: async () => traitsToCSV(traitsRarity, traits),
   });
 
   // Display rarity table
