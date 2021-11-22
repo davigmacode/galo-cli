@@ -38,14 +38,6 @@ interface TraitRarity {
   percentage?: string;
 }
 
-interface TraitRarityTier {
-  [key: string]: TraitRarity
-}
-
-interface Traits {
-  [index: string]: TraitType;
-}
-
 interface GenerationConfig {
   config: string,
   duplicateTolerance: number,

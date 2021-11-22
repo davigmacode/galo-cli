@@ -8,14 +8,7 @@
     "path": "/traits",
     "config": "traits.json",
     "delimiter": "__",
-    "exts": [".png", ".jpg"],
-    "rarity": {
-      "C": { "label": "Common", "weight": 0.5, "default": true },
-      "U": { "label": "Uncommon", "weight": 0.05 },
-      "R": { "label": "Rare", "weight": 0.005 },
-      "E": { "label": "Epic", "weight": 0.0005 },
-      "L": { "label": "Legend", "weight": 0.00005 }
-    }
+    "exts": [".png", ".jpg"]
   },
   "generation": {
     "config": "generation.json",

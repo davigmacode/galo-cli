@@ -1,15 +1,4 @@
-import { get, set, findKey, ceil, omit } from "./utils";
-
-export const getRarityFromName = (key: string, tiers: TraitRarityTier): TraitRarity => {
-  return tiers[key]
-    ? omit({ name: key, ...tiers[key] }, ['default'])
-    : null;
-}
-
-export const getDefaultRarity = (tiers: TraitRarityTier): TraitRarity => {
-  const key = findKey(tiers, { default: true })
-  return getRarityFromName(key, tiers);
-}
+import { get, set, ceil } from "./utils";
 
 export const populateRarity = (traits: TraitType[], generations: Gen[]): TraitType[] => {
   const rarity = {};

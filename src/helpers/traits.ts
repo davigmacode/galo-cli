@@ -4,10 +4,6 @@ import {
   findDirs, findTypes,
   readJson, exists
 } from "./file";
-import {
-  getDefaultRarity,
-  getRarityFromName
-} from "./rarity";
 import { omit } from "./utils";
 import { createWriteStream } from "fs";
 import * as csv from "fast-csv";
@@ -19,11 +15,9 @@ export const populateTraits = (
   basePath: string,
   traitsPath: string,
   exts: string | string[],
-  rarity: TraitRarityTier,
   delimiter: string = '_',
 ) : TraitType[] => {
   const absoluteTraitsPath = pathNormalize([basePath, traitsPath]);
-  const defaultRarityData = getDefaultRarity(rarity);
 
   let traitsData = [];
   for (const traitType of findDirs(absoluteTraitsPath)) {
@@ -55,9 +49,6 @@ export const populateTraits = (
 
       const [traitRarity, traitName] = traitFilename.split(delimiter);
       const traitLabel = traitName || traitRarity;
-      const traitRarityData = traitName
-        ? getRarityFromName(traitRarity, rarity) || { weight: parseInt(traitRarity) }
-        : defaultRarityData;
 
       traitItems.push({
         ...{},
@@ -67,7 +58,7 @@ export const populateTraits = (
           file: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
-          rarity: traitRarityData,
+          rarity: { weight: parseInt(traitRarity) || 1 },
         },
         ...traitConfig
       })
