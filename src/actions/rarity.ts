@@ -1,6 +1,6 @@
-import { writeJson, readJson, pathJoin, exists } from "../helpers/file";
-import { populateRarity, rarityToCSV } from "../helpers/rarity";
-import { print, task } from "../helpers/ui";
+import { readJson, pathJoin, exists } from "../helpers/file";
+import { print, task, createTable } from "../helpers/ui";
+import { traitsToCSV } from "../helpers/traits";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -24,13 +24,6 @@ export default async (basePath: string, opt: any) => {
     return;
   }
 
-  // read the generation from file
-  const generation = await task({
-    processText: 'Loading generation from file',
-    successText: `Collection generation: ${generationPath}`,
-    fn: async () => readJson(generationPath),
-  });
-
   // read the traits from file
   const traitsPath = pathJoin(basePath, config.traits.config)
   const traits = await task({
@@ -39,24 +32,35 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(traitsPath),
   });
 
-  // populating rarity
-  const rarity = await task({
-    processText: 'Populating rarity',
-    successText: `Collection rarity is ready`,
-    fn: async () => populateRarity(traits, generation),
-  });
-
-  const rarityJson = pathJoin(basePath, 'rarity.json');
-  await task({
-    processText: 'Writing rarity to .json',
-    successText: `Collection Rarity: ${rarityJson}`,
-    fn: async () => writeJson(rarityJson, rarity),
-  });
-
-  const rarityCsv = pathJoin(basePath, 'rarity.csv');
+  const csvPath = pathJoin(basePath, 'traits.csv');
   await task({
     processText: 'Writing rarity to .csv',
-    successText: `Collection Rarity: ${rarityCsv}`,
-    fn: async () => rarityToCSV(rarityCsv, rarity),
+    successText: `Collection Rarity: ${csvPath}`,
+    fn: async () => traitsToCSV(csvPath, traits),
   });
+
+  // Display rarity table
+  for (const traitType of traits) {
+    print.success(traitType.label);
+    const rarityTable = new createTable({
+      head: [
+        'Trait Item',
+        'Weight',
+        'Occurrence',
+        'Chance',
+        'Percentage'
+      ],
+      colWidths: [20, 10, 10, 10, 10]
+    });
+    for (const traitItem of traitType.items) {
+      rarityTable.push([
+        traitItem.label,
+        traitItem.rarity.weight,
+        traitItem.rarity.occurrence,
+        traitItem.rarity.chance,
+        traitItem.rarity.percentage
+      ]);
+    }
+    console.log(rarityTable.toString());
+  }
 }

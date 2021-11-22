@@ -9,6 +9,8 @@ import {
   getRarityFromName
 } from "./rarity";
 import { omit } from "./utils";
+import { createWriteStream } from "fs";
+import * as csv from "fast-csv";
 
 // import debug from "debug";
 // const log = debug("traits");
@@ -78,22 +80,38 @@ export const populateTraits = (
 
 export const randomTraits = (traits: TraitType[]) : GenAttr[] => {
   let result: GenAttr[] = [];
-  for (const trait of traits) {
-    let options = [];
-    let weights = [];
-    const traitItems = Object.keys(trait.items);
-    if (traitItems.length > 0) {
-      for (const key of traitItems) {
-        const item = trait.items[key];
-        options.push(item);
-        weights.push(item.rarity.weight);
-      }
-      const selection = weighted.select(options, weights);
-      result.push({
-        traitType: omit(trait, ['path', 'items']),
-        traitItem: omit(selection, ['path', 'ext'])
-      })
+  for (const traitType of traits) {
+    const options = [];
+    const weights = [];
+    if (traitType.items.length == 0) continue;
+    for (const traitItem of traitType.items) {
+      options.push(traitItem);
+      weights.push(traitItem.rarity.weight);
     }
+    const selection = weighted.select(options, weights);
+    result.push({
+      traitType: omit(traitType, ['path', 'items']),
+      traitItem: omit(selection, ['path', 'ext', 'rarity'])
+    })
   }
   return result;
+}
+
+export const traitsToCSV = (path: string, traits: TraitType[]) => {
+  const csvStream = csv.format({ headers: true });
+  const writeStream = createWriteStream(path);
+  csvStream.pipe(writeStream);
+  for (const traitType of traits) {
+    for (const traitItem of traitType.items) {
+      csvStream.write({
+        "Trait Type": traitType.label,
+        "Trait Item": traitItem.label,
+        "Weight": traitItem.rarity.weight,
+        "Occurrence": traitItem.rarity.occurrence,
+        "Chance": traitItem.rarity.chance,
+        "Percentage": traitItem.rarity.percentage
+      });
+    }
+  }
+  csvStream.end();
 }

@@ -1,6 +1,6 @@
 {
   "name": "galo-cli",
-  "version": "2.0.0",
+  "version": "2.1.2",
   "description": "Generative Artworks Lies On-chain",
   "repository": "https://github.com/davigmacode/galo",
   "author": "Irfan Vigma Taufik <davigmacode@gmail.com>",
@@ -16,7 +16,9 @@
   "module": "./build/module/index.js",
   "pkg": {
     "scripts": "./build/**/*.{js|json}",
-    "outputPath": "./bin"
+    "assets": [
+      "./node_modules/sharp/**/*"
+    ]
   },
   "scripts": {
     "build": "run-p build:*",
@@ -47,15 +49,14 @@
     "version": "standard-version",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare-release": "run-s reset-hard test cov:check doc:html version doc:publish",
-    "package:win": "pkg . --output bin/win/galo --compress GZip",
-    "galo:dev": "run-s build galo",
-    "galo": "node build/main/index.js"
+    "package": "pkg . --debug --target host --output ./bin/galo --compress GZip"
   },
   "engines": {
     "node": ">=16"
   },
   "dependencies": {
     "arweave": "^1.10.18",
+    "cli-table": "^0.3.8",
     "commander": "^8.2.0",
     "debug": "^4.3.2",
     "faker": "^5.5.3",
@@ -73,6 +74,7 @@
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/cli-table": "^0.3.0",
     "@types/debug": "^4.1.7",
     "@types/faker": "^5.5.9",
     "@types/inquirer": "^8.1.3",

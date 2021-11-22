@@ -1,8 +1,11 @@
 import ora from "ora";
 import chalk from "chalk";
 import inquirer from "inquirer";
+import Table from "cli-table";
 
 export const createSpinner = ora;
+
+export const createTable = Table;
 
 export const prompt = inquirer.createPromptModule();
 

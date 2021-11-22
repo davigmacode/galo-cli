@@ -1,6 +1,4 @@
 import { get, set, findKey, ceil, omit } from "./utils";
-import { createWriteStream } from "fs";
-import * as csv from "fast-csv";
 
 export const getRarityFromName = (key: string, tiers: TraitRarityTier): TraitRarity => {
   return tiers[key]
@@ -30,29 +28,10 @@ export const populateRarity = (traits: TraitType[], generations: Gen[]): TraitTy
   traits.forEach((traitType) => {
     traitType.items.forEach((traitItem) => {
       const rarityPath = [traitType.label, traitItem.label];
-      const rarityDefault = { name: traitItem.rarity, occurrence: 0, chance: 0, percentage: '0%' };
+      const rarityDefault = { occurrence: 0, chance: 0, percentage: '0%' };
       const rarityData = get(rarity, rarityPath, rarityDefault);
       traitItem.rarity = { ...traitItem.rarity, ...rarityData };
     });
   });
   return traits;
-}
-
-export const rarityToCSV = (path: string, rarity: any) => {
-  const csvStream = csv.format({ headers: true });
-  const writeStream = createWriteStream(path);
-  csvStream.pipe(writeStream);
-  Object.keys(rarity).forEach((traitType) => {
-    Object.keys(rarity[traitType]).forEach((traitItem) => {
-      const traitRarity = rarity[traitType][traitItem];
-      csvStream.write({
-        "Trait Type": traitType,
-        "Trait Item": traitItem,
-        "Occurrence": traitRarity.occurrence,
-        "Chance": traitRarity.chance,
-        "Percentage": traitRarity.percentage,
-      });
-    });
-  });
-  csvStream.end();
 }
