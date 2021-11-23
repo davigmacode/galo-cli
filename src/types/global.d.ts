@@ -2,10 +2,16 @@ interface Gen {
   dna: string;
   edition: number;
   attributes: GenAttr[];
+  artwork?: {
+    id?: string;
+    uri?: string;
+    url?: string;
+    type?: string;
+  };
   rarity?: {
     score?: number;
     rank?: number;
-  }
+  };
 }
 
 interface GenAttr {

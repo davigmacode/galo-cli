@@ -16,6 +16,8 @@ export const extname = p.extname;
 
 export const pathJoin = p.join;
 
+export const pathRelative = p.relative;
+
 export const pathIsAbsolute = p.isAbsolute;
 
 export const pathNormalize = (path: string | string[], ext?: string) => {

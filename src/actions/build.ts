@@ -5,7 +5,7 @@ import {
   deleteDir, deleteFile
 } from "../helpers/file";
 import { populateTraits } from "../helpers/traits";
-import { buildArtworks } from "../helpers/artworks";
+import { buildArtworks, getLocalStoredArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity } from "../helpers/rarity";
 import { isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
@@ -259,12 +259,17 @@ export default async (basePath: string, opt: any) => {
     if (opt.buildMetadata) {
       // create a single metadata
       const metaPath = pathJoin(metadataPath, edition);
+      const artwork = getLocalStoredArtwork(
+        edition + config.artworks.ext,
+        artworksPath,
+        metadataPath
+      );
       await task({
         processText: `[${editionOf}] Building metadata #${edition}`,
         successText: `[${editionOf}] Metadata #${edition}: ${metaPath}.json`,
         fn: async () => {
           // transform gen into metadata based on configurable template
-          const meta = transformGen(gen, config.metadata.template);
+          const meta = transformGen({ ...gen, artwork }, config.metadata.template);
           // create a single metadata
           writeJson(metaPath, meta);
           // add to metadata collection

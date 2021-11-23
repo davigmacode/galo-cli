@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { pathNormalize } from "./file";
+import { pathNormalize, pathJoin, pathRelative, mimeLookup } from "./file";
 import { assign, pick } from "./utils";
 
 export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => {
@@ -76,4 +76,17 @@ export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => 
   .withMetadata()
   .toFormat(artworkFormat, artwork.option)
   .toFile(artworkPath);
+}
+
+export const getLocalStoredArtwork = (
+  artworkFile: string,
+  artworksPath: string,
+  metadataPath: string
+) => {
+  return {
+    id: artworkFile,
+    uri: pathJoin(pathRelative(metadataPath, artworksPath), artworkFile),
+    url: pathJoin(artworksPath, artworkFile),
+    type: mimeLookup(artworkFile) || 'application/octet-stream'
+  }
 }

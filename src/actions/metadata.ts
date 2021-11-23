@@ -1,4 +1,8 @@
-import { writeJson, readJson, pathJoin, exists, setupDir } from "../helpers/file";
+import {
+  writeJson, readJson,
+  pathJoin, exists, setupDir,
+} from "../helpers/file";
+import { getLocalStoredArtwork } from "../helpers/artworks";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil, mapValues } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
@@ -76,20 +80,25 @@ export default async (basePath: string, opt: any) => {
 
   // define metadata collection
   let metadata = [];
+  const artworksPath = pathJoin(basePath, config.artworks.path);
 
-  // generate artworks and metadata
+  // generate metadata
   const generationLength = generation.length;
   for (let i = 0; i < generationLength; i++) {
     const progress = `${i+1}/${generationLength}`;
     const gen = generation[i];
     const edition = gen.edition.toString();
-    const artwork = storedArtworks[edition];
 
     // create a single metadata
-    const metaPath = pathJoin(metadataPath, edition);
+    const metaPath = pathJoin(metadataPath, `${edition}.json`);
+    const artwork = storedArtworks[edition] || getLocalStoredArtwork(
+      edition + config.artworks.ext,
+      artworksPath,
+      metadataPath
+    );
     await task({
       processText: `[${progress}] Building metadata #${edition}`,
-      successText: `[${progress}] Metadata #${edition}: ${metaPath}.json`,
+      successText: `[${progress}] Metadata #${edition}: ${metaPath}`,
       fn: async () => {
         // transform gen into metadata based on configurable template
         const meta = transformGen({ ...gen, artwork }, config.metadata.template);
