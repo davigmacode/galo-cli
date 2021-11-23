@@ -199,12 +199,12 @@ export default async (basePath: string, opt: any) => {
 
       // sort generation by rarity score
       const ranks = generation
-        .map((gen) => pick(gen, ['edition', 'rarity']))
+        .map((gen) => pick(gen, ['id', 'rarity']))
         .sort((a, b) => a.rarity.score - b.rarity.score);
 
       // attach rank to each gen
       generation.forEach((gen) => {
-        gen.rarity.rank = 1 + ranks.findIndex((rank) => gen.edition == rank.edition)
+        gen.rarity.rank = 1 + ranks.findIndex((rank) => gen.id == rank.id)
       });
 
       // write generation with rarity
@@ -222,15 +222,15 @@ export default async (basePath: string, opt: any) => {
   const generationLength = generation.length;
   for (let i = 0; i < generationLength; i++) {
     let gen = generation[i];
-    const edition = gen.edition.toString();
-    const editionOf = `${i+1}/${generationLength}`;
+    const id = gen.id.toString();
+    const progress = `${i+1}/${generationLength}`;
 
     if (opt.buildArtworks) {
       // create a single artwork
-      const artworkPath = pathJoin(artworksPath, edition);
+      const artworkPath = pathJoin(artworksPath, id);
       await task({
-        processText: `[${editionOf}] Building artwork #${edition}`,
-        successText: `[${editionOf}] Artwork #${edition}: ${artworkPath}${config.artworks.ext}`,
+        processText: `[${progress}] Building artwork #${id}`,
+        successText: `[${progress}] Artwork #${id}: ${artworkPath}${config.artworks.ext}`,
         fn: async () => buildArtworks({
           trait: {
             path: pathJoin(basePath, config.traits.path),
@@ -258,15 +258,15 @@ export default async (basePath: string, opt: any) => {
 
     if (opt.buildMetadata) {
       // create a single metadata
-      const metaPath = pathJoin(metadataPath, edition);
+      const metaPath = pathJoin(metadataPath, id);
       const artwork = getLocalStoredArtwork(
-        edition + config.artworks.ext,
+        id + config.artworks.ext,
         artworksPath,
         metadataPath
       );
       await task({
-        processText: `[${editionOf}] Building metadata #${edition}`,
-        successText: `[${editionOf}] Metadata #${edition}: ${metaPath}.json`,
+        processText: `[${progress}] Building metadata #${id}`,
+        successText: `[${progress}] Metadata #${id}: ${metaPath}.json`,
         fn: async () => {
           // transform gen into metadata based on configurable template
           const meta = transformGen({ ...gen, artwork }, config.metadata.template);

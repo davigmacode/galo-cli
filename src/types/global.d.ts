@@ -1,6 +1,6 @@
 interface Gen {
+  id: number;
   dna: string;
-  edition: number;
   attributes: GenAttr[];
   artwork?: {
     id?: string;
@@ -109,5 +109,5 @@ interface UploadsConfig {
   config: any;
   cachedPath: string;
   cached: any;
-  generation: any;
+  generation: Gen[];
 }

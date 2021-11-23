@@ -30,7 +30,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read the generation from file
-  const generation = await task({
+  const generation: Gen[] = await task({
     processText: 'Loading generation from file',
     successText: `Collection generation: ${generationPath}`,
     fn: async () => readJson(generationPath),
@@ -87,18 +87,18 @@ export default async (basePath: string, opt: any) => {
   for (let i = 0; i < generationLength; i++) {
     const progress = `${i+1}/${generationLength}`;
     const gen = generation[i];
-    const edition = gen.edition.toString();
+    const id = gen.id.toString();
 
     // create a single metadata
-    const metaPath = pathJoin(metadataPath, `${edition}.json`);
-    const artwork = storedArtworks[edition] || getLocalStoredArtwork(
-      edition + config.artworks.ext,
+    const metaPath = pathJoin(metadataPath, `${id}.json`);
+    const artwork = storedArtworks[id] || getLocalStoredArtwork(
+      id + config.artworks.ext,
       artworksPath,
       metadataPath
     );
     await task({
-      processText: `[${progress}] Building metadata #${edition}`,
-      successText: `[${progress}] Metadata #${edition}: ${metaPath}`,
+      processText: `[${progress}] Building metadata #${id}`,
+      successText: `[${progress}] Metadata #${id}: ${metaPath}`,
       fn: async () => {
         // transform gen into metadata based on configurable template
         const meta = transformGen({ ...gen, artwork }, config.metadata.template);

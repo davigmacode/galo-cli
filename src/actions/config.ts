@@ -38,8 +38,8 @@ export default async (basePath: string, opt: any) => {
     return;
   }
 
-  const omitedConfig = omit(config, ['engine', 'metadata']);
-  const flattenedObject = flattenObject(omitedConfig);
+  const omittedConfig = omit(config, ['engine', 'metadata']);
+  const flattenedObject = flattenObject(omittedConfig);
   Object.keys((flattenedObject)).forEach((key) => {
     print.log('>', key, '=', flattenedObject[key]);
   });

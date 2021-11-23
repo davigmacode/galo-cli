@@ -54,28 +54,28 @@ export default async ({
   for (let i = 0; i < n; i++) {
     const progress = `[${i+1}/${n}]`;
     const gen = generation[i];
-    const edition = gen.edition;
-    if (!get(cached, [edition, uploadType])) {
-      const fileName = `${edition}${typeExt}`;
+    const id = gen.id;
+    if (!get(cached, [id, uploadType])) {
+      const fileName = `${id}${typeExt}`;
       const filePath = pathJoin(basePath, typePath, fileName);
       const fileMime = mimeLookup(filePath) || 'application/octet-stream';
       const fileData = readFile(filePath, typeExt);
       const fileBlob = new File([fileData], fileName, { type: fileMime });
-      const id = await task({
-        processText: `${progress} Uploading ${uploadType} #${edition} to ${storage.label}`,
-        successText: `${progress} Uploaded ${uploadType} #${edition} to ${storage.label}`,
+      const txId = await task({
+        processText: `${progress} Uploading ${uploadType} #${id} to ${storage.label}`,
+        successText: `${progress} Uploaded ${uploadType} #${id} to ${storage.label}`,
         fn: async () => ipfs.storeBlob(fileBlob),
       }).catch((error) => print.error(progress, error));
       const cacheData = {
-        id,
-        uri: `ipfs://${id}`,
-        url: `https://ipfs.io/ipfs/${id}`,
+        id: txId,
+        uri: `ipfs://${txId}`,
+        url: `https://ipfs.io/ipfs/${txId}`,
         type: fileMime
       };
-      set(cached, [edition, uploadType], cacheData);
+      set(cached, [id, uploadType], cacheData);
       writeJson(cachedPath, cached);
     } else {
-      print.success(progress, `Cached ${uploadType} #${edition}`);
+      print.success(progress, `Cached ${uploadType} #${id}`);
     }
   }
 }

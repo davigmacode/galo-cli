@@ -50,29 +50,29 @@ export const buildGen = (
 
     for (let i = 0; i < genThread.size; i++) {
       let dna: string,
-        edition: number,
+        id: number,
         attributes: GenAttr[],
         unique: boolean,
         duplicates = 0;
       do {
-        edition = generation.startAt + genResult.length;
+        id = generation.startAt + genResult.length;
         attributes = randomTraits(genTraits);
         dna = createDna(attributes, genThread.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
         if (unique) {
-          log(`Generated DNA for #${edition}: Unique.`);
+          log(`Generated DNA for #${id}: Unique.`);
         } else {
           duplicates = duplicates + 1;
-          log(`Generated DNA for #${edition}: Exists!`);
+          log(`Generated DNA for #${id}: Exists!`);
           if (duplicates >= generation.duplicateTolerance) {
             const additionalMessage = !isNil(genThread.dna) && !isEmpty(genThread.dna)
               ? `to ${genThread.dna.join('/')}`
               : ''
-            throw new Error(`Generation break at edition #${edition}, please add more traits ${additionalMessage}`);
+            throw new Error(`Generation break at id #${id}, please add more traits ${additionalMessage}`);
           }
         }
       } while (!unique);
-      genResult.push({ edition, dna, attributes });
+      genResult.push({ id, dna, attributes });
     }
   }
   return genResult;

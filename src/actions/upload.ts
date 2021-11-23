@@ -27,7 +27,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read the generation from file
-  const generation = await task({
+  const generation: Gen[] = await task({
     processText: 'Loading generation from file',
     successText: `Collection generation: ${generationPath}`,
     fn: async () => readJson(generationPath),

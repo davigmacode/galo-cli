@@ -2,8 +2,6 @@ import { isEmpty, omit, get, set } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
 import { writeJson, readJson, readFile, pathJoin, exists, mimeLookup } from "../helpers/file";
 import Arweave from "arweave";
-import Transaction from 'arweave/node/lib/transaction';
-import { JWKInterface } from 'arweave/node/lib/wallet';
 
 export default async ({
   uploadType,
@@ -60,57 +58,39 @@ export default async ({
   for (let i = 0; i < n; i++) {
     const progress = `[${i+1}/${n}]`;
     const gen = generation[i];
-    const edition = gen.edition;
-    if (!get(cached, [edition, uploadType])) {
-      const fileName = `${edition}${typeExt}`;
+    const id = gen.id;
+    if (!get(cached, [id, uploadType])) {
+      const fileName = `${id}${typeExt}`;
       const filePath = pathJoin(basePath, typePath, fileName);
       const fileMime = mimeLookup(filePath) || 'application/octet-stream';
       const fileData = readFile(filePath, typeExt);
-      const { id } = await task({
-        processText: `${progress} Uploading ${uploadType} #${edition} to ${storage.label}`,
-        successText: `${progress} Uploaded ${uploadType} #${edition} to ${storage.label}`,
-        fn: async (spinner) => arweaveUpload(
-          arweave,
-          fileData,
-          fileMime,
-          token,
-          true,
-          spinner
-        ),
+      const tx = await task({
+        processText: `${progress} Uploading ${uploadType} #${id} to ${storage.label}`,
+        successText: `${progress} Uploaded ${uploadType} #${id} to ${storage.label}`,
+        fn: async (spinner) => {
+          const tx = await arweave.createTransaction({ data: fileData }, token);
+          tx.addTag('Content-Type', fileMime);
+          await arweave.transactions.sign(tx, token);
+          const uploader = await arweave.transactions.getUploader(tx);
+          const text = spinner.text;
+          while (!uploader.isComplete) {
+            await uploader.uploadChunk();
+            spinner.text = `${text} - ${uploader.pctComplete}% complete`;
+          }
+          await arweave.transactions.post(tx);
+          return tx;
+        },
       }).catch((error) => print.error(progress, error));
       const cacheData = {
-        id,
-        uri: `ar://${id}`,
-        url: `https://arweave.net/${id}`,
+        id: tx.id,
+        uri: `ar://${tx.id}`,
+        url: `https://arweave.net/${tx.id}`,
         type: fileMime
       };
-      set(cached, [edition, uploadType], cacheData);
+      set(cached, [id, uploadType], cacheData);
       writeJson(cachedPath, cached);
     } else {
-      print.success(progress, `Cached ${uploadType} #${edition}`);
+      print.success(progress, `Cached ${uploadType} #${id}`);
     }
   }
 }
-
-export const arweaveUpload = async (
-  arweave: Arweave,
-  data: Buffer | string,
-  fileType: string,
-  jwk: JWKInterface,
-  isUploadByChunk = false,
-  spinner: any,
-): Promise<Transaction> => {
-  const tx = await arweave.createTransaction({ data: data }, jwk);
-  tx.addTag('Content-Type', fileType);
-  await arweave.transactions.sign(tx, jwk);
-  if (isUploadByChunk) {
-    const uploader = await arweave.transactions.getUploader(tx);
-    const text = spinner.text;
-    while (!uploader.isComplete) {
-      await uploader.uploadChunk();
-      spinner.text = `${text} - ${uploader.pctComplete}% complete`;
-    }
-  }
-  await arweave.transactions.post(tx);
-  return tx;
-};

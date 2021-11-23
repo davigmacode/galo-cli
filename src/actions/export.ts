@@ -55,7 +55,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read the generation from file
-  const generation = await task({
+  const generation: Gen[] = await task({
     processText: 'Loading generation from file',
     successText: `Collection generation: ${generationPath}`,
     fn: async () => readJson(generationPath),
@@ -74,10 +74,10 @@ export default async (basePath: string, opt: any) => {
     fn: async () => {
       let output = { items: {} }
       for (const gen of generation) {
-        const edition = gen.edition.toString();
-        const meta = readJson([basePath, config.metadata.path, edition]);
-        output.items[edition] = {
-          link: cached[edition].metadata.url,
+        const id = gen.id.toString();
+        const meta = readJson([basePath, config.metadata.path, id]);
+        output.items[id] = {
+          link: cached[id].metadata.url,
           name: meta.name,
           onChain: false,
         }

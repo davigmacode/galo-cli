@@ -27,7 +27,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read the generation from file
-  const generation = await task({
+  const generation: Gen[] = await task({
     processText: 'Loading generation from file',
     successText: `Collection generation: ${generationPath}`,
     fn: async () => readJson(generationPath),
@@ -67,14 +67,14 @@ export default async (basePath: string, opt: any) => {
   const generationLength = generation.length;
   for (let i = 0; i < generationLength; i++) {
     const gen = generation[i];
-    const edition = gen.edition.toString();
-    const editionOf = `${i+1}/${generationLength}`;
+    const id = gen.id.toString();
+    const progress = `${i+1}/${generationLength}`;
 
     // create a single artwork
-    const artworkPath = pathJoin(artworksPath, edition);
+    const artworkPath = pathJoin(artworksPath, id);
     await task({
-      processText: `Building artwork for edition [${editionOf}]`,
-      successText: `Artwork [${editionOf}]: ${artworkPath}`,
+      processText: `Building artwork for edition [${progress}]`,
+      successText: `Artwork [${progress}]: ${artworkPath}`,
       fn: async () => buildArtworks({
         trait: {
           path: pathJoin(basePath, config.traits.path),

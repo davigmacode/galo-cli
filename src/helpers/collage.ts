@@ -16,9 +16,9 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
       ? opt.limit // use as exact number of limit
       : Math.round(opt.limit * generation.length) // use as percentage of generation length
   const sample = opt.order.toLowerCase() == 'asc'
-    ? generation.sort((a, b) => a.edition - b.edition).slice(0, limit)
+    ? generation.sort((a, b) => a.id - b.id).slice(0, limit)
     : opt.order.toLowerCase() == 'desc'
-      ? generation.sort((a, b) => b.edition - a.edition).slice(0, limit)
+      ? generation.sort((a, b) => b.id - a.id).slice(0, limit)
       : sampleSize(generation, limit); // else is random
 
   const thumbWidth = opt.thumbWidth;
@@ -35,7 +35,7 @@ export const buildCollage = async (opt: BuildCollageConfig) => {
   let thumbs = [];
   for (let index = 0; index < sample.length; index++) {
     const gen = sample[index];
-    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.edition}`], opt.artworksExt);
+    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.id}`], opt.artworksExt);
     const thumbBuffer = await sharp(thumbPath).resize(thumbWidth, thumbHeight).toBuffer();
     const xPos = thumbWidth * (index % thumbPerRow);
     const yPos = thumbHeight * Math.trunc(index / thumbPerRow);
