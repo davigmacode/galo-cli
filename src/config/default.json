@@ -81,12 +81,6 @@
       "label": "Arweave",
       "cache": "/storage/arweave.json",
       "token": "/.secret/arweave-key.json"
-    },
-    "gdrive": {
-      "label": "Google Drive",
-      "cache": "/storage/gdrive.json",
-      "credentials": "/.secret/gdrive-credentials.json",
-      "token": "/.secret/gdrive-token.json"
     }
   }
 }
