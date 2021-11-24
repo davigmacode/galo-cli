@@ -1,7 +1,7 @@
 export {
 	isEmpty, isArray, isString, isInteger, mapValues,
 	get, set, has, findKey, pick, omit, sampleSize,
-	isNil, isNumber, isFinite, isUndefined,
+	isNil, isNumber, isFinite, isUndefined, isObject,
 	meanBy, ceil, merge, assign
 } from "lodash";
 

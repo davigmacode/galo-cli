@@ -60,23 +60,10 @@ interface GenerationThread {
   dna: string[];
 }
 
-interface BuildArtworksConfig {
-  trait: {
-    path: string;
-    width: number;
-    height: number;
-    scale: any;
-    attributes: GenAttr[];
-  };
-  artwork: {
-    path: string;
-    ext: string;
-    width: number;
-    height: number;
-    background: any;
-    transparent: boolean;
-    option: any;
-  };
+interface BuildArtworkConfig {
+  basePath: string;
+  trait: TraitConfig;
+  artwork: ArtworksConfig;
 }
 
 interface BuildCollageConfig {
@@ -84,6 +71,14 @@ interface BuildCollageConfig {
   generation: Gen[];
   artworks: ArtworksConfig;
   collage: CollageConfig;
+}
+
+interface TraitConfig {
+  path: string;
+  width: number;
+  height: number;
+  attributes: GenAttr[];
+  options: any;
 }
 
 interface ArtworksConfig {

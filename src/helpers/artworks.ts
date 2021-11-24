@@ -1,80 +1,70 @@
 import sharp from "sharp";
 import { pathNormalize, pathJoin, pathRelative, mimeLookup } from "./file";
-import { assign, pick } from "./utils";
+import { assign, pick, isObject } from "./utils";
 
-export const buildArtworks = async ({ trait, artwork }: BuildArtworksConfig) => {
+export const buildArtwork = async ({ basePath, trait, artwork }: BuildArtworkConfig) => {
   // transform attributes to overlay images
-  const defaultTraitOption: any = {
-    opacity: 1,
-    scale: true,
-    rotate: false,
-    flip: false,
-    flop: false,
-    blur: false,
-    negate: false,
-    grayscale: false,
-  };
+  const defaultTraitOption: any = { opacity: 1, scale: true };
   const overlayOption = [
     'blend', 'gravity', 'top', 'left',
     'tile', 'premultiplied', 'density'
   ];
-  let overlays = [];
+  const overlays = [];
   for await (const attr of trait.attributes) {
-    const traitPath = pathNormalize([trait.path, attr.type.name, attr.trait.file]);
+    const traitPath = pathNormalize([basePath, trait.path, attr.type.name, attr.trait.file]);
     const traitOption = assign(defaultTraitOption, attr.type, attr.trait);
-    let traitImage = sharp(traitPath).ensureAlpha(traitOption.opacity);
+    const traitImage = sharp(traitPath).ensureAlpha(traitOption.opacity);
 
     // scale the trait image
     if (traitOption.scale) {
       // scale up/down to fit the artwork width and height
-      // const scalingOption = isObject(traitOption.scaling) ?
       traitImage.resize(artwork.width, artwork.height, traitOption.scale);
     } else {
       // only scale down to fit the artwork width and height
       let traitMeta = await traitImage.metadata();
       if (traitMeta.width > artwork.width) {
-        traitImage = traitImage.resize(artwork.width, null);
+        traitImage.resize(artwork.width, null);
         traitMeta = await traitImage.metadata();
       }
       if (traitMeta.height > artwork.height) {
-        traitImage = traitImage.resize(null, artwork.height);
+        traitImage.resize(null, artwork.height);
       }
     }
 
     // rotate if needed
     if (traitOption.rotate) {
-      traitImage = traitImage.rotate(traitOption.rotate == true ? 'auto' : traitOption.rotate)
+      const rotateOption = isObject(traitOption.rotate) ? traitOption.rotate : 'auto';
+      traitImage.rotate(rotateOption);
     }
 
     // other operation if needed
-    traitImage = traitImage
-      .flip(traitOption.flip)
-      .flop(traitOption.flop)
-      .blur(traitOption.blur)
-      .negate(traitOption.negate)
-      .grayscale(traitOption.grayscale);
+    traitImage
+      .flip(traitOption.flip || false)
+      .flop(traitOption.flop || false)
+      .blur(traitOption.blur || false)
+      .negate(traitOption.negate || false)
+      .grayscale(traitOption.grayscale || false);
 
     // build the overlay image with options
-    const overlayItem = {
+    overlays.push({
       ...pick(traitOption, overlayOption),
       input: await traitImage.toBuffer()
-    };
-    overlays.push(overlayItem);
+    });
   }
 
   const artworkFormat = artwork.ext.substring(1) as any;
-  const artworkPath = pathNormalize(artwork.path, artwork.ext);
+  const artworkPath = pathNormalize([basePath, artwork.path], artwork.ext);
+  const artworkOptions = artwork.options;
   await sharp({
     create: {
       width: artwork.width,
       height: artwork.height,
-      background: artwork.background || '#fff',
-      channels: artwork.transparent ? 4 : 3,
+      background: artworkOptions.background || '#fff',
+      channels: artworkOptions.transparent ? 4 : 3,
     }
   })
   .composite(overlays)
-  .withMetadata()
-  .toFormat(artworkFormat, artwork.option)
+  .toFormat(artworkFormat, artworkOptions)
   .toFile(artworkPath);
 }
 

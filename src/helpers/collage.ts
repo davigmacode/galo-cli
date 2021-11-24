@@ -72,27 +72,15 @@ export const buildCollage = async ({
     .composite(chunkItems)
     .raw().toBuffer();
 
-  // apply any image operation
-  const previewCollage = sharp(previewBuffer, { raw: previewCanvas });
-
-  if (previewOptions.negate) {
-    previewCollage
-      .flatten()
-      .negate(previewOptions.negate);
-  }
-
-  if (previewOptions.blur) {
-    previewCollage.blur(previewOptions.blur);
-  }
-
-  if (previewOptions.grayscale) {
-    previewCollage.grayscale(previewOptions.grayscale);
-  }
-
+  // output result and apply any image operation
   const previewPath = pathJoin(basePath, collage.name);
   const previewFormat = extname(previewPath).substring(1) as any;
   const formatOption = omit(previewOptions, ['blur', 'negate', 'grayscale']);
-  await previewCollage
+  await sharp(previewBuffer, { raw: previewCanvas })
+    .flatten()
+    .blur(previewOptions.blur || false)
+    .negate(previewOptions.negate || false)
+    .grayscale(previewOptions.grayscale || false)
     .toFormat(previewFormat, formatOption)
     .toFile(previewPath);
 }

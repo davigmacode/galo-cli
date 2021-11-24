@@ -5,7 +5,7 @@ import {
   deleteDir, deleteFile
 } from "../helpers/file";
 import { populateTraits } from "../helpers/traits";
-import { buildArtworks, getLocalStoredArtwork } from "../helpers/artworks";
+import { buildArtwork, getLocalStoredArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity } from "../helpers/rarity";
 import { isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
@@ -227,29 +227,24 @@ export default async (basePath: string, opt: any) => {
 
     if (opt.buildArtworks) {
       // create a single artwork
-      const artworkPath = pathJoin(artworksPath, id);
+      const artworkPath = pathJoin(artworksPath, id + config.artworks.ext);
       await task({
         processText: `[${progress}] Building artwork #${id}`,
-        successText: `[${progress}] Artwork #${id}: ${artworkPath}${config.artworks.ext}`,
-        fn: async () => buildArtworks({
+        successText: `[${progress}] Artwork #${id}: ${artworkPath}`,
+        fn: async () => buildArtwork({
+          basePath,
           trait: {
-            path: pathJoin(basePath, config.traits.path),
-            width: config.traits.width,
-            height: config.traits.height,
-            scale: config.traits.scale,
+            ...config.traits,
             attributes: gen.attributes,
+            options: omit(config.traits, [
+              'path', 'width', 'height', 'attributes'
+            ])
           },
           artwork: {
-            path: artworkPath,
-            ext: config.artworks.ext,
-            background: config.artworks.background,
-            transparent: config.artworks.transparent,
-            width: config.artworks.width,
-            height: config.artworks.height,
-            option: omit(config.artworks, [
-              'path', 'ext',
-              'width', 'height',
-              'background', 'transparent'
+            ...config.artworks,
+            path: pathJoin(config.artworks.path, id),
+            options: omit(config.artwork, [
+              'path', 'ext', 'width', 'height'
             ])
           }
         }),
@@ -298,7 +293,7 @@ export default async (basePath: string, opt: any) => {
         generation: generation,
         artworks: {
           ...config.artworks,
-          options: omit(config.collage, [
+          options: omit(config.artworks, [
             'path', 'ext', 'width', 'height'
           ])
         },

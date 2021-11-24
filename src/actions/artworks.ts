@@ -1,6 +1,6 @@
 import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { buildArtworks } from "../helpers/artworks";
+import { buildArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { isNil, omit } from "../helpers/utils";
 
@@ -75,25 +75,20 @@ export default async (basePath: string, opt: any) => {
     await task({
       processText: `Building artwork for edition [${progress}]`,
       successText: `Artwork [${progress}]: ${artworkPath}`,
-      fn: async () => buildArtworks({
+      fn: async () => buildArtwork({
+        basePath,
         trait: {
-          path: pathJoin(basePath, config.traits.path),
-          width: config.traits.width,
-          height: config.traits.height,
-          scale: config.traits.scale,
+          ...config.traits,
           attributes: gen.attributes,
+          options: omit(config.traits, [
+            'path', 'width', 'height', 'attributes'
+          ])
         },
         artwork: {
-          path: artworkPath,
-          ext: config.artworks.ext,
-          background: config.artworks.background,
-          transparent: config.artworks.transparent,
-          width: config.artworks.width,
-          height: config.artworks.height,
-          option: omit(config.artworks, [
-            'path', 'ext',
-            'width', 'height',
-            'background', 'transparent'
+          ...config.artworks,
+          path: pathJoin(config.artworks.path, id),
+          options: omit(config.artwork, [
+            'path', 'ext', 'width', 'height'
           ])
         }
       }),
@@ -110,7 +105,7 @@ export default async (basePath: string, opt: any) => {
       generation: generation,
       artworks: {
         ...config.artworks,
-        options: omit(config.collage, [
+        options: omit(config.artworks, [
           'path', 'ext', 'width', 'height'
         ])
       },
