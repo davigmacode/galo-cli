@@ -81,18 +81,26 @@ interface BuildArtworksConfig {
 
 interface BuildCollageConfig {
   basePath: string;
-  artworksPath: string | string[];
-  previewPath: string | string[];
-  artworksExt: string;
   generation: Gen[];
+  artworks: ArtworksConfig;
+  collage: CollageConfig;
+}
+
+interface ArtworksConfig {
+  path: string;
+  ext: string;
+  width: number;
+  height: number;
+  options: any;
+};
+
+interface CollageConfig {
+  name: string;
   order: string;
   limit: number;
-  background: any;
-  transparent: boolean;
   thumbWidth: number;
   thumbPerRow: number;
-  imageRatio: number;
-  formatOption: any;
+  options: any;
 }
 
 interface TaskConfig {

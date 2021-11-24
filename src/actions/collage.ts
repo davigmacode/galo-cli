@@ -39,21 +39,20 @@ export default async (basePath: string, opt: any) => {
     successText: `Collection Collage: ${collagePath}`,
     fn: async () => buildCollage({
       basePath: basePath,
-      artworksPath: config.artworks.path,
-      artworksExt: config.artworks.ext,
-      previewPath: config.collage.name,
-      thumbWidth: config.collage.thumbWidth,
-      thumbPerRow: config.collage.thumbPerRow,
-      order: config.collage.order,
-      limit: config.collage.limit,
-      background: config.collage.background,
-      transparent: config.collage.transparent,
-      imageRatio: config.artworks.width / config.artworks.height,
       generation: generation,
-      formatOption: omit(config.collage, [
-        'name', 'background', 'order',
-        'limit', 'thumbWidth', 'thumbPerRow'
-      ])
+      artworks: {
+        ...config.artworks,
+        options: omit(config.collage, [
+          'path', 'ext', 'width', 'height'
+        ])
+      },
+      collage: {
+        ...config.collage,
+        options: omit(config.collage, [
+          'name', 'order', 'limit',
+          'thumbWidth', 'thumbPerRow'
+        ])
+      }
     }),
   });
 }

@@ -1,62 +1,98 @@
 import { pathNormalize, pathJoin, extname } from "./file";
-import { sampleSize, isInteger } from "./utils";
+import { sampleSize, isInteger, omit } from "./utils";
 import sharp from "sharp";
 
 import debug from "debug";
 const log = debug("collage");
 
-export const buildCollage = async (opt: BuildCollageConfig) => {
-  const basePath = pathNormalize(opt.basePath);
-  const artworksPath = pathNormalize(opt.artworksPath);
-  const imageRatio = opt.imageRatio;
-  const generation = opt.generation;
-  const limit = !opt.limit
+export const buildCollage = async ({
+  basePath,
+  generation,
+  artworks,
+  collage
+}: BuildCollageConfig) => {
+  const artworksPath = pathNormalize(artworks.path);
+  const artworksRatio = artworks.width / artworks.height;
+  const limit = !collage.limit
     ? generation.length // if value 0 or false use generation length
-    : isInteger(opt.limit)
-      ? opt.limit // use as exact number of limit
-      : Math.round(opt.limit * generation.length) // use as percentage of generation length
-  const sample = opt.order.toLowerCase() == 'asc'
+    : isInteger(collage.limit)
+      ? collage.limit // use as exact number of limit
+      : Math.round(collage.limit * generation.length) // use as percentage of generation length
+  const sample = collage.order.toLowerCase() == 'asc'
     ? generation.sort((a, b) => a.id - b.id).slice(0, limit)
-    : opt.order.toLowerCase() == 'desc'
+    : collage.order.toLowerCase() == 'desc'
       ? generation.sort((a, b) => b.id - a.id).slice(0, limit)
       : sampleSize(generation, limit); // else is random
 
-  const thumbWidth = opt.thumbWidth;
-  const thumbPerRow = opt.thumbPerRow <= 0 ? Math.round(Math.sqrt(limit)) : opt.thumbPerRow;
-  // Calculate height on the fly
-  const thumbHeight = thumbWidth * imageRatio;
-  // Prepare canvas
+  const thumbWidth = collage.thumbWidth;
+  const thumbPerRow = collage.thumbPerRow <= 0 ? Math.round(Math.sqrt(limit)) : collage.thumbPerRow;
+  const thumbRows = Math.round(sample.length / thumbPerRow);
+  const thumbHeight = thumbWidth * artworksRatio;
   const previewWidth = thumbWidth * thumbPerRow;
-  const previewHeight = thumbHeight * Math.round(sample.length / thumbPerRow);
-  // Shout from the mountain tops
+  const previewHeight = thumbHeight * thumbRows;
   const previewSize = `${previewWidth}x${previewHeight}`;
   log(`Preparing a ${previewSize} project preview with ${sample.length} thumbnails.`);
 
-  let thumbs = [];
-  for (let index = 0; index < sample.length; index++) {
-    const gen = sample[index];
-    const thumbPath = pathNormalize([basePath, artworksPath, `${gen.id}`], opt.artworksExt);
-    const thumbBuffer = await sharp(thumbPath).resize(thumbWidth, thumbHeight).toBuffer();
-    const xPos = thumbWidth * (index % thumbPerRow);
-    const yPos = thumbHeight * Math.trunc(index / thumbPerRow);
-    thumbs.push({
-      input: thumbBuffer,
-      left: xPos,
-      top: yPos,
+  const previewOptions = collage.options;
+  const previewCanvas: any = {
+    width: previewWidth,
+    height: previewHeight,
+    background: previewOptions.background || '#fff',
+    channels: 4,
+  }
+
+  // build buffer row by row to prevent sharp crash issue
+  // when composite large number of overlays
+  const chunkCanvas = { ...previewCanvas, height: thumbHeight };
+  const chunkItems = [];
+  for (let i = 0; i < thumbRows; i++) {
+    const thumbs = [];
+    for (let j = 0; j < thumbPerRow; j++) {
+      const index = i * thumbPerRow + j;
+      const gen = sample[index];
+      const thumbPath = pathNormalize([basePath, artworksPath, `${gen.id}`], artworks.ext);
+      const thumbBuffer = await sharp(thumbPath).resize(thumbWidth, thumbHeight).toBuffer();
+      const xPos = thumbWidth * (j % thumbPerRow);
+      thumbs.push({
+        input: thumbBuffer,
+        left: xPos,
+        top: 0,
+      });
+    }
+    chunkItems.push({
+      input: await sharp({ create: chunkCanvas }).composite(thumbs).raw().toBuffer(),
+      raw: chunkCanvas,
+      top: thumbHeight * i,
+      left: 0,
     })
   }
 
-  const previewPath = pathJoin(basePath, pathNormalize(opt.previewPath));
+  // compose rows into single image
+  const previewBuffer = await sharp({ create: previewCanvas })
+    .composite(chunkItems)
+    .raw().toBuffer();
+
+  // apply any image operation
+  const previewCollage = sharp(previewBuffer, { raw: previewCanvas });
+
+  if (previewOptions.negate) {
+    previewCollage
+      .flatten()
+      .negate(previewOptions.negate);
+  }
+
+  if (previewOptions.blur) {
+    previewCollage.blur(previewOptions.blur);
+  }
+
+  if (previewOptions.grayscale) {
+    previewCollage.grayscale(previewOptions.grayscale);
+  }
+
+  const previewPath = pathJoin(basePath, collage.name);
   const previewFormat = extname(previewPath).substring(1) as any;
-  await sharp({
-    create: {
-      width: previewWidth,
-      height: previewHeight,
-      background: opt.background || '#fff',
-      channels: opt.transparent ? 4 : 3,
-    }
-  })
-  .composite(thumbs)
-  .toFormat(previewFormat, opt.formatOption)
-  .toFile(previewPath);
+  const formatOption = omit(previewOptions, ['blur', 'negate', 'grayscale']);
+  await previewCollage
+    .toFormat(previewFormat, formatOption)
+    .toFile(previewPath);
 }
