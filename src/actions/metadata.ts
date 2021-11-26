@@ -4,7 +4,7 @@ import {
 } from "../helpers/file";
 import { getLocalStoredArtwork } from "../helpers/artworks";
 import { task, prompt, print } from "../helpers/ui";
-import { isNil, mapValues } from "../helpers/utils";
+import { isNil, isObject, mapValues } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
@@ -66,6 +66,15 @@ export default async (basePath: string, opt: any) => {
     fn: async () => setupDir(metadataPath)
   });
 
+  // load metadata from file if needed
+  const metadataTemplate = await task({
+    processText: 'Preparing metadata template',
+    successText: `Metadata template is ready`,
+    fn: async () => isObject(config.metadata.template)
+      ? config.metadata.template
+      : readJson([basePath, config.metadata.template])
+  });
+
   const storedArtworks = await task({
     processText: 'Loading stored artworks',
     successText: `Stored artworks is ready`,
@@ -101,7 +110,7 @@ export default async (basePath: string, opt: any) => {
       successText: `[${progress}] Metadata #${id}: ${metaPath}`,
       fn: async () => {
         // transform gen into metadata based on configurable template
-        const meta = transformGen({ ...gen, artwork }, config.metadata.template);
+        const meta = transformGen({ ...gen, artwork }, metadataTemplate);
         // create a single metadata
         writeJson(metaPath, meta);
         // add to metadata collection

@@ -8,7 +8,7 @@ import { populateTraits } from "../helpers/traits";
 import { buildArtwork, getLocalStoredArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { populateRarity } from "../helpers/rarity";
-import { isNil, isEmpty, omit, pick, meanBy, ceil } from "../helpers/utils";
+import { isNil, isEmpty, isObject, omit, pick, meanBy, ceil } from "../helpers/utils";
 import { task, prompt, print } from "../helpers/ui";
 
 export default async (basePath: string, opt: any) => {
@@ -215,6 +215,15 @@ export default async (basePath: string, opt: any) => {
   // end here if no need to build artworks and metadata
   if (!opt.buildArtworks && !opt.buildMetadata) return;
 
+  // load metadata from file if needed
+  const metadataTemplate = await task({
+    processText: 'Preparing metadata template',
+    successText: `Metadata template is ready`,
+    fn: async () => isObject(config.metadata.template)
+      ? config.metadata.template
+      : readJson([basePath, config.metadata.template])
+  });
+
   // define metadata collection
   let metadata = [];
 
@@ -264,7 +273,7 @@ export default async (basePath: string, opt: any) => {
         successText: `[${progress}] Metadata #${id}: ${metaPath}.json`,
         fn: async () => {
           // transform gen into metadata based on configurable template
-          const meta = transformGen({ ...gen, artwork }, config.metadata.template);
+          const meta = transformGen({ ...gen, artwork }, metadataTemplate);
           // create a single metadata
           writeJson(metaPath, meta);
           // add to metadata collection

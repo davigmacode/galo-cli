@@ -28,11 +28,6 @@ export default async (basePath: string, opt: any) => {
     }
   }
 
-  const configAnswers: any = await prompt(questions(basePath)).catch((e) => print.error(e));
-  const configDefault = readJson([__dirname, '../config/default.json']);
-  const configEngine = { engine: { version: LIB_VERSION } };
-  const configData = merge(merge(configDefault, configEngine), configAnswers);
-
   const basePathExists = exists(basePath);
   if (!basePathExists) {
     await task({
@@ -42,10 +37,23 @@ export default async (basePath: string, opt: any) => {
     });
   }
 
+  const configAnswers: any = await prompt(questions(basePath)).catch((e) => print.error(e));
+  const configDefault = readJson([__dirname, '../config/default.json']);
+  const configEngine = { engine: { version: LIB_VERSION } };
+  const configData = merge(merge(configDefault, configEngine), configAnswers);
+
   await task({
     processText: 'Writing configuration',
     successText: `Created: ${configPath}`,
     fn: async () => writeJson([basePath, opt.config], configData),
+  });
+
+  const metaTemplate = readJson([__dirname, '../config/metadata.json']);
+  const metaPath = [basePath, configData.metadata.template];
+  await task({
+    processText: 'Writing default metadata template',
+    successText: `Created: ${metaPath}`,
+    fn: async () => writeJson(metaPath, metaTemplate),
   });
 
   const traitsPath = pathJoin(basePath, configData.traits.path);

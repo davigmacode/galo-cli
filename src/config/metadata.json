@@ -1,0 +1,33 @@
+{
+  "name": "{{faker.name.findName().capitalize()}} #{{rarity.rank}}",
+  "symbol": "GALO",
+  "description": "Generative Artworks Lies On-chain",
+  "seller_fee_basis_points": 500,
+  "external_url": "https://example.com",
+  "image": "{{artwork.url}}",
+  "attributes": {
+    "{{#each attributes}}": {
+      "trait_type": "{{type.label}}",
+      "value": "{{trait.label}}"
+    }
+  },
+  "collection": {
+    "name": "Galo on Solana",
+    "family": "Galo"
+  },
+  "properties": {
+    "files": [
+      {
+        "uri": "{{artwork.url}}",
+        "type": "{{artwork.type}}"
+      }
+    ],
+    "category": "image",
+    "creators": [
+      {
+        "address": "wallet address for a creator",
+        "share": 100
+      }
+    ]
+  }
+}

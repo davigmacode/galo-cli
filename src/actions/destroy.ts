@@ -1,6 +1,6 @@
 import { pathJoin, exists, readJson, deleteJson, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { isNil } from "../helpers/utils";
+import { isNil, isObject } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   if (isNil(opt.removeConfig)) {
@@ -92,11 +92,24 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteDir(metadataPath),
   });
 
-  if (opt.removeConfig) {
-    await task({
-      processText: 'Removing config file',
-      successText: `Removed: ${configPath}`,
-      fn: async () => deleteDir(configPath),
-    });
-  }
+  // skip if no need to remove config file
+  if (!opt.removeConfig) return;
+
+  // remove the config file
+  await task({
+    processText: 'Removing config file',
+    successText: `Removed: ${configPath}`,
+    fn: async () => deleteDir(configPath),
+  });
+
+  // skip to remove metadata template file
+  // if the config is not a path
+  if (isObject(config.metadata.template)) return;
+
+  // remove the metadata template file
+  await task({
+    processText: 'Removing metadata file',
+    successText: `Removed: ${config.metadata.template}`,
+    fn: async () => deleteJson(config.metadata.template),
+  });
 }
