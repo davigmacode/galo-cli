@@ -1,6 +1,8 @@
-import { writeJson, readJson, pathJoin, findDirs, exists } from "../helpers/file";
+import { writeJson, pathJoin, findDirs, exists } from "../helpers/file";
 import { populateTraits } from "../helpers/traits";
 import { task, print } from "../helpers/ui";
+import { loadConfig } from "../helpers/config";
+import { isNil } from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -14,8 +16,13 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
+
+  if (!isNil(config.base)) {
+    print.warn(`Can't operate on distributed directory`);
+    return;
+  }
 
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);

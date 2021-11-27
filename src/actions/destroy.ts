@@ -1,6 +1,7 @@
-import { pathJoin, exists, readJson, deleteJson, deleteDir, deleteFile } from "../helpers/file";
+import { pathJoin, exists, deleteJson, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil, isObject } from "../helpers/utils";
+import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
   if (isNil(opt.removeConfig)) {
@@ -26,8 +27,13 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
+
+  if (!isNil(config.base)) {
+    print.warn(`Can't operate on distributed directory`);
+    return;
+  }
 
   const generationPath = pathJoin(basePath, config.generation.summary);
   await task({

@@ -3,6 +3,7 @@ import { task, prompt, print } from "../helpers/ui";
 import { buildArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
 import { isNil, omit } from "../helpers/utils";
+import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -16,7 +17,7 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
 
   const generationPath = pathJoin(basePath, config.generation.summary);

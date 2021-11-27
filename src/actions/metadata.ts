@@ -6,6 +6,7 @@ import { getLocalStoredArtwork } from "../helpers/artworks";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil, isObject, mapValues } from "../helpers/utils";
 import { transformGen } from "../helpers/gens";
+import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -19,7 +20,7 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
 
   const generationPath = pathJoin(basePath, config.generation.summary);

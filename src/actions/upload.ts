@@ -1,6 +1,7 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil } from "../helpers/utils";
+import { loadConfig } from "../helpers/config";
 import ipfs from "../storages/ipfs";
 import arweave from "../storages/arweave";
 
@@ -16,7 +17,7 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
 
   const generationPath = pathJoin(basePath, config.generation.summary);

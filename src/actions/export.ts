@@ -1,6 +1,7 @@
 import { readJson, pathJoin, exists, writeFile, pathNormalize } from "../helpers/file";
 import { task, print, prompt } from "../helpers/ui";
 import { isNil } from "../helpers/utils";
+import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
   const outputPath = pathNormalize([basePath, opt.output]);
@@ -36,7 +37,7 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
 
   // read the cached data from file

@@ -11,12 +11,6 @@
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
-  "generation": {
-    "summary": "generation.json",
-    "duplicateTolerance": 10000,
-    "startAt": 0,
-    "threads": []
-  },
   "metadata": {
     "path": "/metadata",
     "summary": "metadata.json",
@@ -34,6 +28,21 @@
     "limit": 0.5,
     "thumbPerRow": -1,
     "thumbWidth": 50
+  },
+  "generation": {
+    "summary": "generation.json",
+    "duplicateTolerance": 10000,
+    "startAt": 0,
+    "threads": []
+  },
+  "distribution": {
+    "path": "/dist",
+    "order": "random",
+    "destinations": [
+      { "path": "/public", "default": true },
+      { "path": "/giveaway", "count": 0.1 },
+      { "path": "/whitelist", "count": 0.3 }
+    ]
   },
   "storage": {
     "ipfs": {

@@ -14,6 +14,7 @@ import collageAction from "./actions/collage";
 import rarityAction from "./actions/rarity";
 import uploadAction from "./actions/upload";
 import exportAction from "./actions/export";
+import distributeAction from "./actions/distribute";
 import destroyAction from "./actions/destroy";
 
 import chalk from "chalk";
@@ -191,8 +192,20 @@ program
   .action(exportAction);
 
 program
-  .command('destroy')
+  .command('distribute')
   .alias('d')
+  .argument(
+    '[dir]',
+    'collection directory, use current dir if not supplied',
+    (val) => pathIsAbsolute(val) ? val : cwdJoin(val),
+    process.cwd()
+  )
+  .description('destroy the generated files and directories')
+  .option('-c, --config <path>', 'set config path', './galo.json')
+  .action(distributeAction);
+
+program
+  .command('destroy')
   .argument(
     '[dir]',
     'collection directory, use current dir if not supplied',

@@ -26,6 +26,11 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
+  if (!isNil(config.base)) {
+    print.warn(`Can't operate on distributed directory`);
+    return;
+  }
+
   // exit the action if the collection has no traits
   const traitsItems = findDirs([basePath, config.traits.path]);
   if (traitsItems.length == 0) {
@@ -158,28 +163,6 @@ export default async (basePath: string, opt: any) => {
     }
   });
 
-  // ensure artworks directory
-  const artworksPath = pathJoin(basePath, config.artworks.path);
-  await task({
-    processText: 'Preparing artworks directory',
-    successText: `Artworks Dir: ${artworksPath}`,
-    fn: async () => {
-      deleteDir(artworksPath);
-      setupDir(artworksPath);
-    }
-  });
-
-  // ensure metadata directory
-  const metadataPath = pathJoin(basePath, config.metadata.path);
-  await task({
-    processText: 'Preparing metadata directory',
-    successText: `Metadata Dir: ${metadataPath}`,
-    fn: async () => {
-      deleteDir(metadataPath);
-      setupDir(metadataPath);
-    }
-  });
-
   await task({
     processText: 'Building collection generation rarity and rank',
     successText: 'Updated collection generation with rarity and rank',
@@ -214,6 +197,28 @@ export default async (basePath: string, opt: any) => {
 
   // end here if no need to build artworks and metadata
   if (!opt.buildArtworks && !opt.buildMetadata) return;
+
+  // ensure artworks directory
+  const artworksPath = pathJoin(basePath, config.artworks.path);
+  await task({
+    processText: 'Preparing artworks directory',
+    successText: `Artworks Dir: ${artworksPath}`,
+    fn: async () => {
+      deleteDir(artworksPath);
+      setupDir(artworksPath);
+    }
+  });
+
+  // ensure metadata directory
+  const metadataPath = pathJoin(basePath, config.metadata.path);
+  await task({
+    processText: 'Preparing metadata directory',
+    successText: `Metadata Dir: ${metadataPath}`,
+    fn: async () => {
+      deleteDir(metadataPath);
+      setupDir(metadataPath);
+    }
+  });
 
   // load metadata from file if needed
   const metadataTemplate = await task({

@@ -2,6 +2,7 @@ import { readJson, pathJoin, exists } from "../helpers/file";
 import { buildCollage } from "../helpers/collage";
 import { task, print } from "../helpers/ui";
 import { omit } from "../helpers/utils";
+import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -15,7 +16,7 @@ export default async (basePath: string, opt: any) => {
   const config = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
-    fn: async () => readJson(configPath),
+    fn: async () => loadConfig(basePath, opt.config),
   });
 
   const generationPath = pathJoin(basePath, config.generation.summary);
