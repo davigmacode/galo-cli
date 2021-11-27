@@ -2,7 +2,7 @@ import { readJson, pathJoin, exists, setupDir } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { buildArtwork } from "../helpers/artworks";
 import { buildCollage } from "../helpers/collage";
-import { isNil, omit } from "../helpers/utils";
+import { isNil } from "../helpers/utils";
 import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
@@ -14,7 +14,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => loadConfig(basePath, opt.config),
@@ -80,17 +80,11 @@ export default async (basePath: string, opt: any) => {
         basePath,
         trait: {
           ...config.traits,
-          attributes: gen.attributes,
-          options: omit(config.traits, [
-            'path', 'width', 'height', 'attributes'
-          ])
+          attributes: gen.attributes
         },
         artwork: {
           ...config.artworks,
-          path: pathJoin(config.artworks.path, id),
-          options: omit(config.artwork, [
-            'path', 'ext', 'width', 'height'
-          ])
+          path: pathJoin(config.artworks.path, id)
         }
       }),
     });
@@ -104,19 +98,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => buildCollage({
       basePath: basePath,
       generation: generation,
-      artworks: {
-        ...config.artworks,
-        options: omit(config.artworks, [
-          'path', 'ext', 'width', 'height'
-        ])
-      },
-      collage: {
-        ...config.collage,
-        options: omit(config.collage, [
-          'name', 'order', 'limit',
-          'thumbWidth', 'thumbPerRow'
-        ])
-      }
+      artworks: config.artworks,
+      collage: config.collage
     }),
   });
 }

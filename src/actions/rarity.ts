@@ -12,7 +12,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => loadConfig(basePath, opt.config),
@@ -40,6 +40,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => traitsToCSV(traitsRarity, traits),
   });
 
+  const sortDesc = (a: TraitItem, b: TraitItem) => b.rarity.chance - a.rarity.chance;
+
   // Display rarity table
   for (const traitType of traits) {
     print.success(traitType.label);
@@ -53,7 +55,8 @@ export default async (basePath: string, opt: any) => {
       ],
       colWidths: [20, 10, 10, 10, 10]
     });
-    for (const traitItem of traitType.items) {
+    const traitItems = traitType.items.sort(sortDesc);
+    for (const traitItem of traitItems) {
       rarityTable.push([
         traitItem.label,
         traitItem.weight,

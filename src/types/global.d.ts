@@ -42,7 +42,7 @@ interface TraitRarity {
 }
 
 interface GenerationConfig {
-  config: string,
+  summary: string,
   duplicateTolerance: number,
   startAt: number,
   threads: GenerationThread[]
@@ -57,7 +57,7 @@ interface GenerationOrder {
 interface GenerationThread {
   size: number;
   order: string[] | GenerationOrder[];
-  dna: string[];
+  dna?: string[];
 }
 
 interface BuildArtworkConfig {
@@ -75,9 +75,16 @@ interface BuildCollageConfig {
 
 interface TraitConfig {
   path: string;
-  width: number;
-  height: number;
   attributes: GenAttr[];
+  options: any;
+}
+
+interface TraitsConfig {
+  path: string;
+  summary: string;
+  rarity: string;
+  exts: string;
+  delimiter: string;
   options: any;
 }
 
@@ -98,11 +105,35 @@ interface CollageConfig {
   options: any;
 }
 
+interface MetadataConfig {
+  path: string;
+  summary: string;
+  template: string | object;
+}
+
+interface DistributionConfig {
+  path: string;
+  order: string;
+  outputs: DistributionOutput[];
+}
+
+interface DistributionOutput {
+  path: string;
+  count?: number;
+  default?: boolean;
+}
+
 interface TaskConfig {
   processText: string;
   successText: string;
   delay?: number;
   fn: (spinner: any) => Promise<any>;
+}
+
+interface EngineConfig {
+  name: string;
+  description: string;
+  version: number;
 }
 
 interface UploadsConfig {
@@ -113,4 +144,30 @@ interface UploadsConfig {
   cachedPath: string;
   cached: any;
   generation: Gen[];
+}
+
+interface StorageConfig {
+  [key]: StorageItem;
+}
+
+interface StorageItem {
+  label: string;
+  cache: string;
+  token: string;
+}
+
+interface BaseConfig {
+  config: string;
+}
+
+interface GaloConfig {
+  engine: EngineConfig;
+  traits: TraitsConfig;
+  metadata: MetadataConfig;
+  artworks: ArtworksConfig;
+  collage: CollageConfig;
+  generation: GenerationConfig;
+  distribution: DistributionConfig;
+  storage: StorageConfig;
+  base?: BaseConfig;
 }

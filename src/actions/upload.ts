@@ -14,7 +14,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => loadConfig(basePath, opt.config),

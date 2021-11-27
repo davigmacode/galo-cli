@@ -3,7 +3,7 @@ import { isString } from "../helpers/utils";
 
 export const createDestination = ({
   basePath,
-  destPath,
+  outputPath,
   configData,
   configName,
   generation
@@ -11,23 +11,23 @@ export const createDestination = ({
   const traitsPath = pathJoin(basePath, configData.traits.path);
   const distPath = configData.distribution.path;
 
-  const absoluteDestPath = pathJoin(basePath, distPath, destPath);
-  setupDir(absoluteDestPath);
+  const outPath = pathJoin(basePath, distPath, outputPath);
+  setupDir(outPath);
 
   // write down the config file
   let destConfig: any = {
     engine: configData.engine,
-    base: { config: pathJoin(pathRelative(absoluteDestPath, basePath), configName) },
-    traits: { path: pathRelative(absoluteDestPath, traitsPath) }
+    base: { config: pathJoin(pathRelative(outPath, basePath), configName) },
+    traits: { path: pathRelative(outPath, traitsPath) }
   };
   const metaTemplate = configData.metadata.template
   if (isString(metaTemplate)) {
     destConfig.metadata = {
-      template: pathJoin(pathRelative(absoluteDestPath, basePath), metaTemplate)
+      template: pathJoin(pathRelative(outPath, basePath), metaTemplate)
     }
   }
-  writeJson([absoluteDestPath, configName], destConfig);
+  writeJson([outPath, configName], destConfig);
 
   // write down the picked generation
-  writeJson([absoluteDestPath, configData.generation.summary], generation);
+  writeJson([outPath, configData.generation.summary], generation);
 }

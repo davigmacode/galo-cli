@@ -1,6 +1,6 @@
 import { pathJoin, exists, deleteJson, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
-import { isNil, isObject } from "../helpers/utils";
+import { isNil, isString } from "../helpers/utils";
 import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
@@ -24,7 +24,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => loadConfig(basePath, opt.config),
@@ -42,19 +42,16 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(generationPath),
   });
 
-  const ipfsCache = pathJoin(basePath, config.storage.ipfs.cache);
-  await task({
-    processText: 'Removing IPFS upload cache',
-    successText: `Removed: ${ipfsCache}`,
-    fn: async () => deleteJson(ipfsCache),
-  });
-
-  const arweaveCache = pathJoin(basePath, config.storage.arweave.cache);
-  await task({
-    processText: 'Removing Arweave upload cache',
-    successText: `Removed: ${arweaveCache}`,
-    fn: async () => deleteJson(arweaveCache),
-  });
+  const storageProviders = Object.keys(config.storage);
+  for (const provider of storageProviders) {
+    const cacheLabel = config.storage[provider].label;
+    const cachePath = pathJoin(basePath, config.storage[provider].cache);
+    await task({
+      processText: `Removing ${cacheLabel} upload cache`,
+      successText: `Removed: ${cachePath}`,
+      fn: async () => deleteJson(cachePath),
+    });
+  }
 
   const metadataConfig = pathJoin(basePath, config.metadata.summary);
   await task({
@@ -108,14 +105,15 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteDir(configPath),
   });
 
-  // skip to remove metadata template file
-  // if the config is not a path
-  if (isObject(config.metadata.template)) return;
-
   // remove the metadata template file
-  await task({
-    processText: 'Removing metadata file',
-    successText: `Removed: ${config.metadata.template}`,
-    fn: async () => deleteJson(config.metadata.template),
-  });
+  // if path is provided instead of object
+  const metaTemplate = config.metadata.template
+  if (isString(metaTemplate)) {
+    const metaTemplatePath = pathJoin(basePath, metaTemplate);
+    await task({
+      processText: 'Removing metadata file',
+      successText: `Removed: ${metaTemplatePath}`,
+      fn: async () => deleteJson(metaTemplatePath),
+    });
+  }
 }

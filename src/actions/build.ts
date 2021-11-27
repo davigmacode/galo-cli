@@ -1,15 +1,18 @@
 import { buildGen, transformGen } from "../helpers/gens";
+import { populateTraits } from "../helpers/traits";
+import { buildArtwork, getLocalStoredArtwork } from "../helpers/artworks";
+import { buildCollage } from "../helpers/collage";
+import { populateRarity } from "../helpers/rarity";
+import { task, prompt, print } from "../helpers/ui";
 import {
   setupDir, writeJson, readJson,
   pathJoin, findDirs, exists,
   deleteDir, deleteFile
 } from "../helpers/file";
-import { populateTraits } from "../helpers/traits";
-import { buildArtwork, getLocalStoredArtwork } from "../helpers/artworks";
-import { buildCollage } from "../helpers/collage";
-import { populateRarity } from "../helpers/rarity";
-import { isNil, isEmpty, isObject, omit, pick, meanBy, ceil } from "../helpers/utils";
-import { task, prompt, print } from "../helpers/ui";
+import {
+  isNil, isEmpty, isObject,
+  pick, meanBy, ceil
+} from "../helpers/utils";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -20,7 +23,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => readJson(configPath),
@@ -249,17 +252,11 @@ export default async (basePath: string, opt: any) => {
           basePath,
           trait: {
             ...config.traits,
-            attributes: gen.attributes,
-            options: omit(config.traits, [
-              'path', 'width', 'height', 'attributes'
-            ])
+            attributes: gen.attributes
           },
           artwork: {
             ...config.artworks,
-            path: pathJoin(config.artworks.path, id),
-            options: omit(config.artwork, [
-              'path', 'ext', 'width', 'height'
-            ])
+            path: pathJoin(config.artworks.path, id)
           }
         }),
       });
@@ -305,19 +302,8 @@ export default async (basePath: string, opt: any) => {
       fn: async () => buildCollage({
         basePath: basePath,
         generation: generation,
-        artworks: {
-          ...config.artworks,
-          options: omit(config.artworks, [
-            'path', 'ext', 'width', 'height'
-          ])
-        },
-        collage: {
-          ...config.collage,
-          options: omit(config.collage, [
-            'name', 'order', 'limit',
-            'thumbWidth', 'thumbPerRow'
-          ])
-        }
+        artworks: config.artworks,
+        collage: config.collage
       }),
     });
   }

@@ -12,7 +12,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => readJson(configPath),
@@ -48,54 +48,54 @@ export default async (basePath: string, opt: any) => {
 
   // get destinations data
   const dist = config.distribution;
-  let defaultDest: any;
+  let defaultOutput: any;
 
   // normalize destinations
-  for (const dest of dist.destinations) {
+  for (const output of dist.outputs) {
     // if hasn't "count" means a "default"
-    if (!dest.count) dest.default = true;
+    if (!output.count) output.default = true;
 
     // check for default destination
-    if (dest.default) {
-     if (defaultDest) {
+    if (output.default) {
+     if (defaultOutput) {
       print.warn(`Destinations can't have more than 1 default item`);
       return;
      }
-     defaultDest = dest;
+     defaultOutput = output;
      continue;
     }
 
     // check and calculate if count is a percentage
-    const destCount = isInteger(dest.count)
-      ? dest.count // use as exact number of limit
-      : Math.round(dest.count * genLength); // use as percentage of generation length
+    const outputCount = isInteger(output.count)
+      ? output.count // use as exact number of limit
+      : Math.round(output.count * genLength); // use as percentage of generation length
 
     // get sample member
-    const destSample = generation.splice(0, destCount);
+    const outputSample = generation.splice(0, outputCount);
 
     // create non default distribution
-    const destPath = pathJoin(basePath, dist.path, dest.path);
+    const destPath = pathJoin(basePath, dist.path, output.path);
     await task({
-      processText: `Distributing ${destSample.length} to ${destPath}`,
-      successText: `Distributed ${destSample.length} to ${destPath}`,
+      processText: `Distributing ${outputSample.length} to ${destPath}`,
+      successText: `Distributed ${outputSample.length} to ${destPath}`,
       fn: async () => createDestination({
         basePath,
-        destPath: dest.path,
+        outputPath: output.path,
         configData: config,
         configName: opt.config,
-        generation: destSample
+        generation: outputSample
       }),
     });
   }
 
   // create the default distribution
-  const defaultDestPath = pathJoin(basePath, dist.path, defaultDest.path);
+  const defaultOutPath = pathJoin(basePath, dist.path, defaultOutput.path);
   await task({
-    processText: `Distributing ${generation.length} to ${defaultDestPath}`,
-    successText: `Distributed ${generation.length} to ${defaultDestPath}`,
+    processText: `Distributing ${generation.length} to ${defaultOutPath}`,
+    successText: `Distributed ${generation.length} to ${defaultOutPath}`,
     fn: async () => createDestination({
       basePath,
-      destPath: defaultDest.path,
+      outputPath: defaultOutput.path,
       configData: config,
       configName: opt.config,
       generation: generation

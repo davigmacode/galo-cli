@@ -1,7 +1,6 @@
 import { readJson, pathJoin, exists } from "../helpers/file";
 import { buildCollage } from "../helpers/collage";
 import { task, print } from "../helpers/ui";
-import { omit } from "../helpers/utils";
 import { loadConfig } from "../helpers/config";
 
 export default async (basePath: string, opt: any) => {
@@ -13,7 +12,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read project config file
-  const config = await task({
+  const config: GaloConfig = await task({
     processText: 'Loading collection configuration',
     successText: `Collection Config: ${configPath}`,
     fn: async () => loadConfig(basePath, opt.config),
@@ -41,19 +40,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => buildCollage({
       basePath: basePath,
       generation: generation,
-      artworks: {
-        ...config.artworks,
-        options: omit(config.collage, [
-          'path', 'ext', 'width', 'height'
-        ])
-      },
-      collage: {
-        ...config.collage,
-        options: omit(config.collage, [
-          'name', 'order', 'limit',
-          'thumbWidth', 'thumbPerRow'
-        ])
-      }
+      artworks: config.artworks,
+      collage: config.collage
     }),
   });
 }
