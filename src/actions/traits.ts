@@ -25,7 +25,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // populate traits and write to config file
-  const traitsConfig = pathJoin(basePath, config.traits.config);
+  const traitsConfig = pathJoin(basePath, config.traits.summary);
   let traits: TraitType[];
   await task({
     processText: 'Preparing traits',

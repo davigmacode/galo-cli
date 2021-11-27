@@ -22,7 +22,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationPath = pathJoin(basePath, config.generation.summary);
   const generationExists = exists(generationPath);
   if (!generationExists) {
     print.warn(`generation not found, build the collection first`);
@@ -120,7 +120,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // create metadata for all collection
-  const metadataConfig = pathJoin(basePath, config.metadata.config);
+  const metadataConfig = pathJoin(basePath, config.metadata.summary);
   await task({
     processText: 'Writing collection metadata into file',
     successText: `Metadata: ${metadataConfig}`,

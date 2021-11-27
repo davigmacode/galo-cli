@@ -29,7 +29,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationPath = pathJoin(basePath, config.generation.summary);
   await task({
     processText: 'Removing collection generation',
     successText: `Removed: ${generationPath}`,
@@ -50,14 +50,14 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(arweaveCache),
   });
 
-  const metadataConfig = pathJoin(basePath, config.metadata.config);
+  const metadataConfig = pathJoin(basePath, config.metadata.summary);
   await task({
     processText: 'Removing collection metadata',
     successText: `Removed: ${metadataConfig}`,
     fn: async () => deleteJson(metadataConfig),
   });
 
-  const traitsConfig = pathJoin(basePath, config.traits.config);
+  const traitsConfig = pathJoin(basePath, config.traits.summary);
   await task({
     processText: 'Removing collection traits',
     successText: `Removed: ${traitsConfig}`,

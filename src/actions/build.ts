@@ -34,7 +34,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // populate traits and write to config file
-  const traitsConfig = pathJoin(basePath, config.traits.config);
+  const traitsConfig = pathJoin(basePath, config.traits.summary);
   let traits: TraitType[];
   await task({
     processText: 'Preparing traits',
@@ -51,7 +51,7 @@ export default async (basePath: string, opt: any) => {
   });
 
   // check for the generation config file existence
-  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationPath = pathJoin(basePath, config.generation.summary);
   const generationExists = exists(generationPath);
   if (generationExists) {
     if (isNil(opt.buildGeneration)) {
@@ -146,7 +146,7 @@ export default async (basePath: string, opt: any) => {
     },
   });
 
-  const metadataConfig = pathJoin(basePath, config.metadata.config);
+  const metadataConfig = pathJoin(basePath, config.metadata.summary);
   const collagePath = pathJoin(basePath, config.collage.name);
 
   await task({

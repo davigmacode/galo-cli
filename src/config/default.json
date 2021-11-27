@@ -6,20 +6,20 @@
   },
   "traits": {
     "path": "/traits",
-    "config": "traits.json",
+    "summary": "traits.json",
     "rarity": "rarity.csv",
     "delimiter": "__",
     "exts": [".png", ".jpg"]
   },
   "generation": {
-    "config": "generation.json",
+    "summary": "generation.json",
     "duplicateTolerance": 10000,
     "startAt": 0,
     "threads": []
   },
   "metadata": {
     "path": "/metadata",
-    "config": "metadata.json",
+    "summary": "metadata.json",
     "template": "template.json"
   },
   "artworks": {

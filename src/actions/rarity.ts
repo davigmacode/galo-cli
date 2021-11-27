@@ -17,7 +17,7 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(configPath),
   });
 
-  const generationPath = pathJoin(basePath, config.generation.config);
+  const generationPath = pathJoin(basePath, config.generation.summary);
   const generationExists = exists(generationPath);
   if (!generationExists) {
     print.warn(`generation not found, build the collection first`);
@@ -25,7 +25,7 @@ export default async (basePath: string, opt: any) => {
   }
 
   // read the traits from file
-  const traitsPath = pathJoin(basePath, config.traits.config)
+  const traitsPath = pathJoin(basePath, config.traits.summary)
   const traits = await task({
     processText: 'Loading traits from file',
     successText: `Collection Traits: ${traitsPath}`,
