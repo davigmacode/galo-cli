@@ -32,6 +32,7 @@
   "generation": {
     "summary": "generation.json",
     "duplicateTolerance": 10000,
+    "shuffle": false,
     "startAt": 0,
     "threads": []
   },

@@ -1,6 +1,6 @@
 import hash from "object-hash";
 import { randomTraits } from "./traits";
-import { isArray, isEmpty, isNil, pick } from "./utils";
+import { isArray, isString, isEmpty, isNil, pick, shuffle } from "./utils";
 import faker from "faker";
 import st from "stjs";
 
@@ -17,26 +17,31 @@ export const createDna = (attrs: GenAttr[], dnaAttrs: string[]) => {
 }
 
 export const buildGen = (
-  generation: GenerationConfig,
+  config: GenerationConfig,
   traits: TraitType[],
   spinner?: any,
 ) : Gen[] => {
   let genResult = [];
-  for (const genThread of generation.threads) {
+  for (const genThread of config.threads) {
     let genTraits = [];
     for (const order of genThread.order) {
-      const orderTrait: string = (order as GenerationOrder).name || (order as string);
+      const orderTrait: string = !isString(order) ? order.name : order;
       let genTrait = traits.find((trait => trait.name == orderTrait));
-      // only includes some items
-      const genTraitItemsIncludes = (order as GenerationOrder).includes;
-      if (isArray(genTraitItemsIncludes) && !isEmpty(genTraitItemsIncludes)) {
-        genTrait.items = genTrait.items.filter((e) => genTraitItemsIncludes.includes(e.name));
+
+      // if order is an object
+      if (!isString(order)) {
+        // only includes some items
+        const genTraitItemsIncludes = order.includes;
+        if (isArray(genTraitItemsIncludes) && !isEmpty(genTraitItemsIncludes)) {
+          genTrait.items = genTrait.items.filter((e) => genTraitItemsIncludes.includes(e.name));
+        }
+        // excludes some items
+        const genTraitItemsExcludes = order.excludes;
+        if (isArray(genTraitItemsExcludes) && !isEmpty(genTraitItemsExcludes)) {
+          genTrait.items = genTrait.items.filter((e) => !genTraitItemsExcludes.includes(e.name));
+        }
       }
-      // excludes some items
-      const genTraitItemsExcludes = (order as GenerationOrder).excludes;
-      if (isArray(genTraitItemsExcludes) && !isEmpty(genTraitItemsExcludes)) {
-        genTrait.items = genTrait.items.filter((e) => !genTraitItemsExcludes.includes(e.name));
-      }
+
       // if trait has no items don't includes to trait list
       if (genTrait.items.length > 0) {
         genTraits.push(genTrait);
@@ -55,7 +60,7 @@ export const buildGen = (
         unique: boolean,
         duplicates = 0;
       do {
-        id = generation.startAt + genResult.length;
+        id = config.startAt + genResult.length;
         attributes = randomTraits(genTraits);
         dna = createDna(attributes, genThread.dna);
         unique = genResult.some((gen) => gen.dna == dna) == false;
@@ -64,7 +69,7 @@ export const buildGen = (
         } else {
           duplicates = duplicates + 1;
           log(`Generated DNA for #${id}: Exists!`);
-          if (duplicates >= generation.duplicateTolerance) {
+          if (duplicates >= config.duplicateTolerance) {
             const additionalMessage = !isNil(genThread.dna) && !isEmpty(genThread.dna)
               ? `to ${genThread.dna.join('/')}`
               : ''
@@ -75,7 +80,11 @@ export const buildGen = (
       genResult.push({ id, dna, attributes });
     }
   }
-  return genResult;
+
+  // shuffle the generation if needed
+  return config.shuffle
+    ? resetGenId(shuffle(genResult), config.startAt)
+    : genResult;
 }
 
 export const transformGen = (gen: Gen, template: object) => {
@@ -83,4 +92,11 @@ export const transformGen = (gen: Gen, template: object) => {
     .select(template)
     .transform({ ...gen, faker })
     .root();
+}
+
+export const resetGenId = (gens: Gen[], startAt: number): Gen[] => {
+  return gens.map((gen, index) => {
+    gen.id = index + startAt;
+    return gen;
+  });
 }

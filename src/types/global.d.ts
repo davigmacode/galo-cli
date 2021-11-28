@@ -42,10 +42,11 @@ interface TraitRarity {
 }
 
 interface GenerationConfig {
-  summary: string,
-  duplicateTolerance: number,
-  startAt: number,
-  threads: GenerationThread[]
+  summary: string;
+  duplicateTolerance: number;
+  startAt: number;
+  shuffle: boolean;
+  threads: GenerationThread[];
 }
 
 interface GenerationOrder {
