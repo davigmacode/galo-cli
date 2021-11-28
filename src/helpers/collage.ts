@@ -1,5 +1,5 @@
 import { pathNormalize, pathJoin, extname } from "./file";
-import { sampleSize, isInteger, omit } from "./utils";
+import { sampleSize, isInteger, isNil, omit } from "./utils";
 import sharp from "sharp";
 
 import debug from "debug";
@@ -50,6 +50,10 @@ export const buildCollage = async ({
     for (let j = 0; j < thumbPerRow; j++) {
       const index = i * thumbPerRow + j;
       const gen = sample[index];
+
+      // skip build thumb if gen is undefined
+      if (isNil(gen)) continue;
+
       const thumbPath = pathNormalize([basePath, artworksPath, `${gen.id}`], artworks.ext);
       const thumbBuffer = await sharp(thumbPath).resize(thumbWidth, thumbHeight).toBuffer();
       const xPos = thumbWidth * (j % thumbPerRow);
