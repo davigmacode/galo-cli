@@ -49,7 +49,7 @@ export default async (basePath: string, opt: any) => {
 
   // get destinations data
   const dist = config.distribution;
-  let defaultOutput: any;
+  const defaultOutputs: DistributionOutput[] = [];
 
   // normalize destinations
   for (const output of dist.outputs) {
@@ -58,11 +58,7 @@ export default async (basePath: string, opt: any) => {
 
     // check for default destination
     if (output.default) {
-     if (defaultOutput) {
-      print.warn(`Destinations can't have more than 1 default item`);
-      return;
-     }
-     defaultOutput = output;
+     defaultOutputs.push(output);
      continue;
     }
 
@@ -75,10 +71,10 @@ export default async (basePath: string, opt: any) => {
     const outputSample = generation.splice(0, outputCount);
 
     // create non default distribution
-    const destPath = pathJoin(basePath, dist.path, output.path);
+    const outputPath = pathJoin(basePath, dist.path, output.path);
     await task({
-      processText: `Distributing ${outputSample.length} to ${destPath}`,
-      successText: `Distributed ${outputSample.length} to ${destPath}`,
+      processText: `Distributing ${outputSample.length} to ${outputPath}`,
+      successText: `Distributed ${outputSample.length} to ${outputPath}`,
       fn: async () => createDestination({
         basePath,
         outputPath: output.path,
@@ -91,19 +87,28 @@ export default async (basePath: string, opt: any) => {
     });
   }
 
-  // create the default distribution
-  const defaultOutPath = pathJoin(basePath, dist.path, defaultOutput.path);
-  await task({
-    processText: `Distributing ${generation.length} to ${defaultOutPath}`,
-    successText: `Distributed ${generation.length} to ${defaultOutPath}`,
-    fn: async () => createDestination({
-      basePath,
-      outputPath: defaultOutput.path,
-      configData: config,
-      configName: opt.config,
-      generation: config.distribution.resetId
-        ? resetGenId(generation, defaultOutput.resetIdFrom)
-        : generation
-    }),
-  });
+  // Each portion of default output is the rest divide by default outputs number
+  const defaultOutputPortion = Math.round(generation.length / defaultOutputs.length);
+
+  for (const output of defaultOutputs) {
+    // get sample member
+    const outputSample = generation.splice(0, defaultOutputPortion);
+
+    // create the default distribution
+    const outputPath = pathJoin(basePath, dist.path, output.path);
+    await task({
+      processText: `Distributing ${outputSample.length} to ${outputPath}`,
+      successText: `Distributed ${outputSample.length} to ${outputPath}`,
+      fn: async () => createDestination({
+        basePath,
+        outputPath: output.path,
+        configData: config,
+        configName: opt.config,
+        generation: config.distribution.resetId
+          ? resetGenId(outputSample, output.resetIdFrom)
+          : outputSample
+      }),
+    });
+  }
+
 }
