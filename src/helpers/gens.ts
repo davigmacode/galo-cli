@@ -116,7 +116,7 @@ export const shuffleGen = (gen: Gen[], config: GenerationConfig) => {
   return gen;
 }
 
-export const resetGenId = (gens: Gen[], startAt: number): Gen[] => {
+export const resetGenId = (gens: Gen[], startAt: number = 0): Gen[] => {
   return gens.map((gen, index) => {
     gen.id = index + startAt;
     return gen;

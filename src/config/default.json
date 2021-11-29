@@ -39,8 +39,9 @@
   "distribution": {
     "path": "/dist",
     "order": "random",
+    "resetId": true,
     "outputs": [
-      { "path": "/public", "default": true },
+      { "path": "/public" },
       { "path": "/giveaway", "count": 0.1 },
       { "path": "/whitelist", "count": 0.3 }
     ]

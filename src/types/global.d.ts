@@ -121,6 +121,7 @@ interface MetadataConfig {
 interface DistributionConfig {
   path: string;
   order: string;
+  resetId: boolean;
   outputs: DistributionOutput[];
 }
 
@@ -128,6 +129,7 @@ interface DistributionOutput {
   path: string;
   count?: number;
   default?: boolean;
+  resetIdFrom?: number;
 }
 
 interface TaskConfig {

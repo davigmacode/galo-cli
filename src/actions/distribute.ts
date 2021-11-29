@@ -2,6 +2,7 @@ import { readJson, pathJoin, exists } from "../helpers/file";
 import { task, print } from "../helpers/ui";
 import { isInteger, isNil, shuffle } from "../helpers/utils";
 import { createDestination } from "../helpers/distribution";
+import { resetGenId } from "../helpers/gens";
 
 export default async (basePath: string, opt: any) => {
   const configPath = pathJoin(basePath, opt.config);
@@ -83,7 +84,9 @@ export default async (basePath: string, opt: any) => {
         outputPath: output.path,
         configData: config,
         configName: opt.config,
-        generation: outputSample
+        generation: config.distribution.resetId
+          ? resetGenId(outputSample, output.resetIdFrom)
+          : outputSample
       }),
     });
   }
@@ -98,7 +101,9 @@ export default async (basePath: string, opt: any) => {
       outputPath: defaultOutput.path,
       configData: config,
       configName: opt.config,
-      generation: generation
+      generation: config.distribution.resetId
+        ? resetGenId(generation, defaultOutput.resetIdFrom)
+        : generation
     }),
   });
 }
