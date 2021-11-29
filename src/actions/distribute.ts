@@ -53,8 +53,8 @@ export default async (basePath: string, opt: any) => {
 
   // normalize destinations
   for (const output of dist.outputs) {
-    // if hasn't "count" means a "default"
-    if (!output.count) output.default = true;
+    // if hasn't "portion" means a "default"
+    if (!output.portion) output.default = true;
 
     // check for default destination
     if (output.default) {
@@ -62,13 +62,13 @@ export default async (basePath: string, opt: any) => {
      continue;
     }
 
-    // check and calculate if count is a percentage
-    const outputCount = isInteger(output.count)
-      ? output.count // use as exact number of limit
-      : Math.round(output.count * genLength); // use as percentage of generation length
+    // check and calculate if portion is a percentage
+    const outputPortion = isInteger(output.portion)
+      ? output.portion // use as exact number of limit
+      : Math.round(output.portion * genLength); // use as percentage of generation length
 
     // get sample member
-    const outputSample = generation.splice(0, outputCount);
+    const outputSample = generation.splice(0, outputPortion);
 
     // create non default distribution
     const outputPath = pathJoin(basePath, dist.path, output.path);

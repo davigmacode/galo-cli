@@ -42,8 +42,8 @@
     "resetId": true,
     "outputs": [
       { "path": "/public" },
-      { "path": "/giveaway", "count": 0.1 },
-      { "path": "/whitelist", "count": 0.3 }
+      { "path": "/giveaway", "portion": 0.1 },
+      { "path": "/whitelist", "portion": 0.3 }
     ]
   },
   "storage": {

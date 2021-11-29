@@ -127,7 +127,7 @@ interface DistributionConfig {
 
 interface DistributionOutput {
   path: string;
-  count?: number;
+  portion?: number;
   default?: boolean;
   resetIdFrom?: number;
 }
