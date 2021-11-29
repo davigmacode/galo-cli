@@ -45,8 +45,14 @@ interface GenerationConfig {
   summary: string;
   duplicateTolerance: number;
   startAt: number;
-  shuffle: boolean;
+  shuffle: boolean | GenerationShuffle;
   threads: GenerationThread[];
+}
+
+interface GenerationShuffle {
+  enabled: boolean;
+  fromId: number;
+  toId: number;
 }
 
 interface GenerationOrder {

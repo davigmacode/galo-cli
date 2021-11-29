@@ -1,6 +1,10 @@
 import hash from "object-hash";
 import { randomTraits } from "./traits";
-import { isArray, isString, isEmpty, isNil, pick, shuffle } from "./utils";
+import {
+  isArray, isString,
+  isEmpty, isNil, isObject,
+  pick, shuffle
+} from "./utils";
 import faker from "faker";
 import st from "stjs";
 
@@ -82,9 +86,7 @@ export const buildGen = (
   }
 
   // shuffle the generation if needed
-  return config.shuffle
-    ? resetGenId(shuffle(genResult), config.startAt)
-    : genResult;
+  return shuffleGen(genResult, config);
 }
 
 export const transformGen = (gen: Gen, template: object) => {
@@ -92,6 +94,26 @@ export const transformGen = (gen: Gen, template: object) => {
     .select(template)
     .transform({ ...gen, faker })
     .root();
+}
+
+export const shuffleGen = (gen: Gen[], config: GenerationConfig) => {
+  if (config.shuffle === true) {
+    return resetGenId(shuffle(gen), config.startAt);
+  }
+
+  if (isObject(config.shuffle) && config.shuffle.enabled === true) {
+    const fromId = config.shuffle.fromId || gen[0].id;
+    const toId = config.shuffle.toId || gen[gen.length - 1].id;
+    const genHead = gen.splice(0, gen.findIndex((v) => v.id == fromId));
+    const genShuffle = gen.splice(0, gen.findIndex((v) => v.id == toId) + 1);
+    const genTail = gen;
+    return resetGenId(
+      [...genHead, ...shuffle(genShuffle), ...genTail],
+      config.startAt
+    );
+  }
+
+  return gen;
 }
 
 export const resetGenId = (gens: Gen[], startAt: number): Gen[] => {
