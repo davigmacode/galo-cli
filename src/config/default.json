@@ -7,9 +7,9 @@
   "traits": {
     "path": "/traits",
     "summary": "traits.json",
-    "rarity": "rarity.csv",
     "delimiter": "__",
-    "exts": [".png", ".jpg"]
+    "exts": [".png", ".jpg", ".jpeg"],
+    "rarity": {}
   },
   "metadata": {
     "path": "/metadata",

@@ -16,6 +16,8 @@ export const extname = p.extname;
 
 export const pathJoin = p.join;
 
+export const pathParse = p.parse;
+
 export const pathRelative = p.relative;
 
 export const pathIsAbsolute = p.isAbsolute;

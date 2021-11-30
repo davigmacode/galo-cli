@@ -89,9 +89,9 @@ interface TraitConfig {
 interface TraitsConfig {
   path: string;
   summary: string;
-  rarity: string;
-  exts: string;
-  delimiter: string;
+  exts: string[] = ['.png', '.jpg', '.jpeg'];
+  delimiter: string = '__';
+  rarity: { [key: string]: string };
   options: any;
 }
 

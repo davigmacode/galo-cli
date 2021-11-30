@@ -2,71 +2,85 @@ import weighted from "weighted";
 import {
   pathNormalize, pathJoin,
   findDirs, findTypes,
-  readJson, exists
+  readJson, exists,
+  pathParse
 } from "./file";
-import { omit } from "./utils";
+import { omit, get, ceil } from "./utils";
 import { createWriteStream } from "fs";
 import * as csv from "fast-csv";
 
 // import debug from "debug";
 // const log = debug("traits");
 
+const getRarityTier = (o: object, k: string) => get(o, ['rarity', k], {});
+
+const getFixedRarityWeight = (rarity: string) => parseInt(rarity);
+
+const getRelativeRarityWeight = (rarityTier: any) => {
+  const tierWeight = rarityTier.weight;
+  if (!tierWeight) return null;
+
+  const tierItems = rarityTier.items;
+  return tierItems ? ceil(tierWeight / tierItems, 2) : tierWeight;
+}
+
 export const populateTraits = (
   basePath: string,
-  traitsPath: string,
-  exts: string | string[],
-  delimiter: string = '_',
+  config: TraitsConfig,
 ) : TraitType[] => {
-  const absoluteTraitsPath = pathNormalize([basePath, traitsPath]);
-
-  let traitsData = [];
-  for (const traitType of findDirs(absoluteTraitsPath)) {
-    const traitPath = [traitsPath, traitType];
+  const absoluteTraitsPath = pathNormalize([basePath, config.path]);
+  const traitDirs = findDirs(absoluteTraitsPath);
+  const traitTypes = [];
+  for (const traitDir of traitDirs) {
+    const traitPath = [config.path, traitDir];
     const absoluteTraitPath = [basePath, ...traitPath];
 
     // skip if the layer directory is not exists
     if (!exists(absoluteTraitPath)) continue;
 
-    const traitTypeSplit = traitType.split(delimiter);
-    const traitTypeLabel = traitTypeSplit.length == 2 ? traitTypeSplit[1] : traitTypeSplit[0];
+    const [traitTypeSequence, traitTypeName] = traitDir.split(config.delimiter);
+    const traitTypeLabel = traitTypeName || traitTypeSequence;
 
     const traitConfig = readJson(absoluteTraitPath);
-    const traitData = {
+    const traitType = {
       ...{},
       ...{
-        name: traitType,
+        name: traitDir,
         label: traitTypeLabel,
         path: pathJoin(...traitPath),
       },
       ...traitConfig
     }
 
-    let traitItems = [];
-    const traitFiles = findTypes(absoluteTraitPath, exts);
+    const traitItems = [];
+    const traitFiles = findTypes(absoluteTraitPath, config.exts);
     for (const traitFile of traitFiles) {
-      const [traitFilename, traitExt] = traitFile.split(".");
-      const traitConfig = readJson([...absoluteTraitPath, traitFilename]);
-
-      const [traitRarity, traitName] = traitFilename.split(delimiter);
-      const traitLabel = traitName || traitRarity;
+      const { name: traitName, ext: traitExt } = pathParse(traitFile);
+      const traitConfig = readJson([...absoluteTraitPath, traitName]);
+      const [traitRarity, traitLabel] = traitName.split(config.delimiter);
 
       traitItems.push({
         ...{},
         ...{
-          name: traitFilename,
-          label: traitLabel,
+          name: traitName,
+          label: traitLabel || traitRarity,
           file: traitFile,
           path: pathJoin(...[...traitPath, traitFile]),
           ext: traitExt,
-          weight: parseInt(traitRarity) || 1,
+          weight: getFixedRarityWeight(traitRarity)
+            || getRelativeRarityWeight({
+                ...getRarityTier(config, traitRarity),
+                ...getRarityTier(traitType, traitRarity)
+              })
+            || 1,
         },
         ...traitConfig
       })
     }
 
-    traitsData.push({ ...traitData, items: traitItems });
+    traitTypes.push({ ...traitType, items: traitItems });
   }
-  return traitsData;
+  return traitTypes;
 }
 
 export const randomTraits = (traits: TraitType[]) : GenAttr[] => {
@@ -83,12 +97,13 @@ export const randomTraits = (traits: TraitType[]) : GenAttr[] => {
     result.push({
       type: omit(traitType, ['path', 'items', 'rarity']),
       trait: omit(selection, ['path', 'ext', 'rarity'])
-    })
+    });
   }
   return result;
 }
 
 export const traitsToCSV = (path: string, traits: TraitType[]) => {
+  path = pathNormalize(path, '.csv');
   const csvStream = csv.format({ headers: true });
   const writeStream = createWriteStream(path);
   csvStream.pipe(writeStream);

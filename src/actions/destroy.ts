@@ -1,4 +1,4 @@
-import { pathJoin, exists, deleteJson, deleteDir, deleteFile } from "../helpers/file";
+import { pathJoin, pathParse, exists, deleteJson, deleteDir, deleteFile } from "../helpers/file";
 import { task, prompt, print } from "../helpers/ui";
 import { isNil, isString } from "../helpers/utils";
 import { loadConfig } from "../helpers/config";
@@ -67,7 +67,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => deleteJson(traitsConfig),
   });
 
-  const traitsRarity = pathJoin(basePath, config.traits.rarity);
+  const { name: traitsRarityName } = pathParse(config.traits.summary);
+  const traitsRarity = pathJoin(basePath, traitsRarityName);
   await task({
     processText: 'Removing collection traits rarity table',
     successText: `Removed: ${traitsRarity}`,

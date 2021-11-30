@@ -1,4 +1,4 @@
-import { readJson, pathJoin, exists } from "../helpers/file";
+import { readJson, pathJoin, pathParse, exists } from "../helpers/file";
 import { print, task, createTable } from "../helpers/ui";
 import { traitsToCSV } from "../helpers/traits";
 import { loadConfig } from "../helpers/config";
@@ -33,7 +33,8 @@ export default async (basePath: string, opt: any) => {
     fn: async () => readJson(traitsPath),
   });
 
-  const traitsRarity = pathJoin(basePath, config.traits.rarity);
+  const { name: traitsRarityName } = pathParse(config.traits.summary);
+  const traitsRarity = pathJoin(basePath, traitsRarityName);
   await task({
     processText: 'Writing rarity to .csv',
     successText: `Collection Rarity: ${traitsRarity}`,

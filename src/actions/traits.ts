@@ -38,12 +38,7 @@ export default async (basePath: string, opt: any) => {
     processText: 'Preparing traits',
     successText: `Collection Traits: ${traitsConfig}`,
     fn: async () => {
-      traits = populateTraits(
-        basePath,
-        config.traits.path,
-        config.traits.exts,
-        config.traits.delimiter
-      );
+      traits = populateTraits(basePath, config.traits);
       writeJson(traitsConfig, traits);
     },
   });
